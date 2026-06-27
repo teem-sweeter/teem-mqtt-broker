@@ -1,0 +1,32 @@
+
+###
+# curl 'http://localhost:8088/actuator/env' -i -X GET -H 'Authorization: Basic YWRtaW46MTIzNDU2'
+GET http://localhost:8088/actuator/env
+Authorization: Basic YWRtaW46MTIzNDU2
+
+###
+#startup
+GET http://localhost:8088/actuator/startup
+Authorization: Basic YWRtaW46MTIzNDU2
+
+###
+# mappings
+GET http://localhost:8088/actuator/mappings
+Authorization: Basic YWRtaW46MTIzNDU2
+
+
+###
+# configprops
+GET http://localhost:8088/actuator/configprops
+Authorization: Basic YWRtaW46MTIzNDU2
+
+###
+# beans
+GET http://localhost:8088/actuator/beans
+Authorization: Basic YWRtaW46MTIzNDU2
+
+
+###
+# caches
+GET http://localhost:8088/actuator/threaddump
+Authorization: Basic YWRtaW46MTIzNDU2

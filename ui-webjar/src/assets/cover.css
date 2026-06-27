@@ -1,0 +1,615 @@
+/* 该文件放置强制覆盖的css */
+.el-menu {
+    border-right: none !important;
+}
+.el-main {
+    display: flex !important;
+    padding: 10px 10px !important;
+}
+
+.personal :focus-visible {
+    outline: none;
+}
+
+/* 修复Element Plus tooltip白色背景问题 */
+html.dark .el-popper.is-dark,
+html.dark .el-tooltip__popper {
+    background-color: var(--bg-secondary) !important;
+    color: var(--text-primary) !important;
+    border: 1px solid var(--border-dialog) !important;
+    border-radius: 8px !important;
+    font-size: 12px !important;
+    padding: 8px 12px !important;
+    box-shadow: var(--shadow-md) !important;
+}
+
+html.dark .el-popper.is-dark .el-popper__arrow::before,
+html.dark .el-tooltip__popper .el-popper__arrow::before {
+    background-color: var(--bg-secondary) !important;
+    border-color: var(--border-dialog) !important;
+}
+
+/* 修复el-button hover时的白色背景 */
+.el-button:hover {
+    background-color: var(--color-primary-hover) !important;
+    border-color: var(--color-primary) !important;
+    color: var(--color-primary) !important;
+}
+
+.el-button--primary:hover {
+    background-color: var(--color-primary-interactive) !important;
+    border-color: var(--color-primary-interactive) !important;
+}
+
+.el-button--default:hover {
+    background-color: var(--bg-secondary) !important;
+    border-color: var(--border-darker) !important;
+    color: var(--text-secondary) !important;
+}
+
+/* link按钮：无背景无边框 */
+.el-button.is-link,
+.el-button--primary.is-link,
+.el-button--danger.is-link {
+    background-color: transparent !important;
+    border-color: transparent !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    height: auto !important;
+}
+.el-button.is-link:hover,
+.el-button--primary.is-link:hover,
+.el-button--danger.is-link:hover {
+    background-color: transparent !important;
+    border-color: transparent !important;
+    box-shadow: none !important;
+}
+.el-button--primary.is-link {
+    color: var(--color-primary) !important;
+}
+.el-button--danger.is-link {
+    color: var(--color-danger) !important;
+}
+.el-button--primary.is-link:hover {
+    color: var(--color-primary-dark) !important;
+}
+.el-button--danger.is-link:hover {
+    color: var(--color-danger) !important;
+    opacity: 0.85;
+}
+
+/* 暗色主题 link 按钮 */
+html.dark .el-button.is-link,
+html.dark .el-button--primary.is-link,
+html.dark .el-button--danger.is-link {
+    background-color: transparent !important;
+    border-color: transparent !important;
+    box-shadow: none !important;
+}
+html.dark .el-button--primary.is-link {
+    color: var(--color-primary) !important;
+}
+html.dark .el-button--danger.is-link {
+    color: var(--color-danger) !important;
+}
+html.dark .el-button.is-link:hover,
+html.dark .el-button--primary.is-link:hover,
+html.dark .el-button--danger.is-link:hover {
+    background-color: transparent !important;
+    border-color: transparent !important;
+    box-shadow: none !important;
+}
+
+/* 修复el-input hover时的白色背景 */
+.el-input__wrapper:hover {
+    box-shadow: 0 0 0 1px var(--color-primary) inset !important;
+}
+
+.el-input__wrapper.is-focus {
+    box-shadow: 0 0 0 1px var(--color-primary) inset !important;
+}
+
+/* 修复el-select hover时的白色背景 */
+.el-select:hover .el-input__wrapper {
+    box-shadow: 0 0 0 1px var(--color-primary) inset !important;
+}
+
+/* 修复el-table hover时的白色背景 */
+.el-table__body tr:hover > td {
+    background-color: var(--bg-secondary) !important;
+}
+
+.el-table__body tr.current-row > td {
+    background-color: var(--table-current-row-bg) !important;
+}
+
+/* 修复el-card hover时的白色背景 */
+.el-card:hover {
+    box-shadow: var(--shadow-card-hover) !important;
+    border-color: var(--color-primary) !important;
+}
+
+/* 修复el-tag hover时的白色背景 */
+.el-tag:hover {
+    background-color: var(--bg-active) !important;
+    border-color: var(--color-primary) !important;
+    color: var(--color-primary-dark) !important;
+}
+
+/* 修复el-checkbox hover时的白色背景 */
+.el-checkbox__inner:hover {
+    border-color: var(--color-primary) !important;
+}
+
+.el-checkbox__input.is-checked .el-checkbox__inner {
+    background-color: var(--color-primary) !important;
+    border-color: var(--color-primary) !important;
+}
+
+/* 修复el-radio hover时的白色背景 */
+.el-radio__inner:hover {
+    border-color: var(--color-primary) !important;
+}
+
+.el-radio__input.is-checked .el-radio__inner {
+    background-color: var(--color-primary) !important;
+    border-color: var(--color-primary) !important;
+}
+
+/* 修复el-slider hover时的白色背景 */
+.el-slider__runway:hover .el-slider__bar {
+    background-color: var(--color-primary) !important;
+}
+
+.el-slider__button:hover {
+    border-color: var(--color-primary) !important;
+}
+
+/* 修复el-upload drag hover时的白色背景 */
+.el-upload-dragger:hover {
+    border-color: var(--color-primary) !important;
+    background-color: var(--color-primary-bg) !important;
+}
+
+/* 修复el-button-group hover时的白色背景 */
+.el-button-group .el-button:hover {
+    background-color: var(--color-primary-hover) !important;
+    border-color: var(--color-primary) !important;
+    color: var(--color-primary) !important;
+}
+
+/* 修复el-breadcrumb item hover时的白色背景 */
+.el-breadcrumb__item:hover .el-breadcrumb__inner {
+    color: var(--color-primary) !important;
+}
+
+/* 修复el-menu item hover时的白色背景 */
+.el-menu-item:hover {
+    background-color: var(--color-primary-bg) !important;
+    color: var(--color-primary-dark) !important;
+}
+
+.el-sub-menu__title:hover {
+    background-color: var(--color-primary-bg) !important;
+    color: var(--color-primary-dark) !important;
+}
+
+/* 修复el-dropdown item hover时的白色背景 */
+.el-dropdown-menu__item:hover {
+    background-color: var(--color-primary-bg) !important;
+    color: var(--color-primary-dark) !important;
+}
+
+/* 修复el-pagination button hover时的白色背景 */
+.el-pagination__button:hover {
+    background-color: var(--color-primary-bg) !important;
+    color: var(--color-primary-dark) !important;
+    border-color: var(--color-primary) !important;
+}
+
+.el-pagination__sizes .el-input__wrapper:hover {
+    box-shadow: 0 0 0 1px var(--color-primary) inset !important;
+}
+
+.el-pagination__jump .el-input__wrapper:hover {
+    box-shadow: 0 0 0 1px var(--color-primary) inset !important;
+}
+
+/* 修复el-step hover时的白色背景 */
+.el-step__head.is-finish {
+    color: var(--color-primary) !important;
+    border-color: var(--color-primary) !important;
+}
+
+.el-step__title.is-finish {
+    color: var(--color-primary) !important;
+}
+
+.el-step__description.is-finish {
+    color: var(--color-primary) !important;
+}
+
+/* 修复el-alert hover时的白色背景 */
+.el-alert:hover {
+    box-shadow: 0 2px 12px 0 var(--color-primary-hover) !important;
+}
+
+/* 修复el-badge hover时的白色背景 */
+.el-badge__content {
+    background-color: var(--color-primary) !important;
+    border-color: var(--bg-card) !important;
+}
+
+/* 修复el-link hover时的白色背景 */
+.el-link:hover {
+    color: var(--color-primary) !important;
+}
+
+.el-link--primary:hover {
+    color: var(--color-primary-interactive) !important;
+}
+
+/* 修复el-switch hover时的白色背景 */
+.el-switch:hover .el-switch__core {
+    background-color: var(--color-primary-interactive) !important;
+}
+
+/* 修复el-rate hover时的白色背景 */
+.el-rate__item:hover .el-icon {
+    color: var(--color-primary) !important;
+}
+
+/* 修复el-progress hover时的白色背景 */
+.el-progress-bar__inner:hover {
+    background-color: var(--color-primary-interactive) !important;
+}
+
+/* 修复el-drawer close button hover时的白色背景 */
+.el-drawer__header button:hover {
+    color: var(--color-primary) !important;
+}
+
+/* 修复el-dialog close button hover时的白色 background */
+.el-dialog__headerbtn:hover .el-dialog__close {
+    color: var(--color-primary) !important;
+}
+
+/* 修复el-popconfirm button hover时的白色背景 */
+.el-popconfirm__action .el-button--default:hover {
+    background-color: var(--bg-secondary) !important;
+    border-color: var(--border-darker) !important;
+    color: var(--text-secondary) !important;
+}
+
+.el-popconfirm__action .el-button--primary:hover {
+    background-color: var(--color-primary-interactive) !important;
+    border-color: var(--color-primary-interactive) !important;
+}
+
+/* 修复el-cascader hover时的白色背景 */
+.el-cascader:hover .el-input__wrapper {
+    box-shadow: 0 0 0 1px var(--color-primary) inset !important;
+}
+
+/* 修复el-date-picker hover时的白色背景 */
+.el-date-picker:hover .el-input__wrapper {
+    box-shadow: 0 0 0 1px var(--color-primary) inset !important;
+}
+
+/* 修复el-time-picker hover时的白色背景 */
+.el-time-picker:hover .el-input__wrapper {
+    box-shadow: 0 0 0 1px var(--color-primary) inset !important;
+}
+
+/* 修复el-color-picker hover时的白色背景 */
+.el-color-picker:hover .el-color-picker__trigger {
+    border-color: var(--color-primary) !important;
+}
+
+/* 修复el-transfer hover时的白色背景 */
+.el-transfer:hover .el-input__wrapper {
+    box-shadow: 0 0 0 1px var(--color-primary) inset !important;
+}
+
+/* 修复el-tree hover时的白色背景 */
+.el-tree-node:hover > .el-tree-node__content {
+    background-color: var(--color-primary-bg) !important;
+    color: var(--color-primary-dark) !important;
+}
+
+.el-tree-node.is-current > .el-tree-node__content {
+    background-color: var(--bg-active) !important;
+    color: var(--color-primary-dark) !important;
+}
+
+/* 修复el-select-v2 hover时的白色背景 */
+.el-select-v2:hover .el-input__wrapper {
+    box-shadow: 0 0 0 1px var(--color-primary) inset !important;
+}
+
+/* 修复el-input-number hover时的白色背景 */
+.el-input-number:hover .el-input__wrapper {
+    box-shadow: 0 0 0 1px var(--color-primary) inset !important;
+}
+
+/* 修复el-slider hover时的白色背景 */
+.el-slider:hover .el-input__wrapper {
+    box-shadow: 0 0 0 1px var(--color-primary) inset !important;
+}
+
+/* 修复el-time-select hover时的白色背景 */
+.el-time-select:hover .el-input__wrapper {
+    box-shadow: 0 0 0 1px var(--color-primary) inset !important;
+}
+
+/* 修复el-input hover时的白色背景 */
+.el-input:hover .el-input__wrapper {
+    box-shadow: 0 0 0 1px var(--color-primary) inset !important;
+}
+
+/* 修复el-textarea hover时的白色背景 */
+.el-textarea:hover .el-textarea__inner {
+    box-shadow: 0 0 0 1px var(--color-primary) inset !important;
+}
+
+/* 修复el-input-group hover时的白色背景 */
+.el-input-group:hover .el-input__wrapper {
+    box-shadow: 0 0 0 1px var(--color-primary) inset !important;
+}
+
+/* 修复el-input-affix hover时的白色背景 */
+.el-input-affix:hover .el-input__wrapper {
+    box-shadow: 0 0 0 1px var(--color-primary) inset !important;
+}
+
+/* 修复el-input-password hover时的白色背景 */
+.el-input-password:hover .el-input__wrapper {
+    box-shadow: 0 0 0 1px var(--color-primary) inset !important;
+}
+
+/* 修复el-input-search hover时的白色背景 */
+.el-input-search:hover .el-input__wrapper {
+    box-shadow: 0 0 0 1px var(--color-primary) inset !important;
+}
+
+/* ========== 暗色主题按钮样式 ========== */
+
+/* default按钮：深色底色 */
+html.dark .el-button--default {
+    background-color: var(--bg-card) !important;
+    border-color: var(--border-darker) !important;
+    color: var(--text-primary) !important;
+}
+html.dark .el-button--default:hover {
+    background-color: var(--bg-secondary) !important;
+    border-color: var(--color-primary) !important;
+    color: var(--color-primary) !important;
+}
+
+/* primary按钮：使用主题绿色替代蓝色 */
+html.dark .el-button--primary {
+    background-color: var(--color-primary) !important;
+    border-color: var(--color-primary) !important;
+}
+html.dark .el-button--primary:hover {
+    background-color: var(--color-primary-interactive) !important;
+    border-color: var(--color-primary-interactive) !important;
+}
+html.dark .el-button--primary.is-text {
+    background-color: transparent !important;
+    border-color: transparent !important;
+    color: var(--color-primary) !important;
+}
+html.dark .el-button--primary.is-text:hover {
+    background-color: rgba(43, 224, 140, 0.1) !important;
+    border-color: transparent !important;
+}
+
+/* success按钮 */
+html.dark .el-button--success {
+    background-color: #529b2e !important;
+    border-color: #529b2e !important;
+}
+html.dark .el-button--success:hover {
+    background-color: #67c23a !important;
+    border-color: #67c23a !important;
+}
+
+/* warning按钮 */
+html.dark .el-button--warning {
+    background-color: #a67c2e !important;
+    border-color: #a67c2e !important;
+}
+html.dark .el-button--warning:hover {
+    background-color: #e6a23c !important;
+    border-color: #e6a23c !important;
+}
+
+/* danger按钮 */
+html.dark .el-button--danger {
+    background-color: #c45656 !important;
+    border-color: #c45656 !important;
+}
+html.dark .el-button--danger:hover {
+    background-color: #f56c6c !important;
+    border-color: #f56c6c !important;
+}
+
+/* info按钮 */
+html.dark .el-button--info {
+    background-color: #555a64 !important;
+    border-color: #555a64 !important;
+}
+html.dark .el-button--info:hover {
+    background-color: #909399 !important;
+    border-color: #909399 !important;
+}
+
+/* 纯文字按钮 (type="text") */
+html.dark .el-button--text {
+    background-color: transparent !important;
+    border-color: transparent !important;
+    color: var(--color-primary) !important;
+}
+
+/* 按钮组暗色适配 */
+html.dark .el-button-group .el-button--default {
+    background-color: var(--bg-card) !important;
+    border-color: var(--border-darker) !important;
+    color: var(--text-primary) !important;
+}
+
+/* ========== 暗色主题弹窗样式 ========== */
+
+/* 弹窗遮罩层 */
+html.dark .el-overlay {
+    background-color: rgba(0, 0, 0, 0.7) !important;
+    backdrop-filter: blur(4px);
+}
+
+/* 弹窗主体 */
+html.dark .el-dialog {
+    background-color: var(--bg-card) !important;
+    border: 1px solid var(--border-dialog) !important;
+    border-radius: 12px !important;
+    box-shadow: var(--shadow-dialog) !important;
+    overflow: hidden;
+}
+
+/* 弹窗悬停效果 */
+html.dark .el-dialog:hover {
+    box-shadow: var(--shadow-dialog-hover) !important;
+}
+
+/* 弹窗头部 */
+html.dark .el-dialog__header {
+    background-color: var(--dialog-header-bg) !important;
+    border-bottom: 1px solid var(--border-dialog) !important;
+    padding: 16px 20px !important;
+    margin: 0 !important;
+}
+
+/* 弹窗标题 */
+html.dark .el-dialog__title {
+    color: var(--text-primary) !important;
+    font-weight: 600 !important;
+}
+
+/* 弹窗关闭按钮 */
+html.dark .el-dialog__headerbtn {
+    top: 16px !important;
+    right: 16px !important;
+}
+
+html.dark .el-dialog__headerbtn:hover .el-dialog__close {
+    color: var(--color-primary) !important;
+    transform: rotate(90deg);
+    transition: transform 0.3s ease;
+}
+
+/* 弹窗内容区域 */
+html.dark .el-dialog__body {
+    color: var(--text-regular) !important;
+    padding: 20px 24px !important;
+}
+
+/* 弹窗底部 */
+html.dark .el-dialog__footer {
+    border-top: 1px solid var(--border-dialog) !important;
+    padding: 16px 20px !important;
+}
+
+/* 全屏弹窗 */
+html.dark .el-dialog.is-fullscreen {
+    background-color: var(--bg-page) !important;
+}
+
+/* 消息框样式 */
+html.dark .el-message-box {
+    background-color: var(--bg-card) !important;
+    border: 1px solid var(--border-dialog) !important;
+    border-radius: 12px !important;
+    box-shadow: var(--shadow-dialog) !important;
+}
+
+html.dark .el-message-box__header {
+    background-color: var(--dialog-header-bg) !important;
+    border-bottom: 1px solid var(--border-dialog) !important;
+    padding: 16px 20px !important;
+}
+
+html.dark .el-message-box__title {
+    color: var(--text-primary) !important;
+}
+
+html.dark .el-message-box__content {
+    color: var(--text-regular) !important;
+    padding: 24px !important;
+}
+
+html.dark .el-message-box__btns {
+    border-top: 1px solid var(--border-dialog) !important;
+    padding: 16px 20px !important;
+}
+
+/* 抽屉样式 */
+html.dark .el-drawer {
+    background-color: var(--bg-card) !important;
+    border-left: 1px solid var(--border-dialog) !important;
+}
+
+html.dark .el-drawer__header {
+    background-color: var(--dialog-header-bg) !important;
+    border-bottom: 1px solid var(--border-dialog) !important;
+    color: var(--text-primary) !important;
+    padding: 16px 20px !important;
+    margin-bottom: 0 !important;
+}
+
+html.dark .el-drawer__body {
+    color: var(--text-regular) !important;
+    padding: 20px !important;
+}
+
+/* 通知样式 */
+html.dark .el-notification {
+    background-color: var(--bg-card) !important;
+    border: 1px solid var(--border-dialog) !important;
+    border-radius: 8px !important;
+    box-shadow: var(--shadow-dialog) !important;
+}
+
+html.dark .el-notification__title {
+    color: var(--text-primary) !important;
+}
+
+html.dark .el-notification__content {
+    color: var(--text-regular) !important;
+}
+
+/* 弹出菜单样式 */
+html.dark .el-popper.is-light {
+    background-color: var(--bg-card) !important;
+    border: 1px solid var(--border-dialog) !important;
+    box-shadow: var(--shadow-dialog) !important;
+}
+
+html.dark .el-popover {
+    background-color: var(--bg-card) !important;
+    border: 1px solid var(--border-dialog) !important;
+    box-shadow: var(--shadow-dialog) !important;
+}
+
+/* 下拉菜单样式 */
+html.dark .el-dropdown-menu {
+    background-color: var(--bg-card) !important;
+    border: 1px solid var(--border-dialog) !important;
+    box-shadow: var(--shadow-dialog) !important;
+}
+
+/* 工具提示样式 */
+html.dark .el-tooltip__popper.is-dark {
+    background-color: var(--bg-secondary) !important;
+    border: 1px solid var(--border-dialog) !important;
+    box-shadow: var(--shadow-md) !important;
+}

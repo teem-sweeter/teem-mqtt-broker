@@ -1,0 +1,118 @@
+:root {
+  /* Backgrounds */
+  --bg-page: #EBEFF2;
+  --bg-card: #fff;
+  --bg-card-solid: #ffffff;
+  --bg-secondary: #f5f7fa;
+  --bg-hover: #f0f9f4;
+  --bg-active: #e1f5ee;
+  --bg-input: #f7f9fc;
+  --bg-submenu: rgba(239, 239, 239, 0.92);
+
+  /* Text */
+  --text-primary: #303133;
+  --text-regular: #333;
+  --text-secondary: #606266;
+  --text-muted: #666;
+  --text-placeholder: #909399;
+
+  /* Borders */
+  --border-light: #f1f5f9;
+  --border-base: #e6e6e6;
+  --border-darker: #e4e7ed;
+
+  /* Accent */
+  --color-primary: #2BE08C;
+  --color-primary-dark: #1aab6b;
+  --color-primary-hover: rgba(43, 224, 140, 0.1);
+  --color-primary-bg: #edfcf2;
+  --color-primary-light: rgba(43, 224, 140, 0.77);
+  --color-primary-gradient: linear-gradient(135deg, #2BE08C 0%, #1aab6b 100%);
+  --color-primary-shadow: rgba(43, 224, 140, 0.3);
+  --color-primary-interactive: #1aab6b;
+
+  /* Table */
+  --table-current-row-bg: #ecf5ff;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 2px 12px rgba(0, 0, 0, 0.05);
+  --shadow-card-hover: 0 2px 12px 0 rgba(43, 224, 140, 0.2);
+
+  /* Scrollbar */
+  --scrollbar-track: #fff;
+  --scrollbar-thumb: #e0e0e0;
+
+  /* Misc */
+  --context-menu-bg: #fff;
+  --tag-normal-bg: #f5f7fa;
+  --dropdown-bg: white;
+  --dialog-header-bg: #fafafa;
+  --danger-bg: #fef2f2;
+  --danger-color: #ef4444;
+  --danger-hover: #dc2626;
+}
+
+html.dark {
+  /* Backgrounds — Halo-style near-black tiers */
+  --bg-page: #0A0B0F;
+  --bg-card: #14151C;
+  --bg-card-solid: #14151C;
+  --bg-secondary: #1E2029;
+  --bg-hover: #1E2029;
+  --bg-active: #2A2D38;
+  --bg-input: #14151C;
+  --bg-submenu: rgba(20, 21, 28, 0.92);
+
+  /* Text — bright and clear on dark backgrounds */
+  --text-primary: #F2F4F8;
+  --text-regular: #D0D4DE;
+  --text-secondary: #9AA0AE;
+  --text-muted: #5C6170;
+  --text-placeholder: #484D5C;
+
+  /* Borders — enhanced visibility for dark theme */
+  --border-light: #1E2029;
+  --border-base: #2A2D38;
+  --border-darker: #3A3D4A;
+  --border-dialog: rgba(255, 255, 255, 0.12); /* Dialog border with better contrast */
+  --border-dialog-hover: rgba(43, 224, 140, 0.3); /* Dialog border on hover/focus */
+
+  /* Accent — green retained, tuned for dark substrate */
+  --color-primary: #2BE08C;
+  --color-primary-dark: #1aab6b;
+  --color-primary-hover: rgba(43, 224, 140, 0.12);
+  --color-primary-bg: #111f18;
+  --color-primary-light: rgba(43, 224, 140, 0.6);
+  --color-primary-gradient: linear-gradient(135deg, #2BE08C 0%, #1aab6b 100%);
+  --color-primary-shadow: rgba(43, 224, 140, 0.2);
+  --color-primary-interactive: #1aab6b;
+
+  /* Table */
+  --table-current-row-bg: #1a2a3a;
+
+  /* Shadows — deeper for near-black substrate */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.45);
+  --shadow-lg: 0 2px 12px rgba(0, 0, 0, 0.5);
+  --shadow-card-hover: 0 2px 12px 0 rgba(43, 224, 140, 0.1);
+
+  /* Dialog specific shadows — visible on dark backgrounds */
+  --shadow-dialog: 0 8px 32px rgba(0, 0, 0, 0.6), 0 0 0 1px var(--border-dialog);
+  --shadow-dialog-hover: 0 12px 40px rgba(0, 0, 0, 0.7), 0 0 0 1px var(--border-dialog-hover);
+  --shadow-dialog-glow: 0 0 20px rgba(43, 224, 140, 0.15); /* Subtle glow effect */
+
+  /* Scrollbar */
+  --scrollbar-track: #0A0B0F;
+  --scrollbar-thumb: #2A2D38;
+
+  /* Misc */
+  --context-menu-bg: #14151C;
+  --tag-normal-bg: #1E2029;
+  --dropdown-bg: #14151C;
+  --dialog-header-bg: #14151C;
+  --danger-bg: #2a1215;
+  --danger-color: #f87171;
+  --danger-hover: #ef4444;
+}

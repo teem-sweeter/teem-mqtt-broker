@@ -1,0 +1,23 @@
+<service>
+    <id>mqtt-broker</id>
+    <name>mqtt-broker</name>
+    <description>mqtt-broker</description>
+    <executable>%BASE%\jdk\bin\java.exe</executable>
+    <arguments>
+        -Xms1G
+        -Xmx1G
+        -Dfile.encoding=UTF-8
+        -jar app.jar
+    </arguments>
+
+    <log mode="roll-by-size">
+        <sizeThreshold>1024</sizeThreshold>
+        <keepFiles>3</keepFiles>
+    </log>
+    <env name="JAVA_HOME" value="%BASE%\jdk"/>
+    <onfailure action="restart" delay="10 sec"/>
+
+    <resetfailure>1 hour</resetfailure>
+    <!-- 设置开机自启动 -->
+    <startmode>Automatic</startmode>
+</service>

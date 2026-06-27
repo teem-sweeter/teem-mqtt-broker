@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    MQTT 消息持久化 Logback 配置
+    
+    使用异步 Appender 实现高性能消息持久化：
+    1. AsyncAppender：异步队列缓冲，非阻塞写入
+    2. RollingFileAppender：支持按时间和大小滚动
+    3. JSON 格式输出：便于后续大数据分析
+    
+    @author sweeter
+    @date 2026/3/31
+-->
+<configuration scan="true" scanPeriod="60 seconds" status="WARN">
+
+    <!-- MQTT 消息持久化文件存放目录 -->
+    <property name="MQTT_LOG_HOME" value="./logs/mqtt"/>
+    <property name="MQTT_MESSAGE_FILE" value="mqtt-messages"/>
+    
+    <!-- 异步队列配置 -->
+    <property name="ASYNC_QUEUE_SIZE" value="10000"/>
+    <property name="ASYNC_DISCARDING_THRESHOLD" value="0"/>
+    <property name="ASYNC_INCLUDE_CALLER_DATA" value="false"/>
+    
+    <!-- 文件滚动配置 -->
+    <property name="MAX_FILE_SIZE" value="100MB"/>
+    <property name="MAX_HISTORY" value="30"/>
+    <property name="TOTAL_SIZE_CAP" value="20GB"/>
+    
+    <!-- 公共滚动策略（按时间和大小） -->
+    <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+        <fileNamePattern>${MQTT_LOG_HOME}/${MQTT_MESSAGE_FILE}-%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+        <maxFileSize>${MAX_FILE_SIZE}</maxFileSize>
+        <maxHistory>${MAX_HISTORY}</maxHistory>
+        <totalSizeCap>${TOTAL_SIZE_CAP}</totalSizeCap>
+        <cleanHistoryOnStart>true</cleanHistoryOnStart>
+    </rollingPolicy>
+
+    <!--
+        =====================================================
+        MQTT 消息持久化 Appender（核心配置）
+        =====================================================
+    -->
+    <appender name="MQTT_MESSAGE_APPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!-- 日志文件路径 -->
+        <file>${MQTT_LOG_HOME}/${MQTT_MESSAGE_FILE}.log</file>
+        
+        <!-- 滚动策略 -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${MQTT_LOG_HOME}/${MQTT_MESSAGE_FILE}-%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+            <maxFileSize>${MAX_FILE_SIZE}</maxFileSize>
+            <maxHistory>${MAX_HISTORY}</maxHistory>
+            <totalSizeCap>${TOTAL_SIZE_CAP}</totalSizeCap>
+            <cleanHistoryOnStart>true</cleanHistoryOnStart>
+        </rollingPolicy>
+        
+        <!-- 编码器配置 -->
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <!-- 直接输出消息内容，不添加时间戳和级别（消息本身已包含时间戳） -->
+            <pattern>%msg%n</pattern>
+            <charset>UTF-8</charset>
+            <!-- 禁用立即刷新，提高写入性能 -->
+            <immediateFlush>false</immediateFlush>
+        </encoder>
+        
+        <!-- 安全策略：日志文件权限（Linux/Mac） -->
+        <prudent>false</prudent>
+    </appender>
+
+    <!--
+        MQTT 消息异步 Appender
+        - queueSize: 异步队列长度，默认 256
+        - discardingThreshold: 当队列剩余空间小于此值时开始丢弃日志，默认 queueSize * 0.8
+        - 设为 0 表示队列满时阻塞等待，不丢弃任何日志
+    -->
+    <appender name="MQTT_MESSAGE_ASYNC_APPENDER" class="ch.qos.logback.classic.AsyncAppender">
+        <!-- 绑定下层 Appender -->
+        <appender-ref ref="MQTT_MESSAGE_APPENDER"/>
+        
+        <!-- 队列大小：高并发场景建议 10000+ -->
+        <queueSize>${ASYNC_QUEUE_SIZE}</queueSize>
+        
+        <!-- 丢弃阈值：0 表示不丢弃任何日志，队列满时阻塞 -->
+        <discardingThreshold>${ASYNC_DISCARDING_THRESHOLD}</discardingThreshold>
+        
+        <!-- 是否包含调用者数据（会降低性能，建议关闭） -->
+        <includeCallerData>${ASYNC_INCLUDE_CALLER_DATA}</includeCallerData>
+        
+        <!-- 队列满时的阻塞超时时间（0 表示无限等待） -->
+        <neverBlock>true</neverBlock>
+        
+        <!-- 异步追加器名称（用于日志区分） -->
+        <name>mqtt-message-async-appender</name>
+    </appender>
+
+    <!--
+        MQTT 消息记录 Logger
+        使用独立的 Logger 名称，避免与其他日志混淆
+    -->
+    <logger name="MQTT_DISK_RECORDER" level="INFO" additivity="false">
+        <appender-ref ref="MQTT_MESSAGE_ASYNC_APPENDER"/>
+        <!-- 可选：同时输出到控制台（调试用） -->
+        <!-- <appender-ref ref="CONSOLE"/> -->
+    </logger>
+
+    <!--
+        =====================================================
+        MQTT 连接日志 Appender（可选）
+        用于记录设备连接/断开事件
+        =====================================================
+    -->
+    <appender name="MQTT_CONNECTION_APPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${MQTT_LOG_HOME}/mqtt-connections.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${MQTT_LOG_HOME}/mqtt-connections-%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+            <maxFileSize>50MB</maxFileSize>
+            <maxHistory>30</maxHistory>
+            <totalSizeCap>5GB</totalSizeCap>
+        </rollingPolicy>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>%msg%n</pattern>
+            <charset>UTF-8</charset>
+            <immediateFlush>true</immediateFlush>
+        </encoder>
+    </appender>
+
+    <!-- 连接日志 Logger（连接事件使用同步写入，保证可靠性） -->
+    <logger name="MQTT_CONNECTION_LOGGER" level="INFO" additivity="false">
+        <appender-ref ref="MQTT_CONNECTION_APPENDER"/>
+    </logger>
+
+    <!--
+        =====================================================
+        控制台 Appender（调试用）
+        =====================================================
+    -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+    <!-- 根 Logger 配置 -->
+    <root level="INFO">
+        <appender-ref ref="CONSOLE"/>
+    </root>
+
+</configuration>

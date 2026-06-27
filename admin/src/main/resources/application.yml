@@ -1,0 +1,111 @@
+server:
+  port: 8080
+spring:
+  application:
+    name: mqtt-broker
+  info:
+    app:
+      name: ${spring.application.name}
+      version: 1.0.0
+      description: MQTT Broker
+  # 添加H2数据库配置
+  datasource:
+    url: jdbc:h2:file:./data/mqtt-broker-db;CIPHER=AES;AUTO_SERVER=TRUE
+    driver-class-name: org.h2.Driver
+    username: mqtt
+    password: 'MQTT broker 2026'
+    hikari:
+      maximum-pool-size: 2
+      minimum-idle: 0
+      connection-timeout: 30000
+      initialization-fail-timeout: -1
+      idle-timeout: 30000
+      max-lifetime: 600000
+      pool-name: MQTTBrokerHikari
+  #sql:
+    #init:
+     # mode: always
+      #schema-locations: classpath:schema.sql
+  jpa:
+    open-in-view: false
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        temp:
+          use_jdbc_metadata_defaults: false
+        format_sql: false
+    defer-datasource-initialization: true
+
+mqtt:
+  broker:
+    enabled: true
+    host: 0.0.0.0
+    port: 1883
+    websocket-port: 8083
+    websocket-path: /mqtt
+    allow-anonymous: true
+    username: admin
+    password: admin2026
+    persistence:
+      max-rows: 10000
+
+jwt:
+  secret: ${JWT_SECRET:mqtt-edge-default-secret-key-must-be-at-least-32bytes}
+  expiration: 86400000
+
+management:
+  endpoint:
+    health:
+      show-details: ALWAYS
+      show-components: ALWAYS
+    env:
+      show-values: ALWAYS
+    loggers:
+      enabled: true
+    info:
+      enabled: true
+    threaddump:
+      enabled: true
+    logfile:
+      enabled: true
+    shutdown:
+      enabled: true
+    heapdump:
+      enabled: true
+    startup:
+      enabled: true
+    mappings:
+      enabled: true
+    configprops:
+      enabled: true
+      show-values: ALWAYS
+    beans:
+      enabled: true
+    caches:
+      enabled: true
+    scheduledtasks:
+      enabled: true
+    conditions:
+      enabled: true
+    sbom:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: health,info,env,metrics,threads,threaddump,loggers,logfile,heapdump,mappings,configprops,beans,caches,scheduledtasks,conditions,sbom,startup
+      base-path: /actuator
+    jmx:
+      exposure:
+        exclude: "*"
+  info:
+    env:
+      enabled: true
+    java:
+      enabled: true
+    os:
+      enabled: true
+    build:
+      enabled: true

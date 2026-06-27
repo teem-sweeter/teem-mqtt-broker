@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin>
+    <groupId>com.jjc</groupId>
+    <artifactId>maven-jar-sign-plugin</artifactId>
+    <version>1.0.0</version>
+    <goalPrefix>jar-sign</goalPrefix>
+    <mojos>
+        <mojo>
+            <goal>sign-jar</goal>
+            <phase>package</phase>
+            <implementation>com.jjc.maven.plugin.JarSignMojo</implementation>
+            <parameters>
+                <parameter>
+                    <name>privateKeyPath</name>
+                    <type>java.lang.String</type>
+                    <required>true</required>
+                </parameter>
+                <parameter>
+                    <name>name</name>
+                    <type>java.lang.String</type>
+                    <required>false</required>
+                </parameter>
+                <parameter>
+                    <name>extend</name>
+                    <type>java.lang.String</type>
+                    <required>false</required>
+                </parameter>
+            </parameters>
+        </mojo>
+    </mojos>
+</plugin>
