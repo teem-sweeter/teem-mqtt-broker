@@ -207,15 +207,11 @@
               prefix-icon="Search"
               style="width: 240px;"
             />
-            <el-button @click="fetchClients" :loading="loading">
-              <el-icon><Refresh /></el-icon>
-              刷新
-            </el-button>
           </div>
         </div>
 
         <!-- 数据表格 -->
-        <el-table :data="filteredClients" v-loading="loading" row-key="clientId" stripe class="client-table">
+        <el-table :data="filteredClients" v-loading="initialLoading" row-key="clientId" stripe class="client-table">
           <el-table-column prop="clientId" label="客户端 ID" min-width="150" show-overflow-tooltip>
             <template #default="{ row }">
               <div class="client-id-cell">
@@ -308,7 +304,7 @@
           </el-table-column>
         </el-table>
 
-        <el-empty v-if="!loading && filteredClients.length === 0" description="暂无在线客户端" :image-size="80" />
+        <el-empty v-if="!initialLoading && filteredClients.length === 0" description="暂无在线客户端" :image-size="80" />
       </div>
     </div>
   </div>
@@ -319,13 +315,13 @@ import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import {
   User, UserFilled, CircleCheck, Mute, CloseBold,
-  Refresh, SwitchButton, Search, View, InfoFilled, List, Tickets, Document,
+  SwitchButton, Search, View, InfoFilled, List, Tickets, Document,
   WarningFilled, DataAnalysis
 } from '@element-plus/icons-vue'
 import { getClients, kickClient, setSendDisabled, setReceiveDisabled } from '@/api/client'
 
 const clients = ref([])
-const loading = ref(false)
+const initialLoading = ref(true)
 const searchText = ref('')
 const detailVisible = ref(false)
 const detailClient = ref(null)
@@ -350,14 +346,13 @@ const filteredClients = computed(() => {
   )
 })
 
-async function fetchClients() {
-  loading.value = true
+async function fetchClients(silent = false) {
   try {
     clients.value = await getClients()
   } catch {
-    ElMessage.error('获取客户端列表失败')
+    if (!silent) ElMessage.error('获取客户端列表失败')
   } finally {
-    loading.value = false
+    initialLoading.value = false
   }
 }
 
@@ -398,7 +393,7 @@ async function handleKick(row) {
     const res = await kickClient(row.clientId)
     if (res.success) {
       ElMessage.success('已踢出客户端: ' + row.clientId)
-      fetchClients()
+      fetchClients(true)
     } else {
       ElMessage.error(res.message || '踢出失败')
     }
@@ -433,39 +428,47 @@ function formatDuration(ts) {
 
 onMounted(() => {
   fetchClients()
-  refreshTimer = setInterval(fetchClients, 10000)
+  refreshTimer = setInterval(() => fetchClients(true), 30000)
 })
 
 onUnmounted(() => {
-  if (refreshTimer) clearInterval(refreshTimer)
+  if (refreshTimer) {
+    clearInterval(refreshTimer)
+    refreshTimer = null
+  }
 })
 </script>
 
 <style scoped>
 .client-page {
-  padding: 16px;
+  padding: 12px;
   background: var(--bg-secondary);
-  min-height: 100%;
+  height: 100%;
+  overflow: hidden;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
 }
 
 /* 统计卡片 */
 .stats-section {
-  margin-bottom: 16px;
+  flex-shrink: 0;
+  margin-bottom: 10px;
 }
 
 .stat-cards {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 12px;
+  gap: 10px;
 }
 
 .stat-card {
   background: var(--bg-card);
-  border-radius: 12px;
-  padding: 20px;
+  border-radius: 10px;
+  padding: 12px 14px;
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
   box-shadow: var(--shadow-sm);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
@@ -481,13 +484,13 @@ onUnmounted(() => {
 .stat-card-orange { border-left: 4px solid #f97316; }
 
 .stat-icon {
-  width: 48px;
-  height: 48px;
-  border-radius: 12px;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 24px;
+  font-size: 20px;
 }
 
 .stat-card-blue .stat-icon { background: linear-gradient(135deg, #409eff20, #409eff10); color: #409eff; }
@@ -496,16 +499,20 @@ onUnmounted(() => {
 .stat-card-orange .stat-icon { background: linear-gradient(135deg, #f9731620, #f9731610); color: #f97316; }
 
 .stat-content { flex: 1; }
-.stat-value { font-size: 28px; font-weight: bold; color: var(--text-primary); line-height: 1.2; }
-.stat-label { font-size: 13px; color: var(--text-placeholder); margin-top: 4px; }
+.stat-value { font-size: 22px; font-weight: bold; color: var(--text-primary); line-height: 1.2; }
+.stat-label { font-size: 12px; color: var(--text-placeholder); margin-top: 2px; }
 
 /* 主内容区 */
-.main-section { margin-bottom: 20px; }
+.main-section {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
 
 .main-card {
   background: var(--bg-card);
   border-radius: 12px;
-  padding: 20px;
+  padding: 14px;
   box-shadow: var(--shadow-sm);
   overflow: hidden;
 }
@@ -515,7 +522,7 @@ onUnmounted(() => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 16px;
+  margin-bottom: 12px;
 }
 
 .toolbar-title {
@@ -714,12 +721,12 @@ onUnmounted(() => {
 }
 
 @media (max-width: 768px) {
-  .client-page { padding: 12px; }
+  .client-page { padding: 8px; }
   .stat-cards { grid-template-columns: 1fr; gap: 8px; }
-  .stat-card { padding: 14px; }
-  .stat-value { font-size: 22px; }
-  .main-card { padding: 14px; }
-  .toolbar { flex-direction: column; gap: 12px; align-items: stretch; }
+  .stat-card { padding: 10px 12px; }
+  .stat-value { font-size: 20px; }
+  .main-card { padding: 10px; }
+  .toolbar { flex-direction: column; gap: 10px; align-items: stretch; }
   .toolbar-actions { justify-content: flex-end; }
 }
 </style>

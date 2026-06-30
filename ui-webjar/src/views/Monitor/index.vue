@@ -3,12 +3,9 @@
     <div class="stats-card">
       <div class="card-header">
         <span>MQTT Broker 监控</span>
-        <div class="header-actions">
-          <el-tag :type="wsConnected ? 'success' : 'danger'" size="small">
-            {{ wsConnected ? '已连接' : '未连接' }}
-          </el-tag>
-          <el-button type="primary" size="small" @click="refreshAll">刷新</el-button>
-        </div>
+        <el-tag :type="wsConnected ? 'success' : 'danger'" size="small">
+          {{ wsConnected ? 'WS已连接' : 'WS未连接' }}
+        </el-tag>
       </div>
       <div class="stats-grid">
         <div class="stat-item">
@@ -46,69 +43,71 @@
       </div>
     </div>
 
-    <div class="table-row">
-      <el-card class="table-card">
-        <template #header>
-          <span>已连接客户端</span>
-        </template>
-        <el-table :data="clients" style="width: 100%" max-height="360" @row-click="showClientDetail">
-          <el-table-column prop="clientId" label="客户端ID" show-overflow-tooltip />
-          <el-table-column prop="username" label="用户名" show-overflow-tooltip />
-          <el-table-column prop="ipAddress" label="IP地址" width="130" />
-          <el-table-column label="订阅数" width="70" align="center">
-            <template #default="{ row }">
-              {{ row.subscriptions ? row.subscriptions.length : 0 }}
-            </template>
-          </el-table-column>
-          <el-table-column label="连接时间" width="160">
-            <template #default="{ row }">
-              {{ formatTime(row.connectTime) }}
-            </template>
-          </el-table-column>
-        </el-table>
-      </el-card>
+    <div class="monitor-body">
+      <div class="table-row">
+        <el-card class="table-card">
+          <template #header>
+            <span>已连接客户端</span>
+          </template>
+          <el-table :data="clients" style="width: 100%" max-height="360" @row-click="showClientDetail">
+            <el-table-column prop="clientId" label="客户端ID" show-overflow-tooltip />
+            <el-table-column prop="username" label="用户名" show-overflow-tooltip />
+            <el-table-column prop="ipAddress" label="IP地址" width="130" />
+            <el-table-column label="订阅数" width="70" align="center">
+              <template #default="{ row }">
+                {{ row.subscriptions ? row.subscriptions.length : 0 }}
+              </template>
+            </el-table-column>
+            <el-table-column label="连接时间" width="160">
+              <template #default="{ row }">
+                {{ formatTime(row.connectTime) }}
+              </template>
+            </el-table-column>
+          </el-table>
+        </el-card>
 
-      <el-card class="table-card">
+        <el-card class="table-card">
+          <template #header>
+            <span>主题统计</span>
+          </template>
+          <el-table :data="topicList" style="width: 100%" max-height="360">
+            <el-table-column prop="topic" label="主题" show-overflow-tooltip />
+            <el-table-column prop="count" label="消息数" width="90" align="right" />
+          </el-table>
+        </el-card>
+      </div>
+
+      <el-card class="message-card">
         <template #header>
-          <span>主题统计</span>
+          <div class="card-header">
+            <span>最近消息</span>
+            <div class="header-actions">
+              <el-input v-model="messageFilter.topic" placeholder="按主题过滤" style="width: 140px;" size="small" />
+              <el-select v-model="messageFilter.qos" placeholder="QoS" style="width: 90px;" size="small" clearable>
+                <el-option :value="0" label="QoS 0" />
+                <el-option :value="1" label="QoS 1" />
+                <el-option :value="2" label="QoS 2" />
+              </el-select>
+              <el-button size="small" @click="togglePause">
+                {{ paused ? '继续' : '暂停' }}
+              </el-button>
+            </div>
+          </div>
         </template>
-        <el-table :data="topicList" style="width: 100%" max-height="360">
+        <el-table :data="filteredMessages" style="width: 100%" max-height="360">
+          <el-table-column prop="timestamp" label="时间" width="160">
+            <template #default="{ row }">
+              {{ formatTime(row.timestamp) }}
+            </template>
+          </el-table-column>
           <el-table-column prop="topic" label="主题" show-overflow-tooltip />
-          <el-table-column prop="count" label="消息数" width="90" align="right" />
+          <el-table-column prop="clientId" label="客户端ID" show-overflow-tooltip />
+          <el-table-column prop="qos" label="QoS" width="60" align="center" />
+          <el-table-column prop="direction" label="方向" width="60" align="center" />
+          <el-table-column prop="payload" label="内容" show-overflow-tooltip />
         </el-table>
       </el-card>
     </div>
-
-    <el-card class="message-card">
-      <template #header>
-        <div class="card-header">
-          <span>最近消息</span>
-          <div class="header-actions">
-            <el-input v-model="messageFilter.topic" placeholder="按主题过滤" style="width: 140px;" size="small" />
-            <el-select v-model="messageFilter.qos" placeholder="QoS" style="width: 90px;" size="small" clearable>
-              <el-option :value="0" label="QoS 0" />
-              <el-option :value="1" label="QoS 1" />
-              <el-option :value="2" label="QoS 2" />
-            </el-select>
-            <el-button size="small" @click="togglePause">
-              {{ paused ? '继续' : '暂停' }}
-            </el-button>
-          </div>
-        </div>
-      </template>
-      <el-table :data="filteredMessages" style="width: 100%" max-height="360">
-        <el-table-column prop="timestamp" label="时间" width="160">
-          <template #default="{ row }">
-            {{ formatTime(row.timestamp) }}
-          </template>
-        </el-table-column>
-        <el-table-column prop="topic" label="主题" show-overflow-tooltip />
-        <el-table-column prop="clientId" label="客户端ID" show-overflow-tooltip />
-        <el-table-column prop="qos" label="QoS" width="60" align="center" />
-        <el-table-column prop="direction" label="方向" width="60" align="center" />
-        <el-table-column prop="payload" label="内容" show-overflow-tooltip />
-      </el-table>
-    </el-card>
 
     <!-- 客户端详情对话框 -->
     <el-dialog v-model="clientDetailVisible" title="客户端详情" width="500px" align-center>
@@ -275,10 +274,6 @@ function connectWebSocket() {
     wsConnected.value = true
     reconnectAttempts = 0
     console.log('MQTT监控WebSocket已连接')
-    if (refreshTimer) {
-      clearInterval(refreshTimer)
-      refreshTimer = null
-    }
   }
 
   ws.onmessage = (event) => {
@@ -296,9 +291,6 @@ function connectWebSocket() {
     reconnectAttempts++
     console.log(`MQTT监控WebSocket已断开，${delay / 1000}秒后重连...`)
     setTimeout(connectWebSocket, delay)
-    if (!refreshTimer) {
-      refreshTimer = setInterval(refreshAll, 30000)
-    }
   }
 
   ws.onerror = (error) => {
@@ -360,6 +352,7 @@ onUnmounted(() => {
   }
   if (refreshTimer) {
     clearInterval(refreshTimer)
+    refreshTimer = null
   }
 })
 </script>
@@ -369,8 +362,10 @@ onUnmounted(() => {
   padding: 12px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  min-height: 100%;
+  gap: 10px;
+  height: 100%;
+  overflow: hidden;
+  box-sizing: border-box;
 }
 
 .card-header {
@@ -392,9 +387,10 @@ onUnmounted(() => {
   background: var(--bg-card);
   border: 1px solid var(--border-light);
   border-radius: 12px;
-  padding: 14px 16px;
+  padding: 10px 14px;
   box-shadow: var(--shadow-sm);
   transition: box-shadow 0.25s ease, border-color 0.25s ease;
+  flex-shrink: 0;
 }
 
 .stats-card:hover {
@@ -424,12 +420,12 @@ onUnmounted(() => {
   background: var(--bg-card);
   border-bottom: 1px solid var(--border-light);
   border-radius: 12px 12px 0 0;
-  padding: 14px 16px;
+  padding: 10px 14px;
 }
 
 .table-card :deep(.el-card__body),
 .message-card :deep(.el-card__body) {
-  padding: 14px 16px;
+  padding: 10px 14px;
 }
 
 .table-card:hover :deep(.el-card),
@@ -439,37 +435,46 @@ onUnmounted(() => {
   --el-card-border-color: var(--color-primary);
 }
 
+.monitor-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
 .stats-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(8, 1fr);
   gap: 4px;
-  margin-top: 12px;
+  margin-top: 8px;
 }
 
 .stat-item {
   text-align: center;
-  padding: 10px 0;
+  padding: 6px 0;
   border-radius: 8px;
 }
 
 .stat-value {
-  font-size: 22px;
+  font-size: 18px;
   font-weight: bold;
   color: var(--text-primary);
   line-height: 1.2;
 }
 
 .stat-label {
-  font-size: 12px;
+  font-size: 11px;
   color: var(--text-placeholder);
-  margin-top: 4px;
+  margin-top: 2px;
 }
 
 /* 表格区域 */
 .table-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 12px;
+  gap: 10px;
 }
 
 .table-card {
@@ -517,12 +522,9 @@ onUnmounted(() => {
 }
 
 /* 响应式 */
-@media (max-width: 1200px) {
+@media (max-width: 1400px) {
   .stats-grid {
     grid-template-columns: repeat(4, 1fr);
-  }
-  .stat-value {
-    font-size: 20px;
   }
 }
 
@@ -536,7 +538,7 @@ onUnmounted(() => {
     gap: 2px;
   }
   .stat-value {
-    font-size: 18px;
+    font-size: 16px;
   }
   .table-row {
     grid-template-columns: 1fr;
@@ -548,10 +550,7 @@ onUnmounted(() => {
     grid-template-columns: repeat(2, 1fr);
   }
   .stat-value {
-    font-size: 16px;
-  }
-  .stat-label {
-    font-size: 11px;
+    font-size: 14px;
   }
   .header-actions {
     flex-wrap: wrap;

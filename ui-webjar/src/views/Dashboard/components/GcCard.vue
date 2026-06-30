@@ -37,23 +37,23 @@ function formatGcTime(ms) {
 .card {
   background: var(--bg-card);
   border-radius: 12px;
-  padding: 24px;
+  padding: 16px;
   box-shadow: var(--shadow-sm);
 }
 
 .card h3 {
-  margin: 0 0 20px 0;
-  font-size: 16px;
+  margin: 0 0 12px 0;
+  font-size: 14px;
   font-weight: 600;
   color: var(--text-primary);
-  padding-bottom: 12px;
+  padding-bottom: 8px;
   border-bottom: 1px solid var(--border-light);
 }
 
 .info-list {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 2px;
 }
 
 .gc-item {

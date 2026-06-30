@@ -58,25 +58,25 @@ defineProps({
 .stats-row {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 12px;
-  margin-bottom: 16px;
+  gap: 10px;
+  flex-shrink: 0;
 }
 
 .metric-card {
   background: var(--bg-card);
   border-radius: 10px;
-  padding: 14px;
+  padding: 10px 12px;
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   box-shadow: var(--shadow-sm);
   min-width: 0;
 }
 
 .metric-icon {
-  width: 44px;
-  height: 44px;
-  border-radius: 10px;
+  width: 38px;
+  height: 38px;
+  border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -104,7 +104,7 @@ defineProps({
 }
 
 .metric-value {
-  font-size: 22px;
+  font-size: 20px;
   font-weight: 700;
   color: var(--text-primary);
   line-height: 1.2;
@@ -135,15 +135,15 @@ defineProps({
     gap: 8px;
   }
   .metric-card {
-    padding: 12px;
-    gap: 10px;
+    padding: 10px;
+    gap: 8px;
   }
   .metric-icon {
-    width: 38px;
-    height: 38px;
+    width: 34px;
+    height: 34px;
   }
   .metric-value {
-    font-size: 20px;
+    font-size: 18px;
   }
 }
 </style>

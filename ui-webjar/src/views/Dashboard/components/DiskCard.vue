@@ -15,7 +15,7 @@
         <span class="value">{{ formatBytes((diskInfo.totalSpace || 0) - (diskInfo.usableSpace || 0)) }}</span>
       </div>
     </div>
-    <div class="progress-section" style="margin-top: 16px;">
+    <div class="progress-section">
       <div class="progress-label">
         <span>磁盘使用</span>
         <span>{{ diskUsagePercent }}%</span>
@@ -65,30 +65,30 @@ function formatBytes(bytes) {
 .card {
   background: var(--bg-card);
   border-radius: 12px;
-  padding: 24px;
+  padding: 16px;
   box-shadow: var(--shadow-sm);
 }
 
 .card h3 {
-  margin: 0 0 20px 0;
-  font-size: 16px;
+  margin: 0 0 12px 0;
+  font-size: 14px;
   font-weight: 600;
   color: var(--text-primary);
-  padding-bottom: 12px;
+  padding-bottom: 8px;
   border-bottom: 1px solid var(--border-light);
 }
 
 .info-list {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 2px;
 }
 
 .info-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 8px 0;
+  padding: 6px 0;
 }
 
 .info-item .label {
@@ -105,14 +105,14 @@ function formatBytes(bytes) {
 .text-green { color: #67c23a; }
 
 .progress-section {
-  margin-top: 16px;
+  margin-top: 10px;
 }
 
 .progress-label {
   display: flex;
   justify-content: space-between;
-  font-size: 13px;
+  font-size: 12px;
   color: var(--text-placeholder);
-  margin-bottom: 8px;
+  margin-bottom: 6px;
 }
 </style>
