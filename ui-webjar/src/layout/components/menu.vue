@@ -22,7 +22,7 @@
     >
       <el-menu-item index="/dashboard">
         <el-icon><PieChart/></el-icon>
-        <template #title>首页</template>
+        <template #title>{{ t('menu.home') }}</template>
       </el-menu-item>
       <template v-for="item in visibleRouterList" :key="item.name" :data-key="item.name">
         <!-- 如果子菜单只有一个，则直接渲染为一级菜单 -->
@@ -33,7 +33,7 @@
           <el-icon>
             <component :is="item.meta.icon" />
           </el-icon>
-          <template #title>{{ item.children[0].meta.breadcrumbName }}</template>
+          <template #title>{{ t(item.children[0].meta.breadcrumbName) }}</template>
         </el-menu-item>
         <!-- 否则渲染为子菜单 -->
         <el-sub-menu
@@ -47,7 +47,7 @@
               </el-icon>
             </template>
             <span :class="{'menu-title-hidden': isCollapse}">
-            {{ item.meta.breadcrumbName }}
+            {{ t(item.meta.breadcrumbName) }}
           </span>
           </template>
           <el-menu-item
@@ -60,7 +60,7 @@
                 <component :is="ite.meta.icon" />
               </el-icon>
             </template>
-            {{ ite.meta.breadcrumbName }}
+            {{ t(ite.meta.breadcrumbName) }}
           </el-menu-item>
         </el-sub-menu>
       </template>
@@ -71,6 +71,7 @@
 
 <script setup>
 import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import router from "@/router";
 import { useAuthRouterStore } from "@/stores/authRouter.js";
 import { useTagStore } from "@/stores/tagList.js";
@@ -78,6 +79,7 @@ import { useThemeStore } from "@/stores/theme.js";
 import {PieChart} from "@element-plus/icons-vue";
 const tagStore = useTagStore();
 const themeStore = useThemeStore();
+const { t } = useI18n();
 const routerOptions = router.getRoutes();
 
 const authRouterStore = useAuthRouterStore();

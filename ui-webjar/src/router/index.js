@@ -10,7 +10,7 @@ const router = createRouter({
   routes: [
     {
       path: '/',
-      name: '系统信息',
+      name: 'systemInfo',
       component: Layout,
       redirect: '/dashboard',
       meta: {
@@ -21,7 +21,7 @@ const router = createRouter({
         name: 'dashboard',
         component: () => import('@/views/Dashboard/index.vue'),
         meta: {
-          breadcrumbName: '系统信息',
+          breadcrumbName: 'breadcrumb.systemInfo',
           icon: 'dashboard',
           staticRouter: true // 静态路由
         }

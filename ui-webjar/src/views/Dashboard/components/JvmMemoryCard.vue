@@ -1,26 +1,26 @@
 <template>
   <div class="card" v-if="hasJvmMemory">
-    <h3>JVM 内存</h3>
+    <h3>{{ t('dashboard.jvmMemory') }}</h3>
     <div class="info-list">
       <div class="info-item">
-        <span class="label">堆内存使用</span>
+        <span class="label">{{ t('dashboard.heapMemoryUsed') }}</span>
         <span class="value">{{ formatMemory(jvmInfo.heapMemory) }}</span>
       </div>
       <div class="info-item">
-        <span class="label">非堆内存</span>
+        <span class="label">{{ t('dashboard.nonHeapMemory') }}</span>
         <span class="value">{{ formatMemory(jvmInfo.nonHeapMemory) }}</span>
       </div>
     </div>
     <div class="progress-section">
       <div class="progress-label">
-        <span>堆内存</span>
+        <span>{{ t('dashboard.heapMemory') }}</span>
         <span>{{ heapUsagePercent }}%</span>
       </div>
       <el-progress :percentage="heapUsagePercent" :stroke-width="10" :color="heapColor" :show-text="false" />
     </div>
     <div class="progress-section">
       <div class="progress-label">
-        <span>非堆内存</span>
+        <span>{{ t('dashboard.nonHeapMemory') }}</span>
         <span>{{ nonHeapUsagePercent }}%</span>
       </div>
       <el-progress :percentage="nonHeapUsagePercent" :stroke-width="10" :color="nonHeapColor" :show-text="false" />
@@ -30,6 +30,9 @@
 
 <script setup>
 import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 const props = defineProps({
   jvmInfo: {

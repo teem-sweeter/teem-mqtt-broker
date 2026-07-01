@@ -3,9 +3,9 @@
     <!-- 顶部标题栏 -->
     <div class="mqtt-header">
       <div class="header-left">
-        <h2>MQTT 调试工具</h2>
+        <h2>{{ t('mqttTool.title') }}</h2>
         <el-tag :type="connected ? 'success' : 'info'" effect="dark" size="small">
-          {{ connected ? '已连接' : '未连接' }}
+          {{ connected ? t('mqttTool.connected') : t('mqttTool.disconnected') }}
         </el-tag>
       </div>
     </div>
@@ -17,12 +17,12 @@
           <template #header>
             <div class="panel-title">
               <el-icon><Setting /></el-icon>
-              <span>连接配置</span>
+              <span>{{ t('mqttTool.connectionSettings') }}</span>
             </div>
           </template>
 
           <el-form label-position="top" size="default">
-            <el-form-item label="服务器">
+            <el-form-item :label="t('mqttTool.server')">
               <div class="server-row">
                 <el-input v-model="connConfig.host" placeholder="localhost" class="host-input" />
                 <span class="separator">:</span>
@@ -36,7 +36,7 @@
               </div>
             </el-form-item>
 
-            <el-form-item label="WebSocket 路径">
+            <el-form-item :label="t('mqttTool.wsPath')">
               <el-input v-model="connConfig.path" placeholder="/mqtt" />
             </el-form-item>
 
@@ -52,13 +52,13 @@
 
             <el-row :gutter="12">
               <el-col :span="12">
-                <el-form-item label="用户名">
-                  <el-input v-model="connConfig.username" placeholder="可选" />
+                <el-form-item :label="t('mqttTool.username')">
+                  <el-input v-model="connConfig.username" :placeholder="t('mqttTool.optional')" />
                 </el-form-item>
               </el-col>
               <el-col :span="12">
-                <el-form-item label="密码">
-                  <el-input v-model="connConfig.password" type="password" show-password placeholder="可选" />
+                <el-form-item :label="t('mqttTool.password')">
+                  <el-input v-model="connConfig.password" type="password" show-password :placeholder="t('mqttTool.optional')" />
                 </el-form-item>
               </el-col>
             </el-row>
@@ -70,7 +70,7 @@
               size="large"
             >
               <el-icon><Link /></el-icon>
-              {{ connected ? '断开连接' : '连接' }}
+              {{ connected ? t('mqttTool.disconnect') : t('mqttTool.connect') }}
             </el-button>
           </el-form>
         </el-card>
@@ -80,7 +80,7 @@
           <template #header>
             <div class="panel-title">
               <el-icon><Bell /></el-icon>
-              <span>主题订阅</span>
+              <span>{{ t('mqttTool.topicSubscriptions') }}</span>
               <el-tag size="small" type="info">{{ subscriptions.length }}</el-tag>
             </div>
           </template>
@@ -88,7 +88,7 @@
           <div class="sub-add-row">
             <el-input
               v-model="newSub.topic"
-              placeholder="输入主题，如 sensor/#"
+              :placeholder="t('mqttTool.topicPlaceholder')"
               @keyup.enter="addSubscription"
             >
               <template #append>
@@ -100,7 +100,7 @@
               </template>
             </el-input>
             <el-button type="primary" @click="addSubscription" :disabled="!connected">
-              订阅
+              {{ t('mqttTool.subscribe') }}
             </el-button>
           </div>
 
@@ -116,7 +116,7 @@
                 </el-button>
               </div>
             </TransitionGroup>
-            <el-empty v-if="subscriptions.length === 0" description="暂无订阅" :image-size="60" />
+            <el-empty v-if="subscriptions.length === 0" :description="t('mqttTool.noSubscriptions')" :image-size="60" />
           </div>
         </el-card>
       </div>
@@ -128,14 +128,14 @@
           <template #header>
             <div class="panel-title">
               <el-icon><Promotion /></el-icon>
-              <span>消息发布</span>
+              <span>{{ t('mqttTool.publishMessage') }}</span>
             </div>
           </template>
 
           <el-form label-position="top">
             <el-row :gutter="16">
               <el-col :span="16">
-                <el-form-item label="主题">
+                <el-form-item :label="t('mqttTool.topic')">
                   <el-input v-model="pubMsg.topic" placeholder="test/topic" />
                 </el-form-item>
               </el-col>
@@ -155,20 +155,20 @@
               </el-col>
             </el-row>
 
-            <el-form-item label="消息内容">
+            <el-form-item :label="t('mqttTool.messageContent')">
               <div class="payload-editor">
                 <div class="payload-toolbar">
                   <el-select v-model="payloadFormat" size="small" style="width: 140px;">
-                    <el-option value="none" label="原始文本" />
-                    <el-option value="json" label="JSON 格式化" />
-                    <el-option value="base64-encode" label="Base64 编码" />
-                    <el-option value="base64-decode" label="Base64 解码" />
-                    <el-option value="hex-encode" label="Hex 编码" />
-                    <el-option value="hex-decode" label="Hex 解码" />
-                    <el-option value="url-encode" label="URL 编码" />
-                    <el-option value="url-decode" label="URL 解码" />
+                    <el-option value="none" :label="t('mqttTool.plainText')" />
+                    <el-option value="json" :label="t('mqttTool.jsonFormat')" />
+                    <el-option value="base64-encode" :label="t('mqttTool.base64Encode')" />
+                    <el-option value="base64-decode" :label="t('mqttTool.base64Decode')" />
+                    <el-option value="hex-encode" :label="t('mqttTool.hexEncode')" />
+                    <el-option value="hex-decode" :label="t('mqttTool.hexDecode')" />
+                    <el-option value="url-encode" :label="t('mqttTool.urlEncode')" />
+                    <el-option value="url-decode" :label="t('mqttTool.urlDecode')" />
                   </el-select>
-                  <el-button size="small" @click="formatPayload" :disabled="!pubMsg.payload">格式化</el-button>
+                  <el-button size="small" @click="formatPayload" :disabled="!pubMsg.payload">{{ t('mqttTool.format') }}</el-button>
                 </div>
                 <el-input
                   v-model="pubMsg.payload"
@@ -183,7 +183,7 @@
             <div class="publish-action">
               <el-button type="primary" @click="publish" :disabled="!connected" size="large">
                 <el-icon><Promotion /></el-icon>
-                发布消息
+                {{ t('mqttTool.publish') }}
               </el-button>
             </div>
           </el-form>
@@ -195,18 +195,18 @@
           <template #header>
             <div class="panel-title">
               <el-icon><ChatDotRound /></el-icon>
-              <span>消息日志</span>
+              <span>{{ t('mqttTool.messageLog') }}</span>
               <el-tag size="small" type="info">{{ messages.length }}</el-tag>
               <div class="title-actions">
                 <el-input
                   v-model="msgFilter"
-                  placeholder="过滤主题..."
+                  :placeholder="t('mqttTool.filterTopics')"
                   size="small"
                   prefix-icon="Search"
                   style="width: 180px;"
                   clearable
                 />
-                <el-tooltip :content="paused ? '继续' : '暂停'" placement="top">
+                <el-tooltip :content="paused ? t('mqttTool.resume') : t('mqttTool.pause')" placement="top">
                   <el-button size="small" text @click="togglePause">
                     <el-icon :size="16">
                       <VideoPlay v-if="paused" />
@@ -214,7 +214,7 @@
                     </el-icon>
                   </el-button>
                 </el-tooltip>
-                <el-tooltip content="清空" placement="top">
+                <el-tooltip :content="t('mqttTool.clear')" placement="top">
                   <el-button size="small" text @click="clearMessages">
                     <el-icon :size="16"><Delete /></el-icon>
                   </el-button>
@@ -239,7 +239,7 @@
                     effect="dark"
                     class="msg-tag"
                   >
-                    {{ msg.direction === 'in' ? '收' : '发' }}
+                    {{ msg.direction === 'in' ? t('mqttTool.rx') : t('mqttTool.tx') }}
                   </el-tag>
                 </div>
                 <div class="msg-body">
@@ -249,7 +249,7 @@
                 <div class="msg-payload">{{ msg.payload }}</div>
               </div>
             </TransitionGroup>
-            <el-empty v-if="filteredMessages.length === 0" description="暂无消息" :image-size="80" />
+            <el-empty v-if="filteredMessages.length === 0" :description="t('mqttTool.noMessages')" :image-size="80" />
           </div>
         </el-card>
         </div>
@@ -261,6 +261,9 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue'
 import { ElMessage } from 'element-plus'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 import {
   Refresh, Link, Plus, Delete, Promotion,
   VideoPlay, VideoPause, ChatDotRound, Setting, Bell, Search
@@ -340,10 +343,10 @@ function connect() {
         if (data[3] === 0) {
           connected.value = true
           client.connected = true
-          ElMessage.success('连接成功')
+          ElMessage.success(t('mqttTool.connectSuccess'))
           subscriptions.value.forEach(sub => sendSubscribe(sub.topic, sub.qos))
         } else {
-          ElMessage.error(`连接被拒绝，返回码: ${data[3]}`)
+          ElMessage.error(t('mqttTool.connectRefused', { code: data[3] }))
           ws.close()
         }
       } else if (packetType === 3) {
@@ -354,11 +357,11 @@ function connect() {
     ws.onclose = () => {
       connected.value = false
       client = null
-      ElMessage.info('连接已断开')
+      ElMessage.info(t('mqttTool.connectClosed'))
     }
 
     ws.onerror = () => {
-      ElMessage.error('连接失败')
+      ElMessage.error(t('mqttTool.connectFailed'))
       connected.value = false
       client = null
     }
@@ -372,7 +375,7 @@ function connect() {
     }, 30000)
 
   } catch (e) {
-    ElMessage.error('连接失败: ' + e.message)
+    ElMessage.error(t('mqttTool.connectFailedMsg', { message: e.message }))
   }
 }
 
@@ -469,11 +472,11 @@ function handleIncomingPublish(data) {
 }
 
 function addSubscription() {
-  if (!newSub.value.topic) return ElMessage.warning('请输入主题')
-  if (subscriptions.value.some(s => s.topic === newSub.value.topic)) return ElMessage.warning('主题已存在')
+  if (!newSub.value.topic) return ElMessage.warning(t('mqttTool.enterTopic'))
+  if (subscriptions.value.some(s => s.topic === newSub.value.topic)) return ElMessage.warning(t('mqttTool.topicExists'))
   subscriptions.value.push({ topic: newSub.value.topic, qos: newSub.value.qos })
   if (connected.value) sendSubscribe(newSub.value.topic, newSub.value.qos)
-  ElMessage.success('订阅成功')
+  ElMessage.success(t('mqttTool.subscribeSuccess'))
 }
 
 function removeSubscription(sub) {
@@ -485,8 +488,8 @@ function removeSubscription(sub) {
 }
 
 function publish() {
-  if (!connected.value) return ElMessage.warning('请先连接')
-  if (!pubMsg.value.topic) return ElMessage.warning('请输入主题')
+  if (!connected.value) return ElMessage.warning(t('mqttTool.connectFirst'))
+  if (!pubMsg.value.topic) return ElMessage.warning(t('mqttTool.enterTopic'))
 
   const { topic, qos, retain, payload } = pubMsg.value
   const topicBytes = encodeUTF8(topic)
@@ -539,7 +542,7 @@ function formatPayload() {
         break
     }
   } catch (e) {
-    ElMessage.error('转换失败: ' + e.message)
+    ElMessage.error(t('mqttTool.convertFailed', { message: e.message }))
   }
 }
 

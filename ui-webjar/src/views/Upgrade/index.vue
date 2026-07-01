@@ -1,8 +1,8 @@
 <template>
   <div class="system-upgrade">
     <div class="upgrade-header">
-      <h1 class="upgrade-title">系统升级</h1>
-      <p class="upgrade-subtitle">上传并验证升级包后执行系统在线更新</p>
+      <h1 class="upgrade-title">{{ t('upgrade.title') }}</h1>
+      <p class="upgrade-subtitle">{{ t('upgrade.subtitle') }}</p>
     </div>
 
     <div class="upgrade-container">
@@ -24,12 +24,12 @@
             >
               <el-icon class="upload-icon"><upload-filled /></el-icon>
               <div class="upload-text">
-                <div class="upload-title">拖拽升级包到此处</div>
-                <div class="upload-desc">或 <em class="upload-link">点击上传</em></div>
+                <div class="upload-title">{{ t('upgrade.dragHere') }}</div>
+                <div class="upload-desc">{{ t('upgrade.or') }} <em class="upload-link">{{ t('upgrade.clickToUpload') }}</em></div>
               </div>
               <template #tip>
                 <div class="upload-tip">
-                  请上传系统升级包文件（.zip）
+                  {{ t('upgrade.uploadHint') }}
                 </div>
               </template>
             </el-upload>
@@ -55,7 +55,7 @@
               size="large"
               class="upgrade-btn"
             >
-              {{ isUpgrading ? '升级中...' : '开始升级' }}
+              {{ isUpgrading ? t('upgrade.upgrading') : t('upgrade.startUpgrade') }}
             </el-button>
           </div>
         </div>
@@ -74,7 +74,7 @@
             </div>
 
             <!-- 升级完成动画 -->
-            <div v-else-if="upgradeStatus.text === '升级完成'" class="success-animation">
+            <div v-else-if="upgradeStatus.text === t('upgrade.upgradeComplete')" class="success-animation">
               <el-icon class="success-icon"><CircleCheckFilled /></el-icon>
             </div>
 
@@ -83,14 +83,14 @@
             <p v-if="upgradeStatus.message" class="status-message">{{ upgradeStatus.message }}</p>
           </div>
 
-          <div class="status-actions" v-if="upgradeStatus.text === '升级完成'">
+          <div class="status-actions" v-if="upgradeStatus.text === t('upgrade.upgradeComplete')">
             <el-button
               type="primary"
               @click="reloadPage"
               size="large"
               class="reload-btn"
             >
-              重新加载页面
+              {{ t('upgrade.reloadPage') }}
             </el-button>
           </div>
         </div>
@@ -102,6 +102,9 @@
 <script setup>
 import { ref, reactive, onMounted, onUnmounted } from 'vue';
 import { ElMessage } from 'element-plus';
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 import { UploadFilled, Document, Upload, CircleCheckFilled } from '@element-plus/icons-vue';
 import { uploadUpdatePackage as uploadUpdateApi, checkSystemHealth } from "@/api/upgrade.js";
 
@@ -113,7 +116,7 @@ const showStatusSection = ref(false); // 控制状态区域显示
 
 // 升级状态
 const upgradeStatus = reactive({
-  text: '准备就绪',
+  text: t('upgrade.ready'),
   message: ''
 });
 
@@ -163,14 +166,14 @@ const formatFileSize = (size) => {
 // 上传升级包
 const uploadUpdatePackage = async () => {
   if (!selectedFile.value) {
-    ElMessage.warning('请先选择要上传的升级包文件');
+    ElMessage.warning(t('upgrade.selectFileFirst'));
     return;
   }
 
   try {
     isUpgrading.value = true;
     showStatusSection.value = true; // 显示状态区域
-    upgradeStatus.text = '正在上传升级包';
+    upgradeStatus.text = t('upgrade.uploading');
     upgradeStatus.message = '';
 
     const formData = new FormData();
@@ -184,7 +187,7 @@ const uploadUpdatePackage = async () => {
     startStatusCheck();
   } catch (error) {
     isUpgrading.value = false;
-    ElMessage.error('上传升级包失败: ' + (error.response?.data || error.message));
+    ElMessage.error(t('upgrade.uploadFailed') + ': ' + (error.response?.data || error.message));
   }
 };
 
@@ -203,8 +206,8 @@ const checkStatus = async () => {
       successCount.value++;
       // 检查是否达到所需的连续成功次数
       if (successCount.value >= requiredSuccessCount) {
-        upgradeStatus.text = '升级完成';
-        upgradeStatus.message = '系统升级成功，页面将自动重新加载';
+        upgradeStatus.text = t('upgrade.upgradeComplete');
+        upgradeStatus.message = t('upgrade.upgradeSuccess');
         stopStatusCheck();
         setTimeout(()=>{
           // 重新加载页面
@@ -212,20 +215,20 @@ const checkStatus = async () => {
         },5000)
       } else {
         // 还未达到所需次数，继续检查
-        upgradeStatus.text = '验证升级状态';
-        upgradeStatus.message = `确认系统稳定性 (${successCount.value}/${requiredSuccessCount})`;
+        upgradeStatus.text = t('upgrade.verifying');
+        upgradeStatus.message = `${t('upgrade.confirmStability')} (${successCount.value}/${requiredSuccessCount})`;
       }
     } else {
       // 如果不是200状态码，重置成功计数
       successCount.value = 0;
-      upgradeStatus.text = '升级中...';
+      upgradeStatus.text = t('upgrade.upgrading');
     }
   } catch (error) {
     console.error('检查系统状态失败:', error);
     // 网络错误或请求失败，重置成功计数
     successCount.value = 0;
-    upgradeStatus.text = '系统重启中';
-    upgradeStatus.message = '等待系统恢复...';
+    upgradeStatus.text = t('upgrade.systemRestarting');
+    upgradeStatus.message = t('upgrade.waitingRecovery');
   }
 };
 

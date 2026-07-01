@@ -7,28 +7,28 @@
           <div class="stat-icon"><el-icon><User /></el-icon></div>
           <div class="stat-content">
             <div class="stat-value">{{ clients.length || 0 }}</div>
-            <div class="stat-label">在线客户端</div>
+            <div class="stat-label">{{ t('client.onlineClients') }}</div>
           </div>
         </div>
         <div class="stat-card stat-card-green">
           <div class="stat-icon"><el-icon><CircleCheck /></el-icon></div>
           <div class="stat-content">
             <div class="stat-value">{{ normalCount }}</div>
-            <div class="stat-label">正常通信</div>
+            <div class="stat-label">{{ t('client.normalComm') }}</div>
           </div>
         </div>
         <div class="stat-card stat-card-purple">
           <div class="stat-icon"><el-icon><Mute /></el-icon></div>
           <div class="stat-content">
             <div class="stat-value">{{ sendDisabledCount }}</div>
-            <div class="stat-label">禁止发送</div>
+            <div class="stat-label">{{ t('client.sendDisabled') }}</div>
           </div>
         </div>
         <div class="stat-card stat-card-orange">
           <div class="stat-icon"><el-icon><CloseBold /></el-icon></div>
           <div class="stat-content">
             <div class="stat-value">{{ receiveDisabledCount }}</div>
-            <div class="stat-label">禁止接收</div>
+            <div class="stat-label">{{ t('client.receiveDisabled') }}</div>
           </div>
         </div>
       </div>
@@ -37,7 +37,7 @@
     <!-- 客户端详情弹窗 -->
     <el-dialog
       v-model="detailVisible"
-      title="客户端详情"
+      :title="t('client.clientDetail')"
       width="620px"
       class="detail-dialog"
       destroy-on-close
@@ -47,40 +47,40 @@
         <div class="detail-section">
           <div class="detail-section-title">
             <el-icon><InfoFilled /></el-icon>
-            <span>连接信息</span>
+            <span>{{ t('client.connectionInfo') }}</span>
           </div>
           <el-descriptions :column="2" border size="small">
-            <el-descriptions-item label="客户端 ID" :span="2">
+            <el-descriptions-item :label="t('client.clientId')" :span="2">
               <span class="mono-text">{{ detailClient.clientId }}</span>
             </el-descriptions-item>
-            <el-descriptions-item label="用户名">
+            <el-descriptions-item :label="t('client.username')">
               {{ detailClient.username || '-' }}
             </el-descriptions-item>
-            <el-descriptions-item label="IP 地址">
+            <el-descriptions-item :label="t('client.ipAddress')">
               <span class="mono-text">{{ detailClient.ipAddress || '-' }}:{{ detailClient.port || '' }}</span>
             </el-descriptions-item>
-            <el-descriptions-item label="协议版本">
+            <el-descriptions-item :label="t('client.protocolVersion')">
               <el-tag size="small" effect="plain">{{ detailClient.protocolVersion || '-' }}</el-tag>
             </el-descriptions-item>
             <el-descriptions-item label="Clean Session">
               <el-tag :type="detailClient.cleanSession ? 'warning' : 'info'" size="small" effect="plain">
-                {{ detailClient.cleanSession ? '是' : '否' }}
+                {{ detailClient.cleanSession ? t('common.yes') : t('common.no') }}
               </el-tag>
             </el-descriptions-item>
-            <el-descriptions-item label="连接时间">
+            <el-descriptions-item :label="t('client.connectedAt')">
               {{ formatTime(detailClient.connectTime) }}
             </el-descriptions-item>
-            <el-descriptions-item label="在线时长">
+            <el-descriptions-item :label="t('client.duration')">
               {{ formatDuration(detailClient.connectTime) }}
             </el-descriptions-item>
             <el-descriptions-item label="Keep Alive">
-              {{ detailClient.keepAlive || '-' }} 秒
+              {{ detailClient.keepAlive || '-' }} {{ t('client.seconds') }}
             </el-descriptions-item>
-            <el-descriptions-item label="管控状态">
+            <el-descriptions-item :label="t('client.controlStatus')">
               <div class="status-tags">
-                <el-tag v-if="!detailClient.sendDisabled && !detailClient.receiveDisabled" type="success" size="small" effect="plain">正常</el-tag>
-                <el-tag v-if="detailClient.sendDisabled" type="danger" size="small" effect="plain">禁止发送</el-tag>
-                <el-tag v-if="detailClient.receiveDisabled" type="warning" size="small" effect="plain">禁止接收</el-tag>
+                <el-tag v-if="!detailClient.sendDisabled && !detailClient.receiveDisabled" type="success" size="small" effect="plain">{{ t('client.normal') }}</el-tag>
+                <el-tag v-if="detailClient.sendDisabled" type="danger" size="small" effect="plain">{{ t('client.sendDisabled') }}</el-tag>
+                <el-tag v-if="detailClient.receiveDisabled" type="warning" size="small" effect="plain">{{ t('client.receiveDisabled') }}</el-tag>
               </div>
             </el-descriptions-item>
           </el-descriptions>
@@ -90,7 +90,7 @@
         <div class="detail-section" v-if="detailClient.willFlag">
           <div class="detail-section-title">
             <el-icon><WarningFilled /></el-icon>
-            <span>遗嘱消息（Will）</span>
+            <span>{{ t('client.willMessage') }}</span>
           </div>
           <el-descriptions :column="2" border size="small">
             <el-descriptions-item label="Will Topic" :span="2">
@@ -101,7 +101,7 @@
             </el-descriptions-item>
             <el-descriptions-item label="Will Retain">
               <el-tag :type="detailClient.willRetain ? 'warning' : 'info'" size="small" effect="plain">
-                {{ detailClient.willRetain ? '是' : '否' }}
+                {{ detailClient.willRetain ? t('common.yes') : t('common.no') }}
               </el-tag>
             </el-descriptions-item>
             <el-descriptions-item label="Will Payload" :span="2">
@@ -114,23 +114,23 @@
         <div class="detail-section">
           <div class="detail-section-title">
             <el-icon><DataAnalysis /></el-icon>
-            <span>运行指标</span>
+            <span>{{ t('client.metrics') }}</span>
           </div>
           <div class="metrics-grid">
             <div class="metric-card">
               <div class="metric-val">{{ detailClient.inflightCount || 0 }}</div>
-              <div class="metric-lbl">飞行窗口</div>
-              <div class="metric-desc">正在传输的 QoS1/2 消息</div>
+              <div class="metric-lbl">{{ t('client.inflight') }}</div>
+              <div class="metric-desc">{{ t('client.inflightDesc') }}</div>
             </div>
             <div class="metric-card">
               <div class="metric-val">{{ detailClient.queuedCount || 0 }}</div>
-              <div class="metric-lbl">队列积压</div>
-              <div class="metric-desc">断线期间积压的消息</div>
+              <div class="metric-lbl">{{ t('client.queueBacklog') }}</div>
+              <div class="metric-desc">{{ t('client.queueBacklogDesc') }}</div>
             </div>
             <div class="metric-card">
               <div class="metric-val">{{ detailClient.subscriptions ? detailClient.subscriptions.length : 0 }}</div>
-              <div class="metric-lbl">订阅数</div>
-              <div class="metric-desc">当前活跃的订阅</div>
+              <div class="metric-lbl">{{ t('client.subscriptions') }}</div>
+              <div class="metric-desc">{{ t('client.subscriptionsDesc') }}</div>
             </div>
           </div>
         </div>
@@ -139,7 +139,7 @@
         <div class="detail-section">
           <div class="detail-section-title">
             <el-icon><List /></el-icon>
-            <span>订阅详情</span>
+            <span>{{ t('client.subscriptionDetails') }}</span>
             <el-tag size="small" type="info" class="sub-count">
               {{ detailClient.subscriptionDetails ? detailClient.subscriptionDetails.length : 0 }}
             </el-tag>
@@ -151,7 +151,7 @@
             border
             class="sub-table"
           >
-            <el-table-column prop="topic" label="主题" min-width="180" show-overflow-tooltip>
+            <el-table-column prop="topic" :label="t('client.topic')" min-width="180" show-overflow-tooltip>
               <template #default="{ row }">
                 <span class="mono-text">{{ row.topic }}</span>
               </template>
@@ -164,26 +164,26 @@
             <el-table-column prop="noLocal" label="No Local" width="90" align="center">
               <template #default="{ row }">
                 <el-tag :type="row.noLocal ? 'success' : 'info'" size="small" effect="plain">
-                  {{ row.noLocal ? '是' : '否' }}
+                  {{ row.noLocal ? t('common.yes') : t('common.no') }}
                 </el-tag>
               </template>
             </el-table-column>
-            <el-table-column prop="retainAsPublished" label="Retain 发布" width="100" align="center">
+            <el-table-column prop="retainAsPublished" :label="t('client.retainPublished')" width="100" align="center">
               <template #default="{ row }">
                 <el-tag :type="row.retainAsPublished ? 'success' : 'info'" size="small" effect="plain">
-                  {{ row.retainAsPublished ? '是' : '否' }}
+                  {{ row.retainAsPublished ? t('common.yes') : t('common.no') }}
                 </el-tag>
               </template>
             </el-table-column>
           </el-table>
-          <el-empty v-else description="暂无订阅" :image-size="40" />
+          <el-empty v-else :description="t('client.noSubscriptions')" :image-size="40" />
         </div>
 
         <!-- 备注 -->
         <div class="detail-section" v-if="detailClient.remark">
           <div class="detail-section-title">
             <el-icon><Document /></el-icon>
-            <span>备注</span>
+            <span>{{ t('client.remark') }}</span>
           </div>
           <div class="remark-text">{{ detailClient.remark }}</div>
         </div>
@@ -197,12 +197,12 @@
         <div class="toolbar">
           <div class="toolbar-title">
             <el-icon><UserFilled /></el-icon>
-            <span>客户端管理</span>
+            <span>{{ t('client.clientManagement') }}</span>
           </div>
           <div class="toolbar-actions">
             <el-input
               v-model="searchText"
-              placeholder="搜索客户端ID / 用户名"
+              :placeholder="t('client.searchPlaceholder')"
               clearable
               prefix-icon="Search"
               style="width: 240px;"
@@ -212,42 +212,42 @@
 
         <!-- 数据表格 -->
         <el-table :data="filteredClients" v-loading="initialLoading" row-key="clientId" stripe class="client-table">
-          <el-table-column prop="clientId" label="客户端 ID" min-width="150" show-overflow-tooltip>
+          <el-table-column prop="clientId" :label="t('client.clientId')" min-width="150" show-overflow-tooltip>
             <template #default="{ row }">
               <div class="client-id-cell">
                 <span class="client-id-text">{{ row.clientId }}</span>
                 <el-tag v-if="row.sendDisabled || row.receiveDisabled" type="warning" size="small" effect="plain">
-                  已管控
+                  {{ t('client.controlled') }}
                 </el-tag>
               </div>
             </template>
           </el-table-column>
 
-          <el-table-column prop="username" label="用户名" width="120" show-overflow-tooltip>
+          <el-table-column prop="username" :label="t('client.username')" width="120" show-overflow-tooltip>
             <template #default="{ row }">
               <span>{{ row.username || '-' }}</span>
             </template>
           </el-table-column>
 
-          <el-table-column prop="ipAddress" label="IP 地址" width="160" show-overflow-tooltip>
+          <el-table-column prop="ipAddress" :label="t('client.ipAddress')" width="160" show-overflow-tooltip>
             <template #default="{ row }">
               <span class="mono-text">{{ row.ipAddress || '-' }}:{{ row.port || '' }}</span>
             </template>
           </el-table-column>
 
-          <el-table-column prop="connectTime" label="连接时间" width="170">
+          <el-table-column prop="connectTime" :label="t('client.connectedAt')" width="170">
             <template #default="{ row }">
               <span class="time-text">{{ formatTime(row.connectTime) }}</span>
             </template>
           </el-table-column>
 
-          <el-table-column prop="subscriptions" label="订阅数" width="80" align="center">
+          <el-table-column prop="subscriptions" :label="t('client.subscriptions')" width="80" align="center">
             <template #default="{ row }">
               <el-tag type="info" size="small">{{ row.subscriptions ? row.subscriptions.length : 0 }}</el-tag>
             </template>
           </el-table-column>
 
-          <el-table-column label="允许发送" width="100" align="center">
+          <el-table-column :label="t('client.allowSend')" width="100" align="center">
             <template #default="{ row }">
               <el-switch
                 v-model="row.sendDisabled"
@@ -256,15 +256,15 @@
                 @change="(val) => handleSendToggle(row, val)"
                 :loading="row._sendLoading"
                 inline-prompt
-                active-text="开"
-                inactive-text="关"
+                :active-text="t('client.on')"
+                :inactive-text="t('client.off')"
                 :active-color="'#67c23a'"
                 :inactive-color="'#f56c6c'"
               />
             </template>
           </el-table-column>
 
-          <el-table-column label="允许接收" width="100" align="center">
+          <el-table-column :label="t('client.allowReceive')" width="100" align="center">
             <template #default="{ row }">
               <el-switch
                 v-model="row.receiveDisabled"
@@ -273,30 +273,30 @@
                 @change="(val) => handleReceiveToggle(row, val)"
                 :loading="row._receiveLoading"
                 inline-prompt
-                active-text="开"
-                inactive-text="关"
+                :active-text="t('client.on')"
+                :inactive-text="t('client.off')"
                 :active-color="'#67c23a'"
                 :inactive-color="'#f56c6c'"
               />
             </template>
           </el-table-column>
 
-          <el-table-column label="操作" width="150" align="center" fixed="right">
+          <el-table-column :label="t('client.action')" width="150" align="center" fixed="right">
             <template #default="{ row }">
               <el-button link type="primary" size="small" @click="openDetail(row)">
                 <el-icon><View /></el-icon>
-                详情
+                {{ t('client.detail') }}
               </el-button>
               <el-popconfirm
-                title="确定踢出该客户端？"
-                confirm-button-text="踢出"
-                cancel-button-text="取消"
+                :title="t('client.kickConfirm')"
+                :confirm-button-text="t('client.kick')"
+                :cancel-button-text="t('common.cancel')"
                 @confirm="handleKick(row)"
               >
                 <template #reference>
                   <el-button link type="danger" size="small">
                     <el-icon><SwitchButton /></el-icon>
-                    踢出
+                    {{ t('client.kick') }}
                   </el-button>
                 </template>
               </el-popconfirm>
@@ -304,7 +304,7 @@
           </el-table-column>
         </el-table>
 
-        <el-empty v-if="!initialLoading && filteredClients.length === 0" description="暂无在线客户端" :image-size="80" />
+        <el-empty v-if="!initialLoading && filteredClients.length === 0" :description="t('client.noOnlineClients')" :image-size="80" />
       </div>
     </div>
   </div>
@@ -313,6 +313,9 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { ElMessage } from 'element-plus'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 import {
   User, UserFilled, CircleCheck, Mute, CloseBold,
   SwitchButton, Search, View, InfoFilled, List, Tickets, Document,
@@ -350,7 +353,7 @@ async function fetchClients(silent = false) {
   try {
     clients.value = await getClients()
   } catch {
-    if (!silent) ElMessage.error('获取客户端列表失败')
+    if (!silent) ElMessage.error(t('client.fetchFailed'))
   } finally {
     initialLoading.value = false
   }
@@ -364,10 +367,10 @@ async function handleSendToggle(row, val) {
   try {
     await setSendDisabled(row.clientId, disabled)
     row.sendDisabled = disabled
-    ElMessage.success(disabled ? '已禁止发送' : '已允许发送')
+    ElMessage.success(disabled ? t('client.sendDisabledSuccess') : t('client.sendEnabledSuccess'))
   } catch {
     row.sendDisabled = !disabled
-    ElMessage.error('操作失败')
+    ElMessage.error(t('client.operationFailed'))
   } finally {
     row._sendLoading = false
   }
@@ -379,10 +382,10 @@ async function handleReceiveToggle(row, val) {
   try {
     await setReceiveDisabled(row.clientId, disabled)
     row.receiveDisabled = disabled
-    ElMessage.success(disabled ? '已禁止接收' : '已允许接收')
+    ElMessage.success(disabled ? t('client.receiveDisabledSuccess') : t('client.receiveEnabledSuccess'))
   } catch {
     row.receiveDisabled = !disabled
-    ElMessage.error('操作失败')
+    ElMessage.error(t('client.operationFailed'))
   } finally {
     row._receiveLoading = false
   }
@@ -392,13 +395,13 @@ async function handleKick(row) {
   try {
     const res = await kickClient(row.clientId)
     if (res.success) {
-      ElMessage.success('已踢出客户端: ' + row.clientId)
+      ElMessage.success(t('client.kickSuccess') + ': ' + row.clientId)
       fetchClients(true)
     } else {
-      ElMessage.error(res.message || '踢出失败')
+      ElMessage.error(res.message || t('client.kickFailed'))
     }
   } catch {
-    ElMessage.error('操作失败')
+    ElMessage.error(t('client.operationFailed'))
   }
 }
 
@@ -420,10 +423,10 @@ function formatDuration(ts) {
   const minutes = Math.floor(seconds / 60)
   const hours = Math.floor(minutes / 60)
   const days = Math.floor(hours / 24)
-  if (days > 0) return `${days}天 ${hours % 24}小时 ${minutes % 60}分钟`
-  if (hours > 0) return `${hours}小时 ${minutes % 60}分钟`
-  if (minutes > 0) return `${minutes}分钟 ${seconds % 60}秒`
-  return `${seconds}秒`
+  if (days > 0) return `${days}${t('client.days')} ${hours % 24}${t('client.hours')} ${minutes % 60}${t('client.minutes')}`
+  if (hours > 0) return `${hours}${t('client.hours')} ${minutes % 60}${t('client.minutes')}`
+  if (minutes > 0) return `${minutes}${t('client.minutes')} ${seconds % 60}${t('client.seconds')}`
+  return `${seconds}${t('client.seconds')}`
 }
 
 onMounted(() => {

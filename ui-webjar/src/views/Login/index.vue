@@ -29,7 +29,7 @@
             </svg>
           </div>
           <h1 class="app-title">MQTT-BROKER</h1>
-          <p class="subtitle">基于moquette构建的MQTT Broker</p>
+          <p class="subtitle">{{ t('login.subtitle') }}</p>
         </div>
 
         <!-- 登录表单 -->
@@ -45,7 +45,7 @@
                 </div>
                 <el-input
                   v-model="form.username"
-                  placeholder="用户名"
+                  :placeholder="t('login.username')"
                   class="tech-input"
                   :input-style="{ background: 'transparent' }"
                 />
@@ -65,7 +65,7 @@
                 <el-input
                   v-model="form.password"
                   :type="showPassword ? 'text' : 'password'"
-                  placeholder="密码"
+                  :placeholder="t('login.password')"
                   class="tech-input"
                   :input-style="{ background: 'transparent' }"
                 />
@@ -87,7 +87,7 @@
               <label class="remember-label">
                 <el-checkbox v-model="remember" class="tech-checkbox">
                 </el-checkbox>
-                <span class="checkbox-text">记住密码</span>
+                <span class="checkbox-text">{{ t('login.rememberPassword') }}</span>
               </label>
             </el-form-item>
 
@@ -98,7 +98,7 @@
                 @click="onSubmit"
                 :loading="loginLoading"
               >
-                <span class="btn-text">{{ loginLoading ? '验证中...' : '登录系统' }}</span>
+                <span class="btn-text">{{ loginLoading ? t('login.verifying') : t('login.login') }}</span>
                 <div class="btn-glare"></div>
               </el-button>
             </el-form-item>
@@ -119,6 +119,9 @@
 <script setup>
 import router from "@/router";
 import { ref, reactive, onMounted, nextTick } from "vue";
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 import { getDynamicRoutes } from "@/router/menus.js";
 import { getAuthRouters } from "@/router/authRouter.js";
 import { useAuthRouterStore } from "@/stores/authRouter.js";
@@ -138,10 +141,10 @@ const loginLoading = ref(false);
 
 const rules = {
   username: [
-    { required: true, message: "请输入账号", trigger: "blur" },
+    { required: true, message: t('login.enterUsername'), trigger: "blur" },
   ],
   password: [
-    { required: true, message: "请输入密码", trigger: "blur" },
+    { required: true, message: t('login.enterPassword'), trigger: "blur" },
   ],
 };
 
@@ -187,15 +190,15 @@ const onSubmit = () => {
           }
         } else {
           ElNotification({
-            title: "错误",
-            message: "账号或密码错误",
+            title: t('login.error'),
+            message: t('login.invalidCredentials'),
             type: "error",
           });
         }
       } catch (error) {
         ElNotification({
-          title: "错误",
-          message: "登录失败，请重试",
+          title: t('login.error'),
+          message: t('login.loginFailed'),
           type: "error",
         });
       } finally {

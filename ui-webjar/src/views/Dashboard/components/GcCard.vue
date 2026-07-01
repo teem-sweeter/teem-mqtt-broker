@@ -1,12 +1,12 @@
 <template>
   <div class="card" v-if="hasGc">
-    <h3>GC 信息</h3>
+    <h3>{{ t('dashboard.gcInfo') }}</h3>
     <div class="info-list">
       <div v-for="gc in jvmInfo.gc" :key="gc.name" class="gc-item">
         <div class="gc-name">{{ gc.name }}</div>
         <div class="gc-stats">
-          <span>次数: <b>{{ gc.collectionCount }}</b></span>
-          <span>耗时: <b>{{ formatGcTime(gc.collectionTime) }}</b></span>
+          <span>{{ t('dashboard.gcCount') }}: <b>{{ gc.collectionCount }}</b></span>
+          <span>{{ t('dashboard.gcDuration') }}: <b>{{ formatGcTime(gc.collectionTime) }}</b></span>
         </div>
       </div>
     </div>
@@ -14,6 +14,10 @@
 </template>
 
 <script setup>
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
+
 defineProps({
   jvmInfo: {
     type: Object,

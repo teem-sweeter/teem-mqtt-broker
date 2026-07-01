@@ -11,7 +11,7 @@
           <span class="avatar-text">{{ avatarText }}</span>
         </div>
         <div class="user-meta">
-          <div class="user-nickname">{{ userInfo.nickname || userInfo.username || '未登录' }}</div>
+          <div class="user-nickname">{{ userInfo.nickname || userInfo.username || t('profile.notLoggedIn') }}</div>
           <div class="user-role" v-if="userInfo.role">{{ userInfo.role }}</div>
         </div>
         <el-icon size="14" class="dropdown-arrow" :class="{ 'is-active': dropdownActive }">
@@ -25,7 +25,7 @@
               <span class="avatar-text-lg">{{ avatarText }}</span>
             </div>
             <div class="header-info">
-              <div class="header-nickname">{{ userInfo.nickname || userInfo.username || '未登录' }}</div>
+              <div class="header-nickname">{{ userInfo.nickname || userInfo.username || t('profile.notLoggedIn') }}</div>
               <div class="header-username">{{ userInfo.username || '' }}</div>
             </div>
           </div>
@@ -35,8 +35,8 @@
               <el-icon><Edit /></el-icon>
             </div>
             <div class="item-content">
-              <span class="item-label">修改密码</span>
-              <span class="item-desc">更改账户登录密码</span>
+              <span class="item-label">{{ t('profile.changePassword') }}</span>
+              <span class="item-desc">{{ t('profile.changePasswordDesc') }}</span>
             </div>
           </el-dropdown-item>
           <el-dropdown-item @click="loginOut" class="dropdown-item logout-item">
@@ -44,8 +44,8 @@
               <el-icon><SwitchButton /></el-icon>
             </div>
             <div class="item-content">
-              <span class="item-label">退出登录</span>
-              <span class="item-desc">安全退出当前账户</span>
+              <span class="item-label">{{ t('profile.logout') }}</span>
+              <span class="item-desc">{{ t('profile.logoutDesc') }}</span>
             </div>
           </el-dropdown-item>
         </el-dropdown-menu>
@@ -54,7 +54,7 @@
 
     <el-dialog
       v-model="passWordDialogVisible"
-      title="修改密码"
+      :title="t('profile.changePassword')"
       width="480"
       align-center
       center
@@ -70,42 +70,42 @@
         class="password-form"
         size="large"
       >
-        <el-form-item label="原密码" prop="password">
+        <el-form-item :label="t('profile.oldPassword')" prop="password">
           <el-input
             v-model="ruleForm.password"
             type="password"
             autocomplete="off"
             show-password
-            placeholder="请输入原密码"
+            :placeholder="t('profile.inputOldPassword')"
             :prefix-icon="Lock"
           />
         </el-form-item>
-        <el-form-item label="新密码" prop="newPassword">
+        <el-form-item :label="t('profile.newPassword')" prop="newPassword">
           <el-input
             v-model="ruleForm.newPassword"
             type="password"
             autocomplete="off"
             show-password
-            placeholder="请输入新密码"
+            :placeholder="t('profile.inputNewPassword')"
             :prefix-icon="Lock"
           />
         </el-form-item>
-        <el-form-item label="确认新密码" prop="checkPassword">
+        <el-form-item :label="t('profile.confirmPassword')" prop="checkPassword">
           <el-input
             v-model="ruleForm.checkPassword"
             type="password"
             autocomplete="off"
             show-password
-            placeholder="请再次输入新密码"
+            :placeholder="t('profile.inputConfirmPassword')"
             :prefix-icon="Lock"
           />
         </el-form-item>
       </el-form>
       <template #footer>
         <div class="dialog-footer">
-          <el-button @click="passWordDialogVisible = false" size="large">取消</el-button>
+          <el-button @click="passWordDialogVisible = false" size="large">{{ t('common.cancel') }}</el-button>
           <el-button type="primary" @click="submitForm()" size="large" :loading="submitting">
-            确定
+            {{ t('common.confirm') }}
           </el-button>
         </div>
       </template>
@@ -115,10 +115,13 @@
 
 <script setup>
 import router from "@/router"
-import {onMounted, reactive, ref, computed} from 'vue'
+import {onMounted, ref, computed} from 'vue'
 import {changePassword} from '@/api/user'
 import {ElMessage} from 'element-plus'
 import { User, ArrowDown, Edit, SwitchButton, Lock } from '@element-plus/icons-vue'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 const passWordDialogVisible = ref(false)
 const ruleFormRef = ref()
@@ -144,21 +147,21 @@ const avatarText = computed(() => {
 })
 
 
-const rules = reactive({
+const rules = computed(() => ({
   newPassword: [
-    { required: true, message: '请输入新密码', trigger: 'blur'  },
+    { required: true, message: t('profile.inputNewPassword'), trigger: 'blur' },
     {
       pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{6,}$/,
-      message: "密码必须包含大小写字母、数字，且至少6位",
+      message: t('profile.passwordRule'),
       trigger: "blur"
     }
   ],
   checkPassword: [
-    { required: true, message: "请再次输入密码", trigger: "blur" },
+    { required: true, message: t('profile.inputConfirmPassword'), trigger: "blur" },
     {
       validator: (rule, value, callback) => {
         if (value !== ruleForm.value.newPassword) {
-          callback(new Error("两次输入的密码不一致"));
+          callback(new Error(t('profile.passwordMismatch')));
         } else {
           callback();
         }
@@ -167,9 +170,9 @@ const rules = reactive({
     }
   ],
   password: [
-    { required: true, message: '请输入原密码', trigger: 'blur'  }
+    { required: true, message: t('profile.inputOldPassword'), trigger: 'blur' }
   ],
-})
+}))
 
 
 const submitForm = async () => {
@@ -178,7 +181,7 @@ const submitForm = async () => {
     if (valid) {
       submitting.value = true;
       await changePassword(ruleForm.value);
-      ElMessage.success('修改密码成功');
+      ElMessage.success(t('profile.passwordChangeSuccess'));
       passWordDialogVisible.value = false;
       ruleForm.value = {
         password: '',
@@ -187,7 +190,7 @@ const submitForm = async () => {
       };
     }
   } catch (error) {
-    console.error('修改密码失败:', error);
+    console.error(t('profile.passwordChangeFailed') + ':', error);
   } finally {
     submitting.value = false;
   }
@@ -199,7 +202,7 @@ const handleDropdownChange = (visible) => {
 
 // 退出登录
 const loginOut = () => {
-  ElMessage.success('已安全退出');
+  ElMessage.success(t('profile.logoutSuccess'));
   setTimeout(() => {
     sessionStorage.clear();
     localStorage.removeItem("user");

@@ -1,23 +1,23 @@
 <template>
   <div class="card" v-if="hasDisk">
-    <h3>磁盘信息</h3>
+    <h3>{{ t('dashboard.diskInfo') }}</h3>
     <div class="info-list">
       <div class="info-item">
-        <span class="label">总空间</span>
+        <span class="label">{{ t('dashboard.totalSpace') }}</span>
         <span class="value">{{ formatBytes(diskInfo.totalSpace) }}</span>
       </div>
       <div class="info-item">
-        <span class="label">可用空间</span>
+        <span class="label">{{ t('dashboard.availableSpace') }}</span>
         <span class="value text-green">{{ formatBytes(diskInfo.usableSpace) }}</span>
       </div>
       <div class="info-item">
-        <span class="label">已用空间</span>
+        <span class="label">{{ t('dashboard.usedSpace') }}</span>
         <span class="value">{{ formatBytes((diskInfo.totalSpace || 0) - (diskInfo.usableSpace || 0)) }}</span>
       </div>
     </div>
     <div class="progress-section">
       <div class="progress-label">
-        <span>磁盘使用</span>
+        <span>{{ t('dashboard.diskUsage') }}</span>
         <span>{{ diskUsagePercent }}%</span>
       </div>
       <el-progress :percentage="diskUsagePercent" :stroke-width="10" :color="diskColor" :show-text="false" />
@@ -27,6 +27,9 @@
 
 <script setup>
 import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 const props = defineProps({
   diskInfo: {

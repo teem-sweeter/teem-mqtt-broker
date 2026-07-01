@@ -1,25 +1,25 @@
 <template>
   <div class="card" v-if="hasSystem">
-    <h3>系统信息</h3>
+    <h3>{{ t('dashboard.systemInfo') }}</h3>
     <div class="info-list">
       <div class="info-item" v-if="systemInfo.name">
-        <span class="label">操作系统</span>
+        <span class="label">{{ t('dashboard.os') }}</span>
         <span class="value">{{ systemInfo.name }} {{ systemInfo.version || '' }}</span>
       </div>
       <div class="info-item" v-if="systemInfo.arch">
-        <span class="label">架构</span>
+        <span class="label">{{ t('dashboard.architecture') }}</span>
         <span class="value">{{ systemInfo.arch }}</span>
       </div>
       <div class="info-item" v-if="systemInfo.availableProcessors">
-        <span class="label">CPU 核心</span>
+        <span class="label">{{ t('dashboard.cpuCores') }}</span>
         <span class="value">{{ systemInfo.availableProcessors }}</span>
       </div>
       <div class="info-item" v-if="systemInfo.processCpuLoad != null && systemInfo.processCpuLoad >= 0">
-        <span class="label">CPU 使用率</span>
+        <span class="label">{{ t('dashboard.cpuUsage') }}</span>
         <span class="value" :class="cpuUsageClass">{{ formatPercent(systemInfo.processCpuLoad) }}</span>
       </div>
       <div class="info-item" v-if="systemInfo.systemLoadAverage >= 0">
-        <span class="label">系统负载</span>
+        <span class="label">{{ t('dashboard.systemLoad') }}</span>
         <span class="value">{{ systemInfo.systemLoadAverage.toFixed(2) }}</span>
       </div>
     </div>
@@ -28,6 +28,9 @@
 
 <script setup>
 import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 const props = defineProps({
   systemInfo: {

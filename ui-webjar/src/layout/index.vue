@@ -19,12 +19,16 @@
             <Breadcrumb class="ml-10"></Breadcrumb>
           </div>
           <div class="header-right flex align-center">
-            <div class="theme-btn" :class="{ 'is-dark': themeStore.isDark }" @click="themeStore.toggle()" :title="themeStore.isDark ? '切换亮色' : '切换暗色'">
+            <div class="lang-btn" @click="toggleLocale">
+              <span :class="{ active: locale === 'zh-CN' }">中</span>
+              <span :class="{ active: locale === 'en-US' }">EN</span>
+            </div>
+            <div class="theme-btn" :class="{ 'is-dark': themeStore.isDark }" @click="themeStore.toggle()" :title="themeStore.isDark ? t('layout.switchLight') : t('layout.switchDark')">
               <span class="theme-icon"><el-icon size="14"><Moon /></el-icon></span>
               <span class="theme-icon"><el-icon size="14"><Sunny /></el-icon></span>
               <span class="theme-thumb"></span>
             </div>
-            <div class="fullscreen-btn flex align-center justify-center" @click="toggleFullscreen" :title="isFullscreen ? '退出全屏' : '全屏'">
+            <div class="fullscreen-btn flex align-center justify-center" @click="toggleFullscreen" :title="isFullscreen ? t('layout.exitFullscreen') : t('layout.fullscreen')">
               <el-icon size="18"><FullScreen v-if="!isFullscreen" /><Aim v-else /></el-icon>
             </div>
             <Profile></Profile>
@@ -42,11 +46,19 @@
 </template>
 <script setup>
 import { ref, watchEffect, nextTick, onMounted } from "vue";
+import { useI18n } from 'vue-i18n'
 import { useTagStore } from "@/stores/tagList.js";
 import { useThemeStore } from "@/stores/theme.js";
 import { FullScreen, Aim, Moon, Sunny } from '@element-plus/icons-vue';
 const tagStore = useTagStore();
 const themeStore = useThemeStore();
+const { locale, t } = useI18n();
+
+const toggleLocale = () => {
+  const next = locale.value === 'zh-CN' ? 'en-US' : 'zh-CN'
+  locale.value = next
+  localStorage.setItem('locale', next)
+}
 import MyMenu from "./components/menu.vue";
 import Tag from "./components/tag.vue";
 import Breadcrumb from "./components/breadcrumb.vue";
@@ -145,6 +157,33 @@ const changeCollapse = async () => {
   color: var(--color-primary);
   transform: translateY(-1px);
   box-shadow: 0 4px 12px var(--color-primary-shadow);
+}
+
+.lang-btn {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 4px 6px;
+  border-radius: 8px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-base);
+  cursor: pointer;
+  font-size: 12px;
+  user-select: none;
+}
+
+.lang-btn span {
+  padding: 2px 6px;
+  border-radius: 4px;
+  color: var(--text-muted);
+  transition: all 0.2s ease;
+  line-height: 1.2;
+}
+
+.lang-btn span.active {
+  color: #fff;
+  background: var(--color-primary);
+  font-weight: 500;
 }
 
 /* 胶囊式主题切换开关 */

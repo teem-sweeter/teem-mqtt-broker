@@ -1,7 +1,9 @@
 import axios from 'axios'
 import { ElMessage } from 'element-plus'
-import {ref} from "vue";
 import router from '@/router/index.js'
+import i18n from '@/i18n'
+
+const t = i18n.global.t
 
 axios.defaults.headers['Content-Type'] = 'application/json;charset=utf-8'
 // 创建axios实例
@@ -11,12 +13,14 @@ const service = axios.create({
   // 超时
   timeout: 60000
 });
-const errorCode = ref(  {
-  '401': '认证失败，限制访问',
-  '403': '当前操作没有权限',
-  '404': '访问资源不存在',
-  'default': '系统忙，请稍后重试'
-});
+function getErrorCode(code) {
+  const map = {
+    '401': 'request.authFailed',
+    '403': 'request.noPermission',
+    '404': 'request.notFound',
+  }
+  return t(map[code] || 'request.systemBusy')
+}
 function getToken() {
   return sessionStorage.token;
 }
@@ -54,7 +58,7 @@ service.interceptors.request.use(config => {
 });
 
 function logout() {
-  console.log("登录状态已过期，即将跳转登录")
+  console.log(t('request.sessionExpired'))
   sessionStorage.token=""
   setTimeout(() => {
     router.push({
@@ -74,7 +78,7 @@ service.interceptors.response.use(res => {
 
       // 其他 JSON 数据处理
       const code = res.data.code || 200;
-      const msg = errorCode.value[code] || res.data.msg || errorCode.value['default'];
+      const msg = res.data.msg || getErrorCode(code);
 
       if (code === 401) {
         logout();
@@ -104,16 +108,16 @@ service.interceptors.response.use(res => {
     }
     let {message} = error;
     if (message == "Network Error") {
-      message = "异常";
+      message = t('request.networkError');
     } else if (message.includes("timeout")) {
-      message = "系统忙，请求超时，请稍后重试";
+      message = t('request.timeout');
       ElMessage({
               message: message,
               type: 'error',
               duration: 5 * 1000
             })
     } else if (message.includes("Request failed with status code")) {
-      message = "系统接口" + message.substr(message.length - 3) + "异常";
+      message = t('request.apiError', { code: message.substr(message.length - 3) });
     }
     return Promise.reject(error)
   }

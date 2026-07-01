@@ -4,7 +4,7 @@ const routes = [
     id: 1000,
     name: 'mqtt',
     meta: {
-      title: '消息记录',
+      title: 'menu.messageRecord',
       icon: 'Connection',
     },
     children: [         {
@@ -12,7 +12,7 @@ const routes = [
       id: 10001,
       name: 'mqttMonitor',
       meta: {
-        title: 'MQTT监控',
+        title: 'menu.mqttMonitor',
         icon: 'Connection',
       }
     }]
@@ -22,7 +22,7 @@ const routes = [
     id: 2000,
     name: 'd',
     meta: {
-      title: '消息记录',
+      title: 'menu.messageRecord',
       icon: 'Message',
     },
     children: [      {
@@ -30,7 +30,7 @@ const routes = [
       id: 2001,
       name: 'messageRecord',
       meta: {
-        title: '消息记录',
+        title: 'menu.messageRecord',
         icon: 'Message',
       }
     }]
@@ -40,7 +40,7 @@ const routes = [
     id: 4000,
     name: 'bridge',
     meta: {
-      title: '桥接管理',
+      title: 'menu.bridgeManagement',
       icon: 'Share',
     },
     children: [{
@@ -48,7 +48,7 @@ const routes = [
       id: 4001,
       name: 'bridgeList',
       meta: {
-        title: '桥接链路',
+        title: 'menu.bridgeLink',
         icon: 'Share',
       }
     }]
@@ -58,7 +58,7 @@ const routes = [
     id: 5000,
     name: 'client',
     meta: {
-      title: '客户端管理',
+      title: 'menu.clientManagement',
       icon: 'Monitor',
     },
     children: [{
@@ -66,7 +66,7 @@ const routes = [
       id: 5001,
       name: 'clientList',
       meta: {
-        title: '客户端管理',
+        title: 'menu.clientManagement',
         icon: 'Monitor',
       }
     }]
@@ -76,7 +76,7 @@ const routes = [
     id: 9000,
     name: 'tool',
     meta: {
-      title: '工具',
+      title: 'menu.tools',
       icon: 'Tools',
     },
     children: [{
@@ -84,7 +84,7 @@ const routes = [
       id: 9002,
       name: 'mqttTool',
       meta: {
-        title: 'MQTT调试',
+        title: 'menu.mqttDebug',
         icon: 'Connection',
       }
     }]
@@ -95,7 +95,7 @@ const routes = [
     id: 10000,
     name: 'monitor',
     meta: {
-      title: '系统监控',
+      title: 'menu.systemMonitor',
       icon: 'Monitor',
     },
     children: [{
@@ -103,7 +103,7 @@ const routes = [
       id: 10001,
       name: 'actuator',
       meta: {
-        title: '监控面板',
+        title: 'menu.monitorPanel',
         icon: 'DataAnalysis',
       }
     }]
@@ -113,7 +113,7 @@ const routes = [
     id: 8800,
     name: 'log',
     meta: {
-      title: '日志管理',
+      title: 'menu.logManagement',
       icon: 'Tickets',
     },
     children: [{
@@ -121,7 +121,7 @@ const routes = [
       id: 8803,
       name: 'logSearch',
       meta: {
-        title: '日志搜索',
+        title: 'menu.logSearch',
         icon: 'Search',
       }
     },
@@ -130,7 +130,7 @@ const routes = [
       id: 8804,
       name: 'liveLog',
       meta: {
-        title: '实时日志',
+        title: 'menu.liveLog',
         icon: 'Link',
       }
     }]
@@ -140,7 +140,7 @@ const routes = [
     id: 3000,
     name: 'system',
     meta: {
-      title: '系统管理',
+      title: 'menu.systemManagement',
       icon: 'UploadFilled',
     },
     children: [{
@@ -148,7 +148,7 @@ const routes = [
       id: 3002,
       name: 'upgrade',
       meta: {
-        title: '系统升级',
+        title: 'menu.systemUpgrade',
         icon: 'UploadFilled',
       }
     }]

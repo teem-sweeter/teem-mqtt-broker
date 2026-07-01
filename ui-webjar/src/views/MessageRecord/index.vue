@@ -9,7 +9,7 @@
           </div>
           <div class="stat-content">
             <div class="stat-value">{{ stats.last1Hour || 0 }}</div>
-            <div class="stat-label">最近1小时</div>
+            <div class="stat-label">{{ t('message.last1h') }}</div>
           </div>
         </div>
         <div class="stat-card stat-card-green">
@@ -18,7 +18,7 @@
           </div>
           <div class="stat-content">
             <div class="stat-value">{{ stats.last30Min || 0 }}</div>
-            <div class="stat-label">最近30分钟</div>
+            <div class="stat-label">{{ t('message.last30m') }}</div>
           </div>
         </div>
         <div class="stat-card stat-card-purple">
@@ -27,12 +27,12 @@
           </div>
           <div class="stat-content">
             <div class="stat-value">{{ stats.last5Min || 0 }}</div>
-            <div class="stat-label">最近5分钟</div>
+            <div class="stat-label">{{ t('message.last5m') }}</div>
           </div>
         </div>
         <div class="stat-card stat-card-orange">
           <div class="trend-header">
-            <span class="trend-title">消息趋势</span>
+            <span class="trend-title">{{ t('message.trend') }}</span>
             <el-button type="primary" size="small" text @click="fetchTrend">
               <el-icon><Refresh /></el-icon>
             </el-button>
@@ -49,7 +49,7 @@
             </svg>
             <div v-if="tooltip.visible" class="trend-tooltip" :style="{ left: tooltip.x + 'px', top: tooltip.y + 'px' }">
               <div class="tooltip-time">{{ tooltip.time }}</div>
-              <div class="tooltip-value">{{ tooltip.value }} 条消息</div>
+              <div class="tooltip-value">{{ tooltip.value }} {{ t('message.messages') }}</div>
             </div>
             <div class="trend-labels" v-if="trendData.length > 0">
               <span>{{ formatTrendTime(trendData[0]?.time) }}</span>
@@ -66,42 +66,42 @@
         <div class="query-section">
           <div class="query-title">
             <el-icon><Search /></el-icon>
-            <span>消息查询</span>
+            <span>{{ t('message.query') }}</span>
           </div>
           <div class="query-filters">
             <div class="filter-item">
-              <label>主题</label>
-              <el-input v-model="filterForm.topic" placeholder="按主题搜索" clearable />
+              <label>{{ t('message.topic') }}</label>
+              <el-input v-model="filterForm.topic" :placeholder="t('message.searchByTopic')" clearable />
             </div>
             <div class="filter-item">
-              <label>客户端ID</label>
-              <el-input v-model="filterForm.clientId" placeholder="按客户端ID搜索" clearable />
+              <label>{{ t('message.clientId') }}</label>
+              <el-input v-model="filterForm.clientId" :placeholder="t('message.searchByClientId')" clearable />
             </div>
             <div class="filter-item">
-              <label>时间范围</label>
+              <label>{{ t('message.timeRange') }}</label>
               <el-date-picker v-model="filterForm.timeRange" type="datetimerange"
-                range-separator="至" start-placeholder="开始时间" end-placeholder="结束时间"
+                :range-separator="t('message.rangeTo')" :start-placeholder="t('message.startTime')" :end-placeholder="t('message.endTime')"
                 value-format="YYYY-MM-DDTHH:mm:ss" />
             </div>
             <div class="filter-item">
-              <label>关键词</label>
-              <el-input v-model="filterForm.keyword" placeholder="搜索消息内容" clearable />
+              <label>{{ t('message.keyword') }}</label>
+              <el-input v-model="filterForm.keyword" :placeholder="t('message.searchContent')" clearable />
             </div>
             <div class="filter-actions">
               <el-button type="primary" @click="handleQuery">
                 <el-icon><Search /></el-icon>
-                查询
+                {{ t('message.search') }}
               </el-button>
               <el-button @click="handleReset">
                 <el-icon><RefreshRight /></el-icon>
-                重置
+                {{ t('message.reset') }}
               </el-button>
             </div>
           </div>
         </div>
 
         <el-table :data="messages" v-loading="loading" row-key="id" stripe class="message-table">
-        <el-table-column prop="timestamp" label="时间" width="180">
+        <el-table-column prop="timestamp" :label="t('message.time')" width="180">
           <template #default="{ row }">
             <div class="time-cell">
               <span class="time-date">{{ formatDate(row.timestamp) }}</span>
@@ -109,7 +109,7 @@
             </div>
           </template>
         </el-table-column>
-        <el-table-column prop="topic" label="主题" min-width="200" show-overflow-tooltip>
+        <el-table-column prop="topic" :label="t('message.topic')" min-width="200" show-overflow-tooltip>
           <template #default="{ row }">
             <div class="topic-cell">
               <el-icon><ChatLineSquare /></el-icon>
@@ -117,15 +117,15 @@
             </div>
           </template>
         </el-table-column>
-        <el-table-column prop="clientId" label="客户端ID" width="150" show-overflow-tooltip>
+        <el-table-column prop="clientId" :label="t('message.clientId')" width="150" show-overflow-tooltip>
           <template #default="{ row }">
             <el-tag type="info" size="small">{{ row.clientId || 'N/A' }}</el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="direction" label="方向" width="100">
+        <el-table-column prop="direction" :label="t('message.direction')" width="100">
           <template #default="{ row }">
             <el-tag :type="row.direction === 'INBOUND' ? 'success' : 'warning'" size="small" effect="dark">
-              {{ row.direction === 'INBOUND' ? '接收' : '发送' }}
+              {{ row.direction === 'INBOUND' ? t('message.inbound') : t('message.outbound') }}
             </el-tag>
           </template>
         </el-table-column>
@@ -134,27 +134,27 @@
             <el-tag type="primary" size="small" effect="light">Q{{ row.qos }}</el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="retained" label="保留" width="80" align="center">
+        <el-table-column prop="retained" :label="t('message.retained')" width="80" align="center">
           <template #default="{ row }">
             <el-tag :type="row.retained ? 'warning' : 'info'" size="small" effect="light">
-              {{ row.retained ? '是' : '否' }}
+              {{ row.retained ? t('common.yes') : t('common.no') }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="payload" label="内容" min-width="200" show-overflow-tooltip>
+        <el-table-column prop="payload" :label="t('message.content')" min-width="200" show-overflow-tooltip>
           <template #default="{ row }">
             <span class="payload-text">{{ row.payload }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="140" fixed="right">
+        <el-table-column :label="t('message.action')" width="140" fixed="right">
           <template #default="{ row }">
             <el-button link type="primary" size="small" @click="handleViewDetail(row)">
               <el-icon><View /></el-icon>
-              详情
+              {{ t('message.detail') }}
             </el-button>
             <el-button link type="danger" size="small" @click="handleDelete(row)">
               <el-icon><Delete /></el-icon>
-              删除
+              {{ t('message.delete') }}
             </el-button>
           </template>
         </el-table-column>
@@ -175,14 +175,14 @@
     </div>
 
     <!-- 详情弹窗 -->
-    <el-dialog v-model="detailVisible" title="消息详情" width="800px" class="detail-dialog">
+    <el-dialog v-model="detailVisible" :title="t('message.messageDetail')" width="800px" class="detail-dialog">
       <el-descriptions :column="2" border v-if="selectedMessage">
-        <el-descriptions-item label="消息ID" :span="2">
+        <el-descriptions-item :label="t('message.messageId')" :span="2">
           <span class="id-value">{{ selectedMessage.id }}</span>
         </el-descriptions-item>
-        <el-descriptions-item label="主题">{{ selectedMessage.topic }}</el-descriptions-item>
-        <el-descriptions-item label="客户端ID">{{ selectedMessage.clientId || 'N/A' }}</el-descriptions-item>
-        <el-descriptions-item label="方向">
+        <el-descriptions-item :label="t('message.topic')">{{ selectedMessage.topic }}</el-descriptions-item>
+        <el-descriptions-item :label="t('message.clientId')">{{ selectedMessage.clientId || 'N/A' }}</el-descriptions-item>
+        <el-descriptions-item :label="t('message.direction')">
           <el-tag :type="selectedMessage.direction === 'INBOUND' ? 'success' : 'warning'" size="small">
             {{ selectedMessage.direction || 'N/A' }}
           </el-tag>
@@ -190,16 +190,16 @@
         <el-descriptions-item label="QoS">
           <el-tag type="primary" size="small">Q{{ selectedMessage.qos }}</el-tag>
         </el-descriptions-item>
-        <el-descriptions-item label="保留消息">
+        <el-descriptions-item :label="t('message.retainedMessage')">
           <el-tag :type="selectedMessage.retained ? 'warning' : 'info'" size="small">
-            {{ selectedMessage.retained ? '是' : '否' }}
+            {{ selectedMessage.retained ? t('common.yes') : t('common.no') }}
           </el-tag>
         </el-descriptions-item>
-        <el-descriptions-item label="时间">
+        <el-descriptions-item :label="t('message.time')">
           {{ formatTime(selectedMessage.timestamp) }}
         </el-descriptions-item>
-        <el-descriptions-item label="消息ID">{{ selectedMessage.messageId || 'N/A' }}</el-descriptions-item>
-        <el-descriptions-item label="负载内容" :span="2">
+        <el-descriptions-item :label="t('message.messageId')">{{ selectedMessage.messageId || 'N/A' }}</el-descriptions-item>
+        <el-descriptions-item :label="t('message.payload')" :span="2">
           <div class="payload-viewer">
             <pre>{{ selectedMessage.payload }}</pre>
           </div>
@@ -212,6 +212,9 @@
 <script setup>
 import { ref, reactive, onMounted, computed } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 import {
   Refresh, Search, RefreshRight, View, Delete, Clock, Timer, Lightning, ChatLineSquare
 } from '@element-plus/icons-vue'
@@ -355,7 +358,7 @@ async function fetchMessages() {
     messages.value = response.content
     pagination.total = response.total
   } catch (error) {
-    ElMessage.error('获取消息列表失败')
+    ElMessage.error(t('message.fetchMessagesFailed'))
   } finally {
     loading.value = false
   }
@@ -390,13 +393,13 @@ function handleViewDetail(row) {
 
 async function handleDelete(row) {
   try {
-    await ElMessageBox.confirm('确定删除此消息?', '提示', { type: 'warning' })
+    await ElMessageBox.confirm(t('message.deleteConfirm'), t('message.notice'), { type: 'warning' })
     await deleteMessage(row.id)
-    ElMessage.success('删除成功')
+    ElMessage.success(t('message.deleteSuccess'))
     fetchMessages()
   } catch (error) {
     if (error !== 'cancel') {
-      ElMessage.error('删除失败')
+      ElMessage.error(t('message.deleteFailed'))
     }
   }
 }

@@ -3,19 +3,19 @@
     <h3>MQTT Broker</h3>
     <div class="info-list">
       <div class="info-item">
-        <span class="label">运行时间</span>
+        <span class="label">{{ t('dashboard.uptime') }}</span>
         <span class="value">{{ formatUptime(mqttInfo.uptime) }}</span>
       </div>
       <div class="info-item">
-        <span class="label">总连接数</span>
+        <span class="label">{{ t('dashboard.totalConnections') }}</span>
         <span class="value">{{ mqttInfo.totalConnections || 0 }}</span>
       </div>
       <div class="info-item">
-        <span class="label">接收消息</span>
+        <span class="label">{{ t('dashboard.receivedMessages') }}</span>
         <span class="value text-blue">{{ mqttInfo.totalMessagesReceived || 0 }}</span>
       </div>
       <div class="info-item">
-        <span class="label">发送消息</span>
+        <span class="label">{{ t('dashboard.sentMessages') }}</span>
         <span class="value text-green">{{ mqttInfo.totalMessagesSent || 0 }}</span>
       </div>
     </div>
@@ -23,6 +23,10 @@
 </template>
 
 <script setup>
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
+
 defineProps({
   mqttInfo: {
     type: Object,
@@ -40,10 +44,10 @@ function formatUptime(ms) {
   const minutes = Math.floor(seconds / 60)
   const hours = Math.floor(minutes / 60)
   const days = Math.floor(hours / 24)
-  if (days > 0) return `${days}天 ${hours % 24}小时`
-  if (hours > 0) return `${hours}小时 ${minutes % 60}分钟`
-  if (minutes > 0) return `${minutes}分钟 ${seconds % 60}秒`
-  return `${seconds}秒`
+  if (days > 0) return `${days}${t('dashboard.days')} ${hours % 24}${t('dashboard.hours')}`
+  if (hours > 0) return `${hours}${t('dashboard.hours')} ${minutes % 60}${t('dashboard.minutes')}`
+  if (minutes > 0) return `${minutes}${t('dashboard.minutes')} ${seconds % 60}${t('dashboard.seconds')}`
+  return `${seconds}${t('dashboard.seconds')}`
 }
 </script>
 

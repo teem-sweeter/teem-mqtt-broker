@@ -6,7 +6,7 @@
       </div>
       <div class="metric-body">
         <div class="metric-value">{{ mqttInfo.currentConnections || 0 }}</div>
-        <div class="metric-label">当前连接</div>
+        <div class="metric-label">{{ t('dashboard.currentConnections') }}</div>
       </div>
     </div>
     <div class="metric-card">
@@ -15,7 +15,7 @@
       </div>
       <div class="metric-body">
         <div class="metric-value">{{ mqttInfo.messagesPerSecond || 0 }}<span class="unit">/s</span></div>
-        <div class="metric-label">消息速率</div>
+        <div class="metric-label">{{ t('dashboard.messageRate') }}</div>
       </div>
     </div>
     <div class="metric-card">
@@ -24,7 +24,7 @@
       </div>
       <div class="metric-body">
         <div class="metric-value">{{ mqttInfo.totalTopics || 0 }}</div>
-        <div class="metric-label">主题数</div>
+        <div class="metric-label">{{ t('dashboard.topicCount') }}</div>
       </div>
     </div>
     <div class="metric-card">
@@ -33,7 +33,7 @@
       </div>
       <div class="metric-body">
         <div class="metric-value">{{ mqttInfo.totalSubscriptions || 0 }}</div>
-        <div class="metric-label">订阅数</div>
+        <div class="metric-label">{{ t('dashboard.subscriptionCount') }}</div>
       </div>
     </div>
   </div>
@@ -41,6 +41,9 @@
 
 <script setup>
 import { Connection, ChatDotRound, Document, Bell } from '@element-plus/icons-vue'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 defineProps({
   mqttInfo: {

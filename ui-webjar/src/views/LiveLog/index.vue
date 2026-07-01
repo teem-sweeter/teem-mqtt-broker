@@ -2,11 +2,11 @@
   <div class="live-log-container">
     <div class="log-card">
       <div class="card-header">
-        <span>实时日志</span>
+        <span>{{ t('liveLog.title') }}</span>
         <div class="header-actions">
-          <el-button type="success" @click="startStreaming" :disabled="isStreaming">开始</el-button>
-          <el-button type="warning" @click="stopStreaming" :disabled="!isStreaming">停止</el-button>
-          <el-button type="danger" @click="clearLogs">清空日志</el-button>
+          <el-button type="success" @click="startStreaming" :disabled="isStreaming">{{ t('liveLog.start') }}</el-button>
+          <el-button type="warning" @click="stopStreaming" :disabled="!isStreaming">{{ t('liveLog.stop') }}</el-button>
+          <el-button type="danger" @click="clearLogs">{{ t('liveLog.clearLog') }}</el-button>
         </div>
       </div>
 
@@ -22,7 +22,7 @@
               <pre>{{ line }}</pre>
             </div>
             <div v-if="logs.length === 0" class="empty-placeholder">
-              <div class="placeholder-text">暂无实时日志</div>
+              <div class="placeholder-text">{{ t('liveLog.noLogs') }}</div>
             </div>
           </div>
         </el-scrollbar>
@@ -34,6 +34,9 @@
 <script setup>
 import { ref, onMounted, onUnmounted, nextTick } from 'vue'
 import { ElMessage } from 'element-plus'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 const logs = ref([])
 const scrollbarRef = ref(null)
@@ -92,7 +95,7 @@ const startStreaming = () => {
   }
 
   eventSource.onerror = (error) => {
-    ElMessage.error('SSE连接出错')
+    ElMessage.error(t('liveLog.sseError'))
     console.error('SSE error:', error)
     isStreaming.value = false
     closeStream()
@@ -102,12 +105,12 @@ const startStreaming = () => {
 const stopStreaming = () => {
   isStreaming.value = false
   closeStream()
-  ElMessage.info('已停止日志打印')
+  ElMessage.info(t('liveLog.stopped'))
 }
 
 const clearLogs = () => {
   logs.value = []
-  ElMessage.info('日志已清空')
+  ElMessage.info(t('liveLog.cleared'))
 }
 
 onUnmounted(() => {

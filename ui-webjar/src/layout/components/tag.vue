@@ -10,12 +10,12 @@
         @contextmenu.prevent="showContextMenu($event, item, index)"
       >
         <div :underline="false" class="tag-title">
-          {{ item.breadcrumbName }}
+          {{ t(item.breadcrumbName) }}
         </div>
         <el-icon
           v-if="item.name !== '/dashboard'"
           :size="14"
-          title="关闭窗口"
+          :title="t('layout.closeTab')"
           @click.stop="closeTag(item.name, index)"
         ><Close />
         </el-icon>
@@ -30,13 +30,13 @@
     >
       <ul>
         <li @click="closeCurrentTag" @mouseenter="highlightItem($event)" @mouseleave="unhighlightItem($event)">
-          <span>关闭当前</span>
+          <span>{{ t('tag.closeCurrent') }}</span>
         </li>
         <li @click="closeOther" @mouseenter="highlightItem($event)" @mouseleave="unhighlightItem($event)">
-          <span>关闭其他</span>
+          <span>{{ t('tag.closeOther') }}</span>
         </li>
         <li @click="closeAll" @mouseenter="highlightItem($event)" @mouseleave="unhighlightItem($event)">
-          <span>关闭所有</span>
+          <span>{{ t('tag.closeAll') }}</span>
         </li>
       </ul>
     </div>
@@ -48,11 +48,13 @@ import router from "@/router";
 import { useTagStore } from "@/stores/tagList.js";
 import { useRoute } from "vue-router";
 import { ref } from "vue";
+import { useI18n } from 'vue-i18n'
 import { Close } from "@element-plus/icons-vue";
 
 const route = useRoute();
 const tagStore = useTagStore();
 const tagList = tagStore.tagList;
+const { t } = useI18n();
 
 // 右键菜单状态
 const contextMenuVisible = ref(false);

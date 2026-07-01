@@ -1,6 +1,6 @@
 <template>
   <el-breadcrumb separator="/">
-    <el-breadcrumb-item :to="{ path: '/dashboard' }">首页</el-breadcrumb-item>
+    <el-breadcrumb-item :to="{ path: '/dashboard' }">{{ t('menu.home') }}</el-breadcrumb-item>
     <el-breadcrumb-item v-for="item in breadcrumbList" :key="item.path">
       {{ item.meta.breadcrumbName || item.meta.title || item.name }}
     </el-breadcrumb-item>
@@ -10,7 +10,9 @@
 <script setup>
 import { watch, ref } from "vue";
 import { useRoute } from "vue-router";
+import { useI18n } from 'vue-i18n';
 const route = useRoute();
+const { t } = useI18n();
 
 // 过滤路由匹配列表，避免重复显示
 const getBreadcrumbList = (matched) => {
@@ -28,7 +30,7 @@ const getBreadcrumbList = (matched) => {
       (item.component.__file && item.component.__file && item.component.__file.includes('Layout'))
     );
     
-    return item.name && item.name !== '系统信息' && item.meta && 
+    return item.name && item.name !== 'systemInfo' && item.meta &&
            (item.meta.breadcrumbName || item.meta.title || item.name) && 
            !isLayoutComponent;
   });

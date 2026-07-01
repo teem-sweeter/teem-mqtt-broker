@@ -1,9 +1,9 @@
 <template>
   <div class="log-preview-container">
     <div class="log-header">
-      <h2>日志搜索</h2>
+      <h2>{{ t('logSearch.title') }}</h2>
       <div class="header-actions">
-        <el-button type="primary" @click="loadLogs">刷新</el-button>
+        <el-button type="primary" @click="loadLogs">{{ t('logSearch.refresh') }}</el-button>
 
       </div>
     </div>
@@ -11,21 +11,21 @@
     <div class="log-controls">
       <el-row :gutter="20">
         <el-col :span="6">
-          <el-form-item label="显示行数">
-            <el-select v-model="logForm.lines" placeholder="选择行数" @change="loadLogs" style="width: 100%">
-              <el-option label="50行" :value="50"></el-option>
-              <el-option label="100行" :value="100"></el-option>
-              <el-option label="200行" :value="200"></el-option>
-              <el-option label="500行" :value="500"></el-option>
+          <el-form-item :label="t('logSearch.linesToShow')">
+            <el-select v-model="logForm.lines" :placeholder="t('logSearch.selectLines')" @change="loadLogs" style="width: 100%">
+              <el-option :label="t('logSearch.lines50')" :value="50"></el-option>
+              <el-option :label="t('logSearch.lines100')" :value="100"></el-option>
+              <el-option :label="t('logSearch.lines200')" :value="200"></el-option>
+              <el-option :label="t('logSearch.lines500')" :value="500"></el-option>
             </el-select>
           </el-form-item>
         </el-col>
 
         <el-col :span="6">
-          <el-form-item label="关键字过滤">
+          <el-form-item :label="t('logSearch.keywordFilter')">
             <el-input
               v-model="logForm.keyword"
-              placeholder="输入关键字过滤"
+              :placeholder="t('logSearch.enterKeyword')"
               @keyup.enter="loadLogs"
               clearable
               style="width: 100%"
@@ -34,9 +34,9 @@
         </el-col>
 
         <el-col :span="6">
-          <el-form-item label="日志级别">
-            <el-select v-model="logForm.level" placeholder="选择日志级别" @change="loadLogs" style="width: 100%">
-              <el-option label="全部" value="ALL"></el-option>
+          <el-form-item :label="t('logSearch.logLevel')">
+            <el-select v-model="logForm.level" :placeholder="t('logSearch.selectLevel')" @change="loadLogs" style="width: 100%">
+              <el-option :label="t('logSearch.all')" value="ALL"></el-option>
               <el-option label="DEBUG" value="DEBUG"></el-option>
               <el-option label="INFO" value="INFO"></el-option>
               <el-option label="WARN" value="WARN"></el-option>
@@ -47,8 +47,8 @@
 
         <el-col :span="6">
           <el-form-item>
-            <el-button type="primary" @click="loadLogs">搜索</el-button>
-            <el-button type="danger" @click="downloadLog">下载日志</el-button>
+            <el-button type="primary" @click="loadLogs">{{ t('logSearch.search') }}</el-button>
+            <el-button type="danger" @click="downloadLog">{{ t('logSearch.downloadLog') }}</el-button>
           </el-form-item>
         </el-col>
       </el-row>
@@ -74,6 +74,9 @@
 <script setup>
 import { ref, onMounted, onUnmounted, nextTick } from 'vue'
 import { ElMessage } from 'element-plus'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 import { getRecentLogs, downloadLogFile } from '@/api/log.js'
 
 // 日志表单
@@ -110,7 +113,7 @@ const loadLogs = async () => {
     filterLogs()
     scrollToBottom()
   } catch (error) {
-    ElMessage.error('加载日志失败: ' + error.message)
+    ElMessage.error(t('logSearch.loadFailed') + ': ' + error.message)
   }
 }
 
@@ -176,9 +179,9 @@ const downloadLog = async () => {
     document.body.removeChild(link)
     window.URL.revokeObjectURL(url)
 
-    ElMessage.success('日志文件下载成功')
+    ElMessage.success(t('logSearch.downloadSuccess'))
   } catch (error) {
-    ElMessage.error('下载日志文件失败: ' + error.message)
+    ElMessage.error(t('logSearch.downloadFailed') + ': ' + error.message)
   }
 }
 

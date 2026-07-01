@@ -7,28 +7,28 @@
           <div class="stat-icon"><el-icon><Connection /></el-icon></div>
           <div class="stat-content">
             <div class="stat-value">{{ stats.total || 0 }}</div>
-            <div class="stat-label">链路总数</div>
+            <div class="stat-label">{{ t('bridge.totalLinks') }}</div>
           </div>
         </div>
         <div class="stat-card stat-card-green">
           <div class="stat-icon"><el-icon><CircleCheck /></el-icon></div>
           <div class="stat-content">
             <div class="stat-value">{{ stats.connected || 0 }}</div>
-            <div class="stat-label">已连接</div>
+            <div class="stat-label">{{ t('bridge.connected') }}</div>
           </div>
         </div>
         <div class="stat-card stat-card-purple">
           <div class="stat-icon"><el-icon><Loading /></el-icon></div>
           <div class="stat-content">
             <div class="stat-value">{{ stats.reconnecting || 0 }}</div>
-            <div class="stat-label">重连中</div>
+            <div class="stat-label">{{ t('bridge.reconnecting') }}</div>
           </div>
         </div>
         <div class="stat-card stat-card-orange">
           <div class="stat-icon"><el-icon><CircleClose /></el-icon></div>
           <div class="stat-content">
             <div class="stat-value">{{ stats.disconnected || 0 }}</div>
-            <div class="stat-label">已断开</div>
+            <div class="stat-label">{{ t('bridge.disconnected') }}</div>
           </div>
         </div>
       </div>
@@ -41,23 +41,23 @@
         <div class="toolbar">
           <div class="toolbar-title">
             <el-icon><Share /></el-icon>
-            <span>桥接链路管理</span>
+            <span>{{ t('bridge.linkManagement') }}</span>
           </div>
           <div class="toolbar-actions">
             <el-button type="primary" @click="handleCreate">
               <el-icon><Plus /></el-icon>
-              新建桥接
+              {{ t('bridge.createBridge') }}
             </el-button>
             <el-button @click="fetchBridges" :loading="loading">
               <el-icon><Refresh /></el-icon>
-              刷新
+              {{ t('common.refresh') }}
             </el-button>
           </div>
         </div>
 
         <!-- 数据表格 -->
         <el-table :data="bridges" v-loading="loading" row-key="id" stripe class="bridge-table">
-          <el-table-column prop="name" label="链路别名" min-width="140" show-overflow-tooltip>
+          <el-table-column prop="name" :label="t('bridge.linkAlias')" min-width="140" show-overflow-tooltip>
             <template #default="{ row }">
               <div class="name-cell">
                 <el-icon class="name-icon"><Share /></el-icon>
@@ -66,13 +66,13 @@
             </template>
           </el-table-column>
 
-          <el-table-column prop="remoteUrl" label="远程地址" min-width="220" show-overflow-tooltip>
+          <el-table-column prop="remoteUrl" :label="t('bridge.remoteUrl')" min-width="220" show-overflow-tooltip>
             <template #default="{ row }">
               <span class="url-text">{{ row.remoteUrl }}</span>
             </template>
           </el-table-column>
 
-          <el-table-column prop="status" label="连接状态" width="110" align="center">
+          <el-table-column prop="status" :label="t('bridge.connectionStatus')" width="110" align="center">
             <template #default="{ row }">
               <el-tag :type="statusTagType(row.status)" effect="dark" size="small">
                 <span class="status-dot" :class="'dot-' + row.status"></span>
@@ -81,15 +81,15 @@
             </template>
           </el-table-column>
 
-          <el-table-column prop="enabled" label="启用" width="80" align="center">
+          <el-table-column prop="enabled" :label="t('common.status')" width="80" align="center">
             <template #default="{ row }">
               <el-switch
                 v-model="row.enabled"
                 @change="(val) => handleToggle(row, val)"
                 :loading="row._toggling"
                 inline-prompt
-                active-text="开"
-                inactive-text="关"
+                :active-text="t('bridge.on')"
+                :inactive-text="t('bridge.off')"
               />
             </template>
           </el-table-column>
@@ -100,48 +100,48 @@
             </template>
           </el-table-column>
 
-          <el-table-column prop="routeRuleCount" label="路由规则" width="100" align="center">
+          <el-table-column prop="routeRuleCount" :label="t('bridge.routeRules')" width="100" align="center">
             <template #default="{ row }">
-              <el-tag type="primary" size="small" effect="plain">{{ row.routeRuleCount || 0 }} 条</el-tag>
+              <el-tag type="primary" size="small" effect="plain">{{ row.routeRuleCount || 0 }} {{ t('bridge.ruleUnit') }}</el-tag>
             </template>
           </el-table-column>
 
-          <el-table-column prop="sentCount" label="发送" width="90" align="right">
+          <el-table-column prop="sentCount" :label="t('bridge.sent')" width="90" align="right">
             <template #default="{ row }">
               <span class="count-text">{{ formatCount(row.sentCount) }}</span>
             </template>
           </el-table-column>
 
-          <el-table-column prop="receivedCount" label="接收" width="90" align="right">
+          <el-table-column prop="receivedCount" :label="t('bridge.received')" width="90" align="right">
             <template #default="{ row }">
               <span class="count-text">{{ formatCount(row.receivedCount) }}</span>
             </template>
           </el-table-column>
 
-          <el-table-column label="操作" width="240" fixed="right">
+          <el-table-column :label="t('common.operation')" width="240" fixed="right">
             <template #default="{ row }">
               <el-button link type="primary" size="small" @click="handleEdit(row)">
                 <el-icon><Edit /></el-icon>
-                编辑
+                {{ t('common.edit') }}
               </el-button>
               <el-button link type="success" size="small" @click="openRouteRules(row)">
                 <el-icon><Switch /></el-icon>
-                路由规则
+                {{ t('bridge.routeRules') }}
               </el-button>
               <el-button link type="info" size="small" @click="handleViewStats(row)">
                 <el-icon><DataAnalysis /></el-icon>
-                统计
+                {{ t('bridge.statistics') }}
               </el-button>
               <el-button link type="danger" size="small" @click="handleDelete(row)" :disabled="row.enabled">
                 <el-icon><Delete /></el-icon>
-                删除
+                {{ t('common.delete') }}
               </el-button>
             </template>
           </el-table-column>
         </el-table>
 
-        <el-empty v-if="!loading && bridges.length === 0" description="暂无桥接链路" :image-size="100">
-          <el-button type="primary" @click="handleCreate">创建第一条桥接</el-button>
+        <el-empty v-if="!loading && bridges.length === 0" :description="t('bridge.noLinks')" :image-size="100">
+          <el-button type="primary" @click="handleCreate">{{ t('bridge.createFirstLink') }}</el-button>
         </el-empty>
       </div>
     </div>
@@ -149,7 +149,7 @@
     <!-- 新建/编辑弹窗 -->
     <el-dialog
       v-model="dialogVisible"
-      :title="isEdit ? '编辑桥接链路' : '新建桥接链路'"
+      :title="isEdit ? t('bridge.editLink') : t('bridge.newLink')"
       width="720px"
       class="bridge-dialog"
       :close-on-click-modal="false"
@@ -167,18 +167,18 @@
         <div class="form-section">
           <div class="section-title">
             <el-icon><Connection /></el-icon>
-            <span>基础连接</span>
+            <span>{{ t('bridge.basicConnection') }}</span>
           </div>
 
           <el-row :gutter="16">
             <el-col :span="12">
-              <el-form-item label="链路别名" prop="name">
-                <el-input v-model="form.name" placeholder="如：云平台桥接" maxlength="50" show-word-limit />
+              <el-form-item :label="t('bridge.linkAlias')" prop="name">
+                <el-input v-model="form.name" :placeholder="t('bridge.linkAliasPlaceholder')" maxlength="50" show-word-limit />
               </el-form-item>
             </el-col>
             <el-col :span="12">
               <el-form-item label="Client ID" prop="clientId">
-                <el-input v-model="form.clientId" placeholder="留空自动生成">
+                <el-input v-model="form.clientId" :placeholder="t('bridge.clientIdPlaceholder')">
                   <template #append>
                     <el-button @click="generateClientId"><el-icon><Refresh /></el-icon></el-button>
                   </template>
@@ -187,8 +187,8 @@
             </el-col>
           </el-row>
 
-          <el-form-item label="远程地址" prop="remoteUrl">
-            <el-input v-model="form.remoteUrl" placeholder="broker.example.com:1883">
+          <el-form-item :label="t('bridge.remoteUrl')" prop="remoteUrl">
+            <el-input v-model="form.remoteUrl" :placeholder="t('bridge.remoteUrlPlaceholder')">
               <template #prepend>
                 <el-select v-model="urlProtocol" style="width: 90px;">
                   <el-option value="tcp://" label="tcp://" />
@@ -202,23 +202,23 @@
 
           <el-row :gutter="16">
             <el-col :span="8">
-              <el-form-item label="Keep Alive" prop="keepAlive">
+              <el-form-item :label="t('bridge.keepAlive')" prop="keepAlive">
                 <el-input-number v-model="form.keepAlive" :min="5" :max="300" :step="5" style="width: 100%;" />
-                <span class="form-hint">秒</span>
+                <span class="form-hint">{{ t('bridge.secondsUnit') }}</span>
               </el-form-item>
             </el-col>
             <el-col :span="8">
-              <el-form-item label="连接超时" prop="connectionTimeout">
+              <el-form-item :label="t('bridge.connectionTimeout')" prop="connectionTimeout">
                 <el-input-number v-model="form.connectionTimeout" :min="3" :max="120" :step="1" style="width: 100%;" />
-                <span class="form-hint">秒</span>
+                <span class="form-hint">{{ t('bridge.secondsUnit') }}</span>
               </el-form-item>
             </el-col>
             <el-col :span="8">
               <el-form-item label="QoS" prop="defaultQos">
                 <el-select v-model="form.defaultQos" style="width: 100%;">
-                  <el-option :value="0" label="QoS 0 - 最多一次" />
-                  <el-option :value="1" label="QoS 1 - 至少一次" />
-                  <el-option :value="2" label="QoS 2 - 恰好一次" />
+                  <el-option :value="0" :label="t('bridge.qos0')" />
+                  <el-option :value="1" :label="t('bridge.qos1')" />
+                  <el-option :value="2" :label="t('bridge.qos2')" />
                 </el-select>
               </el-form-item>
             </el-col>
@@ -229,27 +229,27 @@
         <div class="form-section">
           <div class="section-title">
             <el-icon><Lock /></el-icon>
-            <span>安全认证</span>
+            <span>{{ t('bridge.security') }}</span>
           </div>
 
-          <el-form-item label="认证方式">
+          <el-form-item :label="t('bridge.authType')">
             <el-radio-group v-model="form.authType" @change="handleAuthTypeChange">
-              <el-radio value="anonymous">匿名</el-radio>
-              <el-radio value="password">账号密码</el-radio>
-              <el-radio value="ssl">SSL/TLS 证书</el-radio>
+              <el-radio value="anonymous">{{ t('bridge.anonymous') }}</el-radio>
+              <el-radio value="password">{{ t('bridge.passwordAuth') }}</el-radio>
+              <el-radio value="ssl">{{ t('bridge.sslCert') }}</el-radio>
             </el-radio-group>
           </el-form-item>
 
           <template v-if="form.authType === 'password'">
             <el-row :gutter="16">
               <el-col :span="12">
-                <el-form-item label="用户名" prop="username">
-                  <el-input v-model="form.username" placeholder="MQTT 用户名" />
+                <el-form-item :label="t('bridge.username')" prop="username">
+                  <el-input v-model="form.username" :placeholder="t('bridge.mqttUsername')" />
                 </el-form-item>
               </el-col>
               <el-col :span="12">
-                <el-form-item label="密码" prop="password">
-                  <el-input v-model="form.password" type="password" show-password placeholder="MQTT 密码" />
+                <el-form-item :label="t('bridge.password')" prop="password">
+                  <el-input v-model="form.password" type="password" show-password :placeholder="t('bridge.mqttPassword')" />
                 </el-form-item>
               </el-col>
             </el-row>
@@ -257,11 +257,11 @@
 
           <template v-if="form.authType === 'ssl'">
             <el-alert type="info" :closable="false" show-icon class="ssl-hint">
-              <template #title>请上传 PEM 格式的证书文件。服务端 CA 证书用于验证远程 Broker 身份，客户端证书用于双向认证。</template>
+              <template #title>{{ t('bridge.sslHint') }}</template>
             </el-alert>
             <el-row :gutter="16">
               <el-col :span="12">
-                <el-form-item label="CA 证书">
+                <el-form-item :label="t('bridge.caCert')">
                   <el-upload
                     :auto-upload="false"
                     :limit="1"
@@ -270,12 +270,12 @@
                     :on-remove="() => { form.caCert = '' }"
                     class="cert-upload"
                   >
-                    <el-button size="small"><el-icon><Upload /></el-icon> 选择文件</el-button>
+                    <el-button size="small"><el-icon><Upload /></el-icon> {{ t('bridge.selectFile') }}</el-button>
                   </el-upload>
                 </el-form-item>
               </el-col>
               <el-col :span="12">
-                <el-form-item label="客户端证书">
+                <el-form-item :label="t('bridge.clientCert')">
                   <el-upload
                     :auto-upload="false"
                     :limit="1"
@@ -284,12 +284,12 @@
                     :on-remove="() => { form.clientCert = '' }"
                     class="cert-upload"
                   >
-                    <el-button size="small"><el-icon><Upload /></el-icon> 选择文件</el-button>
+                    <el-button size="small"><el-icon><Upload /></el-icon> {{ t('bridge.selectFile') }}</el-button>
                   </el-upload>
                 </el-form-item>
               </el-col>
             </el-row>
-            <el-form-item label="客户端密钥">
+            <el-form-item :label="t('bridge.clientKey')">
               <el-upload
                 :auto-upload="false"
                 :limit="1"
@@ -298,7 +298,7 @@
                 :on-remove="() => { form.clientKey = '' }"
                 class="cert-upload"
               >
-                <el-button size="small"><el-icon><Upload /></el-icon> 选择文件</el-button>
+                <el-button size="small"><el-icon><Upload /></el-icon> {{ t('bridge.selectFile') }}</el-button>
               </el-upload>
             </el-form-item>
           </template>
@@ -306,8 +306,8 @@
 
         <!-- 备注 -->
         <div class="form-section">
-          <el-form-item label="备注">
-            <el-input v-model="form.remark" type="textarea" :rows="2" placeholder="可选备注信息" maxlength="200" show-word-limit />
+          <el-form-item :label="t('bridge.remark')">
+            <el-input v-model="form.remark" type="textarea" :rows="2" :placeholder="t('bridge.remarkPlaceholder')" maxlength="200" show-word-limit />
           </el-form-item>
         </div>
       </el-form>
@@ -316,12 +316,12 @@
         <div class="dialog-footer">
           <el-button @click="handleTestConnection" :loading="testing" :disabled="!form.remoteUrl">
             <el-icon><Link /></el-icon>
-            测试连接
+            {{ t('bridge.testConnection') }}
           </el-button>
           <div class="footer-right">
-            <el-button @click="dialogVisible = false">取消</el-button>
+            <el-button @click="dialogVisible = false">{{ t('common.cancel') }}</el-button>
             <el-button type="primary" @click="handleSubmit" :loading="submitting">
-              {{ isEdit ? '保存修改' : '创建链路' }}
+              {{ isEdit ? t('bridge.saveChanges') : t('bridge.createLink') }}
             </el-button>
           </div>
         </div>
@@ -331,7 +331,7 @@
     <!-- 路由规则弹窗 -->
     <el-dialog
       v-model="routeDialogVisible"
-      title="路由规则配置"
+      :title="t('bridge.routeRuleConfig')"
       width="900px"
       class="route-dialog"
       :close-on-click-modal="false"
@@ -341,17 +341,17 @@
       <div class="route-bridge-info" v-if="routeBridge">
         <div class="info-row">
           <div class="info-item">
-            <span class="info-label">链路名称</span>
+            <span class="info-label">{{ t('bridge.linkName') }}</span>
             <span class="info-value">{{ routeBridge.name }}</span>
           </div>
           <div class="info-item">
-            <span class="info-label">连接状态</span>
+            <span class="info-label">{{ t('bridge.connectionStatus') }}</span>
             <el-tag :type="statusTagType(routeBridge.status)" effect="dark" size="small">
               {{ statusLabel(routeBridge.status) }}
             </el-tag>
           </div>
           <div class="info-item">
-            <span class="info-label">远程地址</span>
+            <span class="info-label">{{ t('bridge.remoteUrl') }}</span>
             <span class="info-value mono-text">{{ routeBridge.remoteUrl }}</span>
           </div>
         </div>
@@ -365,15 +365,15 @@
         show-icon
         class="loop-warning"
       >
-        <template #title>检测到双向规则存在主题重叠，可能导致消息循环。请确认防环配置已正确启用。</template>
+        <template #title>{{ t('bridge.loopWarning') }}</template>
       </el-alert>
 
       <!-- 工具栏 -->
       <div class="route-toolbar">
-        <span class="route-count">共 {{ routeRules.length }} 条规则</span>
+        <span class="route-count">{{ t('bridge.ruleCount', { count: routeRules.length }) }}</span>
         <el-button type="primary" size="small" @click="handleAddRouteRule">
           <el-icon><Plus /></el-icon>
-          添加规则
+          {{ t('bridge.addRule') }}
         </el-button>
       </div>
 
@@ -382,30 +382,30 @@
         <div class="route-table" v-if="routeRules.length > 0">
           <div class="route-table-header">
             <span class="rt-col-idx">#</span>
-            <span class="rt-col-dir">方向</span>
-            <span class="rt-col-src">源主题</span>
-            <span class="rt-col-dst">目的主题</span>
+            <span class="rt-col-dir">{{ t('bridge.direction') }}</span>
+            <span class="rt-col-src">{{ t('bridge.sourceTopic') }}</span>
+            <span class="rt-col-dst">{{ t('bridge.destTopic') }}</span>
             <span class="rt-col-qos">QoS</span>
-            <span class="rt-col-retain">Retain</span>
-            <span class="rt-col-act">操作</span>
+            <span class="rt-col-retain">{{ t('bridge.retain') }}</span>
+            <span class="rt-col-act">{{ t('common.operation') }}</span>
           </div>
           <div v-for="(rule, index) in routeRules" :key="index" class="route-table-row">
             <span class="rt-col-idx">{{ index + 1 }}</span>
             <span class="rt-col-dir">
               <el-select v-model="rule.direction" size="small">
-                <el-option value="outbound" label="出向 →" />
-                <el-option value="inbound" label="← 入向" />
+                <el-option value="outbound" :label="t('bridge.outbound')" />
+                <el-option value="inbound" :label="t('bridge.inbound')" />
               </el-select>
             </span>
             <span class="rt-col-src">
-              <el-input v-model="rule.sourceTopic" size="small" placeholder="sensor/+/data" />
+              <el-input v-model="rule.sourceTopic" size="small" :placeholder="t('bridge.sourcePlaceholder')" />
             </span>
             <span class="rt-col-dst">
-              <el-input v-model="rule.destTopic" size="small" placeholder="remote/${1}/data" />
+              <el-input v-model="rule.destTopic" size="small" :placeholder="t('bridge.destPlaceholder')" />
             </span>
             <span class="rt-col-qos">
               <el-select v-model="rule.qos" size="small">
-                <el-option :value="-1" label="透传" />
+                <el-option :value="-1" :label="t('bridge.passthrough')" />
                 <el-option :value="0" label="QoS 0" />
                 <el-option :value="1" label="QoS 1" />
                 <el-option :value="2" label="QoS 2" />
@@ -413,9 +413,9 @@
             </span>
             <span class="rt-col-retain">
               <el-select v-model="rule.retainHandling" size="small">
-                <el-option value="keep" label="保持" />
-                <el-option value="strip" label="去除" />
-                <el-option value="ifRetained" label="仅保留" />
+                <el-option value="keep" :label="t('bridge.keep')" />
+                <el-option value="strip" :label="t('bridge.strip')" />
+                <el-option value="ifRetained" :label="t('bridge.ifRetained')" />
               </el-select>
             </span>
             <span class="rt-col-act">
@@ -425,8 +425,8 @@
             </span>
           </div>
         </div>
-        <el-empty v-if="!routeLoading && routeRules.length === 0" description="暂无路由规则" :image-size="60">
-          <el-button type="primary" size="small" @click="handleAddRouteRule">添加规则</el-button>
+        <el-empty v-if="!routeLoading && routeRules.length === 0" :description="t('bridge.noRules')" :image-size="60">
+          <el-button type="primary" size="small" @click="handleAddRouteRule">{{ t('bridge.addRule') }}</el-button>
         </el-empty>
       </div>
 
@@ -434,23 +434,23 @@
       <el-collapse class="route-help">
         <el-collapse-item>
           <template #title>
-            <div class="help-title"><el-icon><QuestionFilled /></el-icon><span>规则说明</span></div>
+            <div class="help-title"><el-icon><QuestionFilled /></el-icon><span>{{ t('bridge.ruleHelp') }}</span></div>
           </template>
           <div class="help-grid">
             <div class="help-item">
-              <strong>方向：</strong>出向 = 本地→远程，入向 = 远程→本地
+              <strong>{{ t('bridge.helpDirection') }}</strong>
             </div>
             <div class="help-item">
-              <strong>通配符：</strong><code>+</code> 匹配单层，<code>#</code> 匹配多层
+              <strong>{{ t('bridge.helpWildcard') }}</strong>
             </div>
             <div class="help-item">
-              <strong>变量替换：</strong>目的主题用 <code>${1}</code> 引用源主题通配符匹配值
+              <strong>{{ t('bridge.helpVariable') }}</strong>
             </div>
             <div class="help-item">
-              <strong>QoS 透传：</strong>使用消息原始 QoS 等级转发
+              <strong>{{ t('bridge.helpQos') }}</strong>
             </div>
             <div class="help-item">
-              <strong>Retain：</strong>保持 = 原样转发，去除 = 移除标记，仅保留 = 只转发 Retain 消息
+              <strong>{{ t('bridge.helpRetain') }}</strong>
             </div>
           </div>
         </el-collapse-item>
@@ -460,9 +460,9 @@
         <div class="dialog-footer">
           <div></div>
           <div class="footer-right">
-            <el-button @click="routeDialogVisible = false">取消</el-button>
+            <el-button @click="routeDialogVisible = false">{{ t('common.cancel') }}</el-button>
             <el-button type="primary" @click="handleSaveRouteRules" :loading="routeSaving">
-              保存规则
+              {{ t('bridge.saveRules') }}
             </el-button>
           </div>
         </div>
@@ -472,18 +472,18 @@
     <!-- 统计弹窗 -->
     <el-dialog
       v-model="statsDialogVisible"
-      title="链路实时统计"
+      :title="t('bridge.realtimeStats')"
       width="560px"
       class="stats-dialog"
       destroy-on-close
     >
       <div class="stats-detail" v-if="currentStats">
         <div class="stats-info-row">
-          <span class="stats-label">链路名称</span>
+          <span class="stats-label">{{ t('bridge.linkName') }}</span>
           <span class="stats-value">{{ currentStats.name }}</span>
         </div>
         <div class="stats-info-row">
-          <span class="stats-label">连接状态</span>
+          <span class="stats-label">{{ t('bridge.connectionStatus') }}</span>
           <el-tag :type="statusTagType(currentStats.status)" effect="dark" size="small">
             {{ statusLabel(currentStats.status) }}
           </el-tag>
@@ -494,41 +494,41 @@
             <div class="metric-icon outbound"><el-icon><Top /></el-icon></div>
             <div class="metric-info">
               <div class="metric-value">{{ formatCount(currentStats.sentCount) }}</div>
-              <div class="metric-label">出向消息</div>
+              <div class="metric-label">{{ t('bridge.outboundMessages') }}</div>
             </div>
           </div>
           <div class="metric-item">
             <div class="metric-icon inbound"><el-icon><Bottom /></el-icon></div>
             <div class="metric-info">
               <div class="metric-value">{{ formatCount(currentStats.receivedCount) }}</div>
-              <div class="metric-label">入向消息</div>
+              <div class="metric-label">{{ t('bridge.inboundMessages') }}</div>
             </div>
           </div>
           <div class="metric-item">
             <div class="metric-icon bytes"><el-icon><Coin /></el-icon></div>
             <div class="metric-info">
               <div class="metric-value">{{ formatBytes(currentStats.sentBytes) }}</div>
-              <div class="metric-label">发送字节</div>
+              <div class="metric-label">{{ t('bridge.sentBytes') }}</div>
             </div>
           </div>
           <div class="metric-item">
             <div class="metric-icon bytes"><el-icon><Coin /></el-icon></div>
             <div class="metric-info">
               <div class="metric-value">{{ formatBytes(currentStats.receivedBytes) }}</div>
-              <div class="metric-label">接收字节</div>
+              <div class="metric-label">{{ t('bridge.receivedBytes') }}</div>
             </div>
           </div>
         </div>
         <div class="stats-info-row" v-if="currentStats.lastConnectedTime">
-          <span class="stats-label">最近连接</span>
+          <span class="stats-label">{{ t('bridge.lastConnected') }}</span>
           <span class="stats-value">{{ formatTime(currentStats.lastConnectedTime) }}</span>
         </div>
         <div class="stats-info-row" v-if="currentStats.lastError">
-          <span class="stats-label">最近错误</span>
+          <span class="stats-label">{{ t('bridge.lastError') }}</span>
           <span class="stats-value error-text">{{ currentStats.lastError }}</span>
         </div>
       </div>
-      <el-empty v-else description="暂无统计数据" />
+      <el-empty v-else :description="t('bridge.noStats')" />
     </el-dialog>
   </div>
 </template>
@@ -536,6 +536,7 @@
 <script setup>
 import { ref, reactive, computed, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
+import { useI18n } from 'vue-i18n'
 import {
   Connection, CircleCheck, CircleClose, Loading, Share, Plus, Refresh,
   Edit, Delete, DataAnalysis, Lock, Upload, Switch, Link, Top, Bottom, Coin,
@@ -546,6 +547,8 @@ import {
   toggleBridge, getBridgeStats, testBridgeConnection,
   getRouteRules, saveRouteRules
 } from '@/api/bridge'
+
+const { t } = useI18n()
 
 // ===== 桥接列表状态 =====
 const bridges = ref([])
@@ -598,18 +601,18 @@ const defaultForm = () => ({
 const form = reactive(defaultForm())
 
 // 校验规则
-const rules = {
+const rules = computed(() => ({
   name: [
-    { required: true, message: '请输入链路别名', trigger: 'blur' },
-    { min: 2, max: 50, message: '长度在 2 到 50 个字符', trigger: 'blur' }
+    { required: true, message: t('bridge.nameRequired'), trigger: 'blur' },
+    { min: 2, max: 50, message: t('bridge.nameLength'), trigger: 'blur' }
   ],
   remoteUrl: [
-    { required: true, message: '请输入远程地址', trigger: 'blur' }
+    { required: true, message: t('bridge.remoteUrlRequired'), trigger: 'blur' }
   ],
   keepAlive: [
-    { required: true, message: '请设置 Keep Alive', trigger: 'change' }
+    { required: true, message: t('bridge.keepAliveRequired'), trigger: 'change' }
   ]
-}
+}))
 
 // ===== 路由规则弹窗 =====
 
@@ -648,7 +651,7 @@ async function openRouteRules(row) {
     const data = await getRouteRules(row.id)
     routeRules.value = (data || []).map(r => ({ ...r }))
   } catch {
-    ElMessage.error('获取路由规则失败')
+    ElMessage.error(t('bridge.fetchRouteRulesFailed'))
     routeRules.value = []
   } finally {
     routeLoading.value = false
@@ -668,7 +671,7 @@ function handleAddRouteRule() {
 async function handleSaveRouteRules() {
   const emptyRules = routeRules.value.filter(r => !r.sourceTopic)
   if (emptyRules.length > 0) {
-    ElMessage.warning('请填写所有规则的源主题')
+    ElMessage.warning(t('bridge.fillSourceTopic'))
     return
   }
   routeSaving.value = true
@@ -681,11 +684,11 @@ async function handleSaveRouteRules() {
       retainHandling: r.retainHandling
     }))
     await saveRouteRules(routeBridge.value.id, payload)
-    ElMessage.success('保存成功')
+    ElMessage.success(t('bridge.saveRouteRulesSuccess'))
     routeDialogVisible.value = false
     fetchBridges()
   } catch {
-    ElMessage.error('保存失败')
+    ElMessage.error(t('bridge.saveRouteRulesFailed'))
   } finally {
     routeSaving.value = false
   }
@@ -772,15 +775,15 @@ async function handleSubmit() {
 
     if (isEdit.value) {
       await updateBridge(editingId.value, payload)
-      ElMessage.success('更新成功')
+      ElMessage.success(t('bridge.updateSuccess'))
     } else {
       await createBridge(payload)
-      ElMessage.success('创建成功')
+      ElMessage.success(t('bridge.createSuccess'))
     }
     dialogVisible.value = false
     fetchBridges()
   } catch {
-    ElMessage.error(isEdit.value ? '更新失败' : '创建失败')
+    ElMessage.error(isEdit.value ? t('bridge.updateFailed') : t('bridge.createFailed'))
   } finally {
     submitting.value = false
   }
@@ -803,12 +806,12 @@ async function handleTestConnection() {
     }
     const result = await testBridgeConnection(payload)
     if (result.success) {
-      ElMessage.success('连接成功！延迟: ' + (result.latency || 0) + 'ms')
+      ElMessage.success(t('bridge.connectSuccess', { latency: result.latency || 0 }))
     } else {
-      ElMessage.error('连接失败: ' + (result.message || '未知错误'))
+      ElMessage.error(t('bridge.connectFailed', { message: result.message || t('bridge.unknown') }))
     }
   } catch (error) {
-    ElMessage.error('测试连接失败: ' + (error.message || '网络错误'))
+    ElMessage.error(t('bridge.testConnectFailed', { message: error.message || t('bridge.networkError') }))
   } finally {
     testing.value = false
   }
@@ -818,11 +821,11 @@ async function handleToggle(row, enable) {
   row._toggling = true
   try {
     await toggleBridge(row.id, enable)
-    ElMessage.success(enable ? '已启用' : '已停用')
+    ElMessage.success(enable ? t('bridge.enableSuccess') : t('bridge.disableSuccess'))
     fetchBridges()
   } catch {
     row.enabled = !enable
-    ElMessage.error('操作失败')
+    ElMessage.error(t('bridge.operationFailed'))
   } finally {
     row._toggling = false
   }
@@ -831,16 +834,16 @@ async function handleToggle(row, enable) {
 async function handleDelete(row) {
   try {
     await ElMessageBox.confirm(
-      `确定要删除桥接链路「${row.name}」吗？此操作不可恢复。`,
-      '删除确认',
-      { type: 'warning', confirmButtonText: '确定删除', cancelButtonText: '取消' }
+      t('bridge.deleteConfirm', { name: row.name }),
+      t('bridge.deleteConfirmTitle'),
+      { type: 'warning', confirmButtonText: t('bridge.confirmDelete'), cancelButtonText: t('common.cancel') }
     )
     await deleteBridge(row.id)
-    ElMessage.success('删除成功')
+    ElMessage.success(t('bridge.deleteSuccess'))
     fetchBridges()
   } catch (error) {
     if (error !== 'cancel') {
-      ElMessage.error('删除失败')
+      ElMessage.error(t('bridge.deleteFailed'))
     }
   }
 }
@@ -850,7 +853,7 @@ async function handleViewStats(row) {
     currentStats.value = await getBridgeStats(row.id)
     statsDialogVisible.value = true
   } catch {
-    ElMessage.error('获取统计数据失败')
+    ElMessage.error(t('bridge.fetchStatsFailed'))
   }
 }
 
@@ -859,7 +862,7 @@ async function fetchBridges() {
   try {
     bridges.value = await getBridges()
   } catch {
-    ElMessage.error('获取桥接列表失败')
+    ElMessage.error(t('bridge.fetchBridgesFailed'))
   } finally {
     loading.value = false
   }
@@ -873,8 +876,8 @@ function statusTagType(status) {
 }
 
 function statusLabel(status) {
-  const map = { CONNECTED: '已连接', RECONNECTING: '重连中', DISCONNECTED: '已断开', FAILED: '失败' }
-  return map[status] || status || '未知'
+  const map = { CONNECTED: t('bridge.connected'), RECONNECTING: t('bridge.reconnecting'), DISCONNECTED: t('bridge.disconnected'), FAILED: t('bridge.failed') }
+  return map[status] || status || t('bridge.unknown')
 }
 
 function formatCount(val) {

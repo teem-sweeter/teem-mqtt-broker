@@ -1,21 +1,21 @@
 <template>
   <div class="card" v-if="hasThreads">
-    <h3>线程信息</h3>
+    <h3>{{ t('dashboard.threadInfo') }}</h3>
     <div class="info-list">
       <div class="info-item">
-        <span class="label">活跃线程</span>
+        <span class="label">{{ t('dashboard.activeThreads') }}</span>
         <span class="value text-blue">{{ jvmInfo.threadCount || 0 }}</span>
       </div>
       <div class="info-item">
-        <span class="label">峰值线程</span>
+        <span class="label">{{ t('dashboard.peakThreads') }}</span>
         <span class="value">{{ jvmInfo.peakThreadCount || 0 }}</span>
       </div>
       <div class="info-item">
-        <span class="label">守护线程</span>
+        <span class="label">{{ t('dashboard.daemonThreads') }}</span>
         <span class="value">{{ jvmInfo.daemonThreadCount || 0 }}</span>
       </div>
       <div class="info-item">
-        <span class="label">已启动线程总数</span>
+        <span class="label">{{ t('dashboard.totalThreadsStarted') }}</span>
         <span class="value">{{ jvmInfo.totalStartedThreadCount || 0 }}</span>
       </div>
     </div>
@@ -23,6 +23,10 @@
 </template>
 
 <script setup>
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
+
 defineProps({
   jvmInfo: {
     type: Object,

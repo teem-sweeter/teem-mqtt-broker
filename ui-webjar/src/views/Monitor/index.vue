@@ -2,43 +2,43 @@
   <div class="mqtt-monitor">
     <div class="stats-card">
       <div class="card-header">
-        <span>MQTT Broker 监控</span>
+        <span>{{ t('monitor.title') }}</span>
         <el-tag :type="wsConnected ? 'success' : 'danger'" size="small">
-          {{ wsConnected ? 'WS已连接' : 'WS未连接' }}
+          {{ wsConnected ? t('monitor.wsConnected') : t('monitor.wsDisconnected') }}
         </el-tag>
       </div>
       <div class="stats-grid">
         <div class="stat-item">
           <div class="stat-value">{{ stats.currentConnections || 0 }}</div>
-          <div class="stat-label">当前连接</div>
+          <div class="stat-label">{{ t('dashboard.currentConnections') }}</div>
         </div>
         <div class="stat-item">
           <div class="stat-value">{{ stats.totalConnections || 0 }}</div>
-          <div class="stat-label">总连接数</div>
+          <div class="stat-label">{{ t('dashboard.totalConnections') }}</div>
         </div>
         <div class="stat-item">
           <div class="stat-value">{{ stats.totalMessagesReceived || 0 }}</div>
-          <div class="stat-label">总消息数</div>
+          <div class="stat-label">{{ t('monitor.totalMessages') }}</div>
         </div>
         <div class="stat-item">
           <div class="stat-value">{{ stats.messagesPerSecond || 0 }}/s</div>
-          <div class="stat-label">消息速率</div>
+          <div class="stat-label">{{ t('dashboard.messageRate') }}</div>
         </div>
         <div class="stat-item">
           <div class="stat-value">{{ stats.totalSubscriptions || 0 }}</div>
-          <div class="stat-label">订阅数</div>
+          <div class="stat-label">{{ t('dashboard.subscriptionCount') }}</div>
         </div>
         <div class="stat-item">
           <div class="stat-value">{{ stats.totalTopics || 0 }}</div>
-          <div class="stat-label">主题数</div>
+          <div class="stat-label">{{ t('dashboard.topicCount') }}</div>
         </div>
         <div class="stat-item">
           <div class="stat-value">{{ formatUptime(stats.uptime) }}</div>
-          <div class="stat-label">运行时间</div>
+          <div class="stat-label">{{ t('dashboard.uptime') }}</div>
         </div>
         <div class="stat-item">
           <div class="stat-value">{{ health.status || 'checking...' }}</div>
-          <div class="stat-label">健康状态</div>
+          <div class="stat-label">{{ t('monitor.healthStatus') }}</div>
         </div>
       </div>
     </div>
@@ -47,18 +47,18 @@
       <div class="table-row">
         <el-card class="table-card">
           <template #header>
-            <span>已连接客户端</span>
+            <span>{{ t('monitor.connectedClients') }}</span>
           </template>
           <el-table :data="clients" style="width: 100%" max-height="360" @row-click="showClientDetail">
-            <el-table-column prop="clientId" label="客户端ID" show-overflow-tooltip />
-            <el-table-column prop="username" label="用户名" show-overflow-tooltip />
-            <el-table-column prop="ipAddress" label="IP地址" width="130" />
-            <el-table-column label="订阅数" width="70" align="center">
+            <el-table-column prop="clientId" :label="t('monitor.clientId')" show-overflow-tooltip />
+            <el-table-column prop="username" :label="t('monitor.username')" show-overflow-tooltip />
+            <el-table-column prop="ipAddress" :label="t('monitor.ipAddress')" width="130" />
+            <el-table-column :label="t('dashboard.subscriptionCount')" width="70" align="center">
               <template #default="{ row }">
                 {{ row.subscriptions ? row.subscriptions.length : 0 }}
               </template>
             </el-table-column>
-            <el-table-column label="连接时间" width="160">
+            <el-table-column :label="t('monitor.connectedAt')" width="160">
               <template #default="{ row }">
                 {{ formatTime(row.connectTime) }}
               </template>
@@ -68,11 +68,11 @@
 
         <el-card class="table-card">
           <template #header>
-            <span>主题统计</span>
+            <span>{{ t('monitor.topicStats') }}</span>
           </template>
           <el-table :data="topicList" style="width: 100%" max-height="360">
-            <el-table-column prop="topic" label="主题" show-overflow-tooltip />
-            <el-table-column prop="count" label="消息数" width="90" align="right" />
+            <el-table-column prop="topic" :label="t('monitor.topic')" show-overflow-tooltip />
+            <el-table-column prop="count" :label="t('monitor.messageCount')" width="90" align="right" />
           </el-table>
         </el-card>
       </div>
@@ -80,49 +80,49 @@
       <el-card class="message-card">
         <template #header>
           <div class="card-header">
-            <span>最近消息</span>
+            <span>{{ t('monitor.recentMessages') }}</span>
             <div class="header-actions">
-              <el-input v-model="messageFilter.topic" placeholder="按主题过滤" style="width: 140px;" size="small" />
+              <el-input v-model="messageFilter.topic" :placeholder="t('monitor.filterByTopic')" style="width: 140px;" size="small" />
               <el-select v-model="messageFilter.qos" placeholder="QoS" style="width: 90px;" size="small" clearable>
                 <el-option :value="0" label="QoS 0" />
                 <el-option :value="1" label="QoS 1" />
                 <el-option :value="2" label="QoS 2" />
               </el-select>
               <el-button size="small" @click="togglePause">
-                {{ paused ? '继续' : '暂停' }}
+                {{ paused ? t('monitor.resume') : t('monitor.pause') }}
               </el-button>
             </div>
           </div>
         </template>
         <el-table :data="filteredMessages" style="width: 100%" max-height="360">
-          <el-table-column prop="timestamp" label="时间" width="160">
+          <el-table-column prop="timestamp" :label="t('monitor.time')" width="160">
             <template #default="{ row }">
               {{ formatTime(row.timestamp) }}
             </template>
           </el-table-column>
-          <el-table-column prop="topic" label="主题" show-overflow-tooltip />
-          <el-table-column prop="clientId" label="客户端ID" show-overflow-tooltip />
+          <el-table-column prop="topic" :label="t('monitor.topic')" show-overflow-tooltip />
+          <el-table-column prop="clientId" :label="t('monitor.clientId')" show-overflow-tooltip />
           <el-table-column prop="qos" label="QoS" width="60" align="center" />
-          <el-table-column prop="direction" label="方向" width="60" align="center" />
-          <el-table-column prop="payload" label="内容" show-overflow-tooltip />
+          <el-table-column prop="direction" :label="t('monitor.direction')" width="60" align="center" />
+          <el-table-column prop="payload" :label="t('monitor.content')" show-overflow-tooltip />
         </el-table>
       </el-card>
     </div>
 
     <!-- 客户端详情对话框 -->
-    <el-dialog v-model="clientDetailVisible" title="客户端详情" width="500px" align-center>
+    <el-dialog v-model="clientDetailVisible" :title="t('monitor.clientDetail')" width="500px" align-center>
       <el-descriptions :column="1" border>
-        <el-descriptions-item label="客户端ID">{{ selectedClient.clientId }}</el-descriptions-item>
-        <el-descriptions-item label="用户名">{{ selectedClient.username }}</el-descriptions-item>
-        <el-descriptions-item label="IP地址">{{ selectedClient.ipAddress }}</el-descriptions-item>
-        <el-descriptions-item label="端口">{{ selectedClient.port }}</el-descriptions-item>
+        <el-descriptions-item :label="t('monitor.clientId')">{{ selectedClient.clientId }}</el-descriptions-item>
+        <el-descriptions-item :label="t('monitor.username')">{{ selectedClient.username }}</el-descriptions-item>
+        <el-descriptions-item :label="t('monitor.ipAddress')">{{ selectedClient.ipAddress }}</el-descriptions-item>
+        <el-descriptions-item :label="t('monitor.port')">{{ selectedClient.port }}</el-descriptions-item>
         <el-descriptions-item label="KeepAlive">{{ selectedClient.keepAlive }}s</el-descriptions-item>
-        <el-descriptions-item label="连接时间">{{ formatTime(selectedClient.connectTime) }}</el-descriptions-item>
-        <el-descriptions-item label="订阅列表">
+        <el-descriptions-item :label="t('monitor.connectedAt')">{{ formatTime(selectedClient.connectTime) }}</el-descriptions-item>
+        <el-descriptions-item :label="t('monitor.subscriptionList')">
           <el-tag v-for="topic in selectedClient.subscriptions" :key="topic" style="margin: 2px;">
             {{ topic }}
           </el-tag>
-          <span v-if="!selectedClient.subscriptions || selectedClient.subscriptions.length === 0">无订阅</span>
+          <span v-if="!selectedClient.subscriptions || selectedClient.subscriptions.length === 0">{{ t('monitor.noSubscriptions') }}</span>
         </el-descriptions-item>
       </el-descriptions>
     </el-dialog>
@@ -132,6 +132,9 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { ElMessage } from 'element-plus'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 import {
   getMqttStats,
   getMqttClients,
@@ -333,7 +336,7 @@ function handleWebSocketMessage(data) {
     case 'PONG':
       break
     case 'ERROR':
-      ElMessage.error(data.message || 'WebSocket错误')
+      ElMessage.error(data.message || t('monitor.wsError'))
       break
     default:
       console.log('未知消息类型:', data.type)

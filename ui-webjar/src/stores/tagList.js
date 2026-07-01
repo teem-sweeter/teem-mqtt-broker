@@ -10,7 +10,7 @@ export const useTagStore = defineStore('tagList', () => {
   const tagList = reactive([
     {
       name: '/dashboard',
-      breadcrumbName: '首页'
+      breadcrumbName: 'menu.home'
     }
   ])
   if (route.path !== '/dashboard') {
