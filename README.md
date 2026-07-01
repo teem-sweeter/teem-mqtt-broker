@@ -2,6 +2,8 @@
 
 基于 Spring Boot + Moquette 的 MQTT Broker，内置 Web 管理控制台，提供实时监控、消息持久化、日志管理和在线调试等功能。
 
+> 本项目由 **Xiaomi MiMo v2.5 Pro** 大模型辅助构建。
+
 ## 功能特性
 
 ### MQTT Broker
