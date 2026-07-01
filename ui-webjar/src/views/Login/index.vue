@@ -28,7 +28,7 @@
               <circle cx="24" cy="39" r="2.5" fill="var(--color-primary)" opacity="0.8"/>
             </svg>
           </div>
-          <h1 class="app-title">MQTT-BROKER</h1>
+          <h1 class="app-title">{{ t('login.appTitle') }}</h1>
           <p class="subtitle">{{ t('login.subtitle') }}</p>
         </div>
 
@@ -118,7 +118,7 @@
 
 <script setup>
 import router from "@/router";
-import { ref, reactive, onMounted, nextTick } from "vue";
+import { ref, reactive, computed, onMounted, nextTick } from "vue";
 import { useI18n } from 'vue-i18n'
 
 const { t } = useI18n()
@@ -139,14 +139,14 @@ const remember = ref(false);
 const showPassword = ref(false);
 const loginLoading = ref(false);
 
-const rules = {
+const rules = computed(() => ({
   username: [
     { required: true, message: t('login.enterUsername'), trigger: "blur" },
   ],
   password: [
     { required: true, message: t('login.enterPassword'), trigger: "blur" },
   ],
-};
+}));
 
 // 密码显示切换
 const togglePasswordVisibility = () => {

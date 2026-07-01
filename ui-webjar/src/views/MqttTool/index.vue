@@ -155,6 +155,26 @@
               </el-col>
             </el-row>
 
+            <el-row :gutter="16">
+              <el-col :span="8">
+                <el-form-item :label="t('mqttTool.delayPublish')">
+                  <el-input-number
+                    v-model="pubMsg.delaySeconds"
+                    :min="0"
+                    :max="86400"
+                    :placeholder="t('mqttTool.delayPlaceholder')"
+                    style="width: 100%;"
+                    controls-position="right"
+                  />
+                </el-form-item>
+              </el-col>
+              <el-col :span="4">
+                <el-form-item label=" ">
+                  <span class="delay-hint">{{ t('mqttTool.delayUnit') }}</span>
+                </el-form-item>
+              </el-col>
+            </el-row>
+
             <el-form-item :label="t('mqttTool.messageContent')">
               <div class="payload-editor">
                 <div class="payload-toolbar">
@@ -181,6 +201,10 @@
             </el-form-item>
 
             <div class="publish-action">
+              <el-button v-if="pubMsg.delaySeconds > 0" type="warning" @click="publishDelayed" size="large">
+                <el-icon><Timer /></el-icon>
+                {{ t('mqttTool.delayedPublish') }}
+              </el-button>
               <el-button type="primary" @click="publish" :disabled="!connected" size="large">
                 <el-icon><Promotion /></el-icon>
                 {{ t('mqttTool.publish') }}
@@ -264,8 +288,9 @@ import { ElMessage } from 'element-plus'
 import { useI18n } from 'vue-i18n'
 
 const { t } = useI18n()
+import { createDelayedMessage } from '@/api/delayed'
 import {
-  Refresh, Link, Plus, Delete, Promotion,
+  Refresh, Link, Plus, Delete, Promotion, Timer,
   VideoPlay, VideoPause, ChatDotRound, Setting, Bell, Search
 } from '@element-plus/icons-vue'
 
@@ -287,7 +312,7 @@ const connConfig = ref({
 })
 
 const newSub = ref({ topic: 'test/#', qos: 0 })
-const pubMsg = ref({ topic: 'test/topic', qos: 0, retain: false, payload: '{"message": "hello"}' })
+const pubMsg = ref({ topic: 'test/topic', qos: 0, retain: false, payload: '{"message": "hello"}', delaySeconds: 0 })
 const payloadFormat = ref('none')
 
 const filteredMessages = computed(() => {
@@ -505,6 +530,30 @@ function publish() {
   const remainingLength = variableHeader.length + payloadBytes.length
   client.ws.send(new Uint8Array([flags, ...encodeRemainingLength(remainingLength), ...variableHeader, ...payloadBytes]))
   addMessage('out', topic, payload, qos)
+}
+
+async function publishDelayed() {
+  if (!pubMsg.value.topic) return ElMessage.warning(t('mqttTool.enterTopic'))
+  if (!pubMsg.value.payload) return ElMessage.warning(t('mqttTool.enterPayload'))
+  if (pubMsg.value.delaySeconds <= 0) return ElMessage.warning(t('mqttTool.enterDelay'))
+
+  try {
+    const res = await createDelayedMessage({
+      topic: pubMsg.value.topic,
+      qos: pubMsg.value.qos,
+      payload: pubMsg.value.payload,
+      retain: pubMsg.value.retain,
+      delaySeconds: pubMsg.value.delaySeconds
+    })
+    if (res.success) {
+      ElMessage.success(t('mqttTool.delayedPublishSuccess', { seconds: pubMsg.value.delaySeconds }))
+      addMessage('out', pubMsg.value.topic, `[${t('mqttTool.delayedLabel', { seconds: pubMsg.value.delaySeconds })}] ${pubMsg.value.payload}`, pubMsg.value.qos)
+    } else {
+      ElMessage.error(res.message || t('mqttTool.delayedPublishFailed'))
+    }
+  } catch (e) {
+    ElMessage.error(t('mqttTool.delayedPublishFailed'))
+  }
 }
 
 function clearMessages() { messages.value = [] }
@@ -905,6 +954,12 @@ onUnmounted(() => disconnect())
 
 ::-webkit-scrollbar-thumb:hover {
   background: var(--border-darker);
+}
+
+.delay-hint {
+  font-size: 12px;
+  color: var(--text-placeholder);
+  line-height: 32px;
 }
 
 /* Element Plus 覆盖 */

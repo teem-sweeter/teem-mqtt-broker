@@ -2,7 +2,7 @@
   <el-breadcrumb separator="/">
     <el-breadcrumb-item :to="{ path: '/dashboard' }">{{ t('menu.home') }}</el-breadcrumb-item>
     <el-breadcrumb-item v-for="item in breadcrumbList" :key="item.path">
-      {{ item.meta.breadcrumbName || item.meta.title || item.name }}
+      {{ t(item.meta.breadcrumbName || item.meta.title || item.name) }}
     </el-breadcrumb-item>
   </el-breadcrumb>
 </template>

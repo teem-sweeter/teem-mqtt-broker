@@ -211,7 +211,7 @@
         </div>
 
         <!-- 数据表格 -->
-        <el-table :data="filteredClients" v-loading="initialLoading" row-key="clientId" stripe class="client-table">
+        <el-table :data="filteredClients" v-loading="initialLoading" row-key="clientId" stripe class="client-table" empty-text=" ">
           <el-table-column prop="clientId" :label="t('client.clientId')" min-width="150" show-overflow-tooltip>
             <template #default="{ row }">
               <div class="client-id-cell">

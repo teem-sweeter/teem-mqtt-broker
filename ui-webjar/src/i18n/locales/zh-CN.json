@@ -135,7 +135,17 @@
     "port": "端口",
     "subscriptionList": "订阅列表",
     "noSubscriptions": "无订阅",
-    "wsError": "WebSocket错误"
+    "wsError": "WebSocket错误",
+    "delayedMessages": "延迟消息",
+    "pending": "待投递",
+    "delivered": "已投递",
+    "cancelled": "已取消",
+    "delay": "延迟",
+    "scheduledTime": "计划时间",
+    "cancel": "取消",
+    "refresh": "刷新",
+    "delayedCancelSuccess": "延迟消息已取消",
+    "delayedCancelFailed": "取消失败"
   },
   "client": {
     "onlineClients": "在线客户端",
@@ -276,9 +286,19 @@
     "topicExists": "主题已存在",
     "subscribeSuccess": "订阅成功",
     "connectFirst": "请先连接",
-    "convertFailed": "转换失败: {message}"
+    "convertFailed": "转换失败: {message}",
+    "delayPublish": "延迟(秒)",
+    "delayPlaceholder": "0 = 立即",
+    "delayUnit": "秒后投递",
+    "delayedPublish": "延迟发布",
+    "delayedPublishSuccess": "延迟消息已创建，{seconds}秒后投递",
+    "delayedPublishFailed": "延迟消息创建失败",
+    "enterPayload": "请输入消息内容",
+    "enterDelay": "请输入延迟时间",
+    "delayedLabel": "延迟{seconds}s"
   },
   "login": {
+    "appTitle": "MQTT-BROKER",
     "subtitle": "基于moquette构建的MQTT Broker",
     "username": "用户名",
     "password": "密码",

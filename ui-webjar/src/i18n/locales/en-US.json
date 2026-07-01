@@ -135,7 +135,17 @@
     "port": "Port",
     "subscriptionList": "Subscriptions",
     "noSubscriptions": "No subscriptions",
-    "wsError": "WebSocket Error"
+    "wsError": "WebSocket Error",
+    "delayedMessages": "Delayed Messages",
+    "pending": "Pending",
+    "delivered": "Delivered",
+    "cancelled": "Cancelled",
+    "delay": "Delay",
+    "scheduledTime": "Scheduled",
+    "cancel": "Cancel",
+    "refresh": "Refresh",
+    "delayedCancelSuccess": "Delayed message cancelled",
+    "delayedCancelFailed": "Cancel failed"
   },
   "client": {
     "onlineClients": "Online Clients",
@@ -276,9 +286,19 @@
     "topicExists": "Topic already exists",
     "subscribeSuccess": "Subscribed successfully",
     "connectFirst": "Please connect first",
-    "convertFailed": "Conversion failed: {message}"
+    "convertFailed": "Conversion failed: {message}",
+    "delayPublish": "Delay (sec)",
+    "delayPlaceholder": "0 = immediate",
+    "delayUnit": "seconds to deliver",
+    "delayedPublish": "Delayed Publish",
+    "delayedPublishSuccess": "Delayed message created, delivers in {seconds}s",
+    "delayedPublishFailed": "Failed to create delayed message",
+    "enterPayload": "Please enter message content",
+    "enterDelay": "Please enter delay time",
+    "delayedLabel": "Delayed {seconds}s"
   },
   "login": {
+    "appTitle": "MQTT-BROKER",
     "subtitle": "MQTT Broker built on Moquette",
     "username": "Username",
     "password": "Password",

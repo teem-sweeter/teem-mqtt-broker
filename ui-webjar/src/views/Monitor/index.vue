@@ -107,6 +107,52 @@
           <el-table-column prop="payload" :label="t('monitor.content')" show-overflow-tooltip />
         </el-table>
       </el-card>
+
+      <!-- 延迟消息管理 -->
+      <el-card class="delayed-card">
+        <template #header>
+          <div class="card-header">
+            <span>{{ t('monitor.delayedMessages') }}</span>
+            <div class="header-actions">
+              <el-tag size="small" type="warning">{{ t('monitor.pending') }}: {{ delayedStats.pending || 0 }}</el-tag>
+              <el-tag size="small" type="success">{{ t('monitor.delivered') }}: {{ delayedStats.delivered || 0 }}</el-tag>
+              <el-tag size="small" type="info">{{ t('monitor.cancelled') }}: {{ delayedStats.cancelled || 0 }}</el-tag>
+              <el-button size="small" @click="refreshDelayedMessages">
+                {{ t('monitor.refresh') }}
+              </el-button>
+            </div>
+          </div>
+        </template>
+        <el-table :data="delayedMessages" style="width: 100%" max-height="300">
+          <el-table-column prop="id" label="ID" width="60" />
+          <el-table-column prop="topic" :label="t('monitor.topic')" show-overflow-tooltip />
+          <el-table-column prop="qos" label="QoS" width="60" align="center" />
+          <el-table-column :label="t('monitor.delay')" width="80" align="center">
+            <template #default="{ row }">
+              {{ row.delaySeconds }}s
+            </template>
+          </el-table-column>
+          <el-table-column :label="t('monitor.scheduledTime')" width="170">
+            <template #default="{ row }">
+              {{ formatTime(new Date(row.scheduledTime).getTime()) }}
+            </template>
+          </el-table-column>
+          <el-table-column :label="t('monitor.status')" width="80" align="center">
+            <template #default="{ row }">
+              <el-tag :type="row.status === 'PENDING' ? 'warning' : row.status === 'DELIVERED' ? 'success' : 'info'" size="small">
+                {{ row.status }}
+              </el-tag>
+            </template>
+          </el-table-column>
+          <el-table-column :label="t('monitor.action')" width="80" align="center">
+            <template #default="{ row }">
+              <el-button v-if="row.status === 'PENDING'" type="danger" text size="small" @click="handleCancelDelayed(row.id)">
+                {{ t('monitor.cancel') }}
+              </el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+      </el-card>
     </div>
 
     <!-- 客户端详情对话框 -->
@@ -142,6 +188,7 @@ import {
   getMqttTopics,
   getHealth
 } from '@/api/mqtt'
+import { getDelayedMessages, cancelDelayedMessage, getDelayedMessageStats } from '@/api/delayed'
 
 const stats = ref({})
 const clients = ref([])
@@ -152,6 +199,8 @@ const wsConnected = ref(false)
 const paused = ref(false)
 const clientDetailVisible = ref(false)
 const selectedClient = ref({})
+const delayedMessages = ref([])
+const delayedStats = ref({})
 
 const messageFilter = ref({
   topic: '',
@@ -207,7 +256,8 @@ async function refreshAll() {
     refreshClients(),
     refreshMessages(),
     refreshTopics(),
-    refreshHealth()
+    refreshHealth(),
+    refreshDelayedMessages()
   ])
 }
 
@@ -249,6 +299,33 @@ async function refreshHealth() {
     health.value = await getHealth()
   } catch (error) {
     console.error('获取健康状态失败:', error)
+  }
+}
+
+async function refreshDelayedMessages() {
+  try {
+    const [messages, stats] = await Promise.all([
+      getDelayedMessages('PENDING'),
+      getDelayedMessageStats()
+    ])
+    delayedMessages.value = messages
+    delayedStats.value = stats
+  } catch (error) {
+    console.error('获取延迟消息失败:', error)
+  }
+}
+
+async function handleCancelDelayed(id) {
+  try {
+    const res = await cancelDelayedMessage(id)
+    if (res.success) {
+      ElMessage.success(t('monitor.delayedCancelSuccess'))
+      refreshDelayedMessages()
+    } else {
+      ElMessage.error(res.message || t('monitor.delayedCancelFailed'))
+    }
+  } catch (error) {
+    ElMessage.error(t('monitor.delayedCancelFailed'))
   }
 }
 
@@ -471,6 +548,65 @@ onUnmounted(() => {
   font-size: 11px;
   color: var(--text-placeholder);
   margin-top: 2px;
+}
+
+/* 延迟消息卡片 */
+.delayed-card {
+  min-width: 0;
+}
+
+.delayed-card :deep(.el-card) {
+  background: var(--bg-card) !important;
+  border: 1px solid var(--border-light) !important;
+  border-radius: 12px !important;
+  box-shadow: var(--shadow-sm) !important;
+  transition: box-shadow 0.25s ease, border-color 0.25s ease;
+  --el-card-border-color: var(--border-light);
+  --el-card-border-radius: 12px;
+}
+
+.delayed-card :deep(.el-card__header) {
+  background: var(--bg-card);
+  border-bottom: 1px solid var(--border-light);
+  border-radius: 12px 12px 0 0;
+  padding: 10px 14px;
+}
+
+.delayed-card :deep(.el-card__body) {
+  padding: 10px 14px;
+}
+
+.delayed-card:hover :deep(.el-card) {
+  box-shadow: var(--shadow-card-hover) !important;
+  border-color: var(--color-primary) !important;
+  --el-card-border-color: var(--color-primary);
+}
+
+.delayed-card :deep(.el-table),
+.delayed-card :deep(.el-table) {
+  --el-table-border-color: var(--border-light);
+  --el-table-header-bg-color: var(--bg-input);
+  --el-table-tr-bg-color: var(--bg-card);
+  --el-table-row-hover-bg-color: var(--bg-hover);
+  --el-table-current-row-bg-color: var(--table-current-row-bg);
+  background: var(--bg-card);
+  color: var(--text-primary);
+}
+
+.delayed-card :deep(.el-table th) {
+  background: var(--bg-input);
+  color: var(--text-secondary);
+  font-weight: 600;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.delayed-card :deep(.el-table td) {
+  border-bottom: 1px solid var(--border-light);
+  color: var(--text-primary);
+}
+
+.delayed-card :deep(.el-table__row:hover > td) {
+  background: var(--bg-hover) !important;
 }
 
 /* 表格区域 */
