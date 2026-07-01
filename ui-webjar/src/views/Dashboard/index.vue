@@ -1,77 +1,91 @@
 <template>
   <div class="dashboard-page">
     <div class="container">
-      <div class="dashboard-body">
-        <!-- 核心指标卡片 -->
-        <MetricCards :mqtt-info="mqttInfo" :has-mqtt="hasMqtt" />
-
-        <div class="dashboard-grid">
-          <!-- MQTT Broker 信息 -->
-          <MqttBrokerCard :mqtt-info="mqttInfo" :has-mqtt="hasMqtt" />
-
-          <!-- JVM 内存 -->
-          <JvmMemoryCard :jvm-info="jvmInfo" :has-jvm-memory="hasJvmMemory" />
-
-          <!-- 线程信息 -->
-          <ThreadCard :jvm-info="jvmInfo" :has-threads="hasThreads" />
-
-          <!-- GC 信息 -->
-          <GcCard :jvm-info="jvmInfo" :has-gc="hasGc" />
-
-          <!-- 系统信息 -->
-          <SystemCard :system-info="systemInfo" :has-system="hasSystem" />
-
-          <!-- 磁盘信息 -->
-          <DiskCard :disk-info="diskInfo" :has-disk="hasDisk" />
+      <div class="dashboard-header">
+        <div class="range-switch">
+          <el-radio-group v-model="timeRange" @change="reconnect">
+            <el-radio-button value="5m">5 {{ t('dashboard.minutes') }}</el-radio-button>
+            <el-radio-button value="15m">15 {{ t('dashboard.minutes') }}</el-radio-button>
+            <el-radio-button value="60m">60 {{ t('dashboard.minutes') }}</el-radio-button>
+          </el-radio-group>
         </div>
+      </div>
+
+      <div class="overview-cards">
+        <MetricCards :mqtt-info="mqttInfo" :has-mqtt="hasMqtt" />
+      </div>
+
+      <div class="charts-grid">
+        <MessageChart :data="chartData" />
+        <ClientChart :data="chartData" />
+        <BandwidthChart :data="chartData" />
+        <TopicChart :data="chartData" />
+        <QosChart :data="chartData" />
+        <ErrorChart :data="chartData" />
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { getHealth } from '@/api/mqtt'
 import MetricCards from './components/MetricCards.vue'
-import MqttBrokerCard from './components/MqttBrokerCard.vue'
-import JvmMemoryCard from './components/JvmMemoryCard.vue'
-import ThreadCard from './components/ThreadCard.vue'
-import GcCard from './components/GcCard.vue'
-import SystemCard from './components/SystemCard.vue'
-import DiskCard from './components/DiskCard.vue'
+import MessageChart from './components/MessageChart.vue'
+import ClientChart from './components/ClientChart.vue'
+import BandwidthChart from './components/BandwidthChart.vue'
+import TopicChart from './components/TopicChart.vue'
+import QosChart from './components/QosChart.vue'
+import ErrorChart from './components/ErrorChart.vue'
 
-const healthData = ref({})
-let refreshTimer = null
+const { t } = useI18n()
 
-const mqttInfo = computed(() => healthData.value.mqtt || {})
-const jvmInfo = computed(() => healthData.value.jvm || {})
-const systemInfo = computed(() => healthData.value.system || {})
-const diskInfo = computed(() => healthData.value.disk || {})
+const timeRange = ref('15m')
+const chartData = ref([])
+const mqttInfo = ref({})
+const hasMqtt = ref(false)
+let eventSource = null
 
-const hasMqtt = computed(() => Object.keys(mqttInfo.value).length > 0)
-const hasJvmMemory = computed(() => !!(jvmInfo.value.heapMemory && jvmInfo.value.heapMemory.used))
-const hasThreads = computed(() => jvmInfo.value.threadCount > 0)
-const hasGc = computed(() => jvmInfo.value.gc && jvmInfo.value.gc.length > 0)
-const hasSystem = computed(() => !!(systemInfo.value.name || systemInfo.value.arch))
-const hasDisk = computed(() => !!(diskInfo.value.totalSpace && diskInfo.value.totalSpace > 0))
+function connectSse() {
+  if (eventSource) {
+    eventSource.close()
+  }
+  eventSource = new EventSource(`/api/dashboard/stream?range=${timeRange.value}`)
+  eventSource.onmessage = (event) => {
+    try {
+      const data = JSON.parse(event.data)
+      chartData.value = data
+    } catch (e) {
+      console.error('SSE parse error:', e)
+    }
+  }
+  eventSource.onerror = () => {
+    console.error('SSE connection error')
+  }
+}
 
-async function refreshData() {
+function reconnect() {
+  connectSse()
+}
+
+async function loadHealth() {
   try {
-    healthData.value = await getHealth()
-  } catch (error) {
-    console.error('获取健康状态失败:', error)
+    mqttInfo.value = await getHealth()
+    hasMqtt.value = true
+  } catch (e) {
+    console.error('Failed to load health:', e)
   }
 }
 
 onMounted(() => {
-  refreshData()
-  refreshTimer = setInterval(refreshData, 30000)
+  connectSse()
+  loadHealth()
 })
 
 onUnmounted(() => {
-  if (refreshTimer) {
-    clearInterval(refreshTimer)
-    refreshTimer = null
+  if (eventSource) {
+    eventSource.close()
   }
 })
 </script>
@@ -93,42 +107,53 @@ onUnmounted(() => {
   flex-direction: column;
 }
 
-.dashboard-body {
+.dashboard-header {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 12px;
+}
+
+.overview-cards {
+  margin-bottom: 12px;
+}
+
+.charts-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  min-width: 0;
   flex: 1;
   min-height: 0;
   overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
 }
 
-.dashboard-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
-  min-width: 0;
+.chart-card {
+  background: var(--el-bg-color);
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: var(--el-box-shadow-light);
+}
+
+.chart-title {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: var(--el-text-color-primary);
 }
 
 /* 大屏 2K+ */
 @media (min-width: 2560px) {
-  .dashboard-grid {
-    grid-template-columns: repeat(4, 1fr);
-  }
-}
-
-/* 中屏 */
-@media (max-width: 1400px) {
-  .dashboard-grid {
-    grid-template-columns: repeat(2, 1fr);
+  .charts-grid {
+    grid-template-columns: repeat(3, 1fr);
   }
 }
 
 /* 小屏 */
-@media (max-width: 900px) {
+@media (max-width: 768px) {
   .dashboard-page {
     padding: 8px;
   }
-  .dashboard-grid {
+  .charts-grid {
     grid-template-columns: 1fr;
     gap: 10px;
   }
