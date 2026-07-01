@@ -18,7 +18,7 @@ import java.util.List;
 
 @SpringBootApplication
 @EnableAsync
-@EnableJpaRepositories(basePackages = {"com.jjc.mqtt.admin.persistence.repository", "com.jjc.mqtt.admin.bridge.repository", "com.jjc.mqtt.admin.client.repository"})
+@EnableJpaRepositories(basePackages = {"com.jjc.mqtt.admin.persistence.repository", "com.jjc.mqtt.admin.bridge.repository", "com.jjc.mqtt.admin.client.repository", "com.jjc.mqtt.admin.delayed.repository", "com.jjc.mqtt.admin.webhook.repository"})
 @EnableTransactionManagement
 public class Application {
     public static void main(String[] args) {
