@@ -13,7 +13,11 @@ spring:
 
 mqtt:
   broker:
-    enabled: false
+    enabled: true
+    port: 0
+    websocket-port: 0
+    persistence-enabled: false
+    data-path: ./target/test-mqtt-data/
 
 jwt:
   secret: test-secret-key-must-be-at-least-32bytes
