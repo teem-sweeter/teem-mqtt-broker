@@ -127,20 +127,6 @@ onUnmounted(() => {
   overflow-y: auto;
 }
 
-.chart-card {
-  background: var(--el-bg-color);
-  border-radius: 8px;
-  padding: 16px;
-  box-shadow: var(--el-box-shadow-light);
-}
-
-.chart-title {
-  font-size: 14px;
-  font-weight: 600;
-  margin-bottom: 12px;
-  color: var(--el-text-color-primary);
-}
-
 /* 大屏 2K+ */
 @media (min-width: 2560px) {
   .charts-grid {

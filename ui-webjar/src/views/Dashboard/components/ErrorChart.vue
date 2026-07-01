@@ -8,13 +8,8 @@
 <script setup>
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { use } from 'echarts/core'
-import { CanvasRenderer } from 'echarts/renderers'
-import { LineChart } from 'echarts/charts'
-import { GridComponent, TooltipComponent } from 'echarts/components'
+import './echarts-setup'
 import VChart from 'vue-echarts'
-
-use([CanvasRenderer, LineChart, GridComponent, TooltipComponent])
 
 const { t } = useI18n()
 
@@ -31,3 +26,18 @@ const chartOption = computed(() => ({
   ]
 }))
 </script>
+
+<style scoped>
+.chart-card {
+  background: var(--el-bg-color);
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: var(--el-box-shadow-light);
+}
+.chart-title {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: var(--el-text-color-primary);
+}
+</style>
