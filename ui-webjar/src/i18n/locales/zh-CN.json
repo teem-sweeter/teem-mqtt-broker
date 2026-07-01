@@ -19,7 +19,8 @@
     "logSearch": "日志搜索",
     "liveLog": "实时日志",
     "systemManagement": "系统管理",
-    "systemUpgrade": "系统升级"
+    "systemUpgrade": "系统升级",
+    "webhook": "WebHook 转发"
   },
   "common": {
     "loading": "加载中...",
@@ -340,6 +341,29 @@
     "loadFailed": "加载日志失败",
     "downloadSuccess": "日志文件下载成功",
     "downloadFailed": "下载日志文件失败"
+  },
+  "webhook": {
+    "title": "WebHook 转发",
+    "create": "新建 WebHook",
+    "edit": "编辑 WebHook",
+    "name": "名称",
+    "url": "目标 URL",
+    "topicFilter": "主题过滤",
+    "topicFilterHint": "支持 + 和 # 通配符，留空或 # 表示匹配所有主题",
+    "minQoS": "最低 QoS",
+    "contentType": "Content-Type",
+    "headers": "自定义请求头",
+    "headersPlaceholder": "每行一个，格式 Key: Value\n例如：\nAuthorization: Bearer xxx\nX-Custom-Header: value",
+    "retryCount": "重试次数",
+    "retryInterval": "重试间隔(秒)",
+    "remark": "备注",
+    "remarkPlaceholder": "可选备注信息",
+    "nameRequired": "请输入名称",
+    "urlRequired": "请输入目标 URL",
+    "urlInvalid": "请输入有效的 URL",
+    "deleteConfirm": "确定删除该 WebHook 吗？",
+    "noWebhooks": "暂无 WebHook 配置",
+    "namePlaceholder": "如：消息推送到业务系统"
   },
   "upgrade": {
     "title": "系统升级",

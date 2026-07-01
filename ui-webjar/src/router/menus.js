@@ -144,6 +144,15 @@ const routes = [
       icon: 'UploadFilled',
     },
     children: [{
+      path: 'webhook',
+      id: 3001,
+      name: 'webhook',
+      meta: {
+        title: 'menu.webhook',
+        icon: 'Link',
+      }
+    },
+    {
       path: 'upgrade',
       id: 3002,
       name: 'upgrade',

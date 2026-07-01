@@ -12,6 +12,7 @@ import mqttTool from '../views/MqttTool/index.vue'
 import messageRecord from '../views/MessageRecord/index.vue'
 import bridgeList from '../views/Bridge/index.vue'
 import clientList from '../views/Client/index.vue'
+import webhook from '../views/WebHook/index.vue'
 
 const componentObj = {
   layout,
@@ -23,7 +24,8 @@ const componentObj = {
   mqttTool,
   messageRecord,
   bridgeList,
-  clientList
+  clientList,
+  webhook
 }
 /**
  * 动态添加用户路由权限
