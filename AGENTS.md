@@ -1,8 +1,4 @@
-# CLAUDE.md
-
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
-
-## Project Overview
+# Project Overview
 
 This is a Maven multi-module MQTT broker project using Spring Boot 4.0.6. It integrates the Moquette broker engine and provides a Web UI for monitoring and management.
 

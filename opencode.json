@@ -1,0 +1,54 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "instructions": ["AGENTS.md"],
+
+  "references": {
+    "docs": {
+      "path": "docs",
+      "description": "Project documentation, release notes, and architecture docs"
+    },
+    "standalone": {
+      "path": "standalone",
+      "description": "Standalone deployment configuration"
+    }
+  },
+
+  "command": {
+    "build": {
+      "description": "Build the entire project (Maven + npm)",
+      "template": "Run full Maven build: cd $PROJECT_ROOT && mvn clean install -DskipTests"
+    },
+    "build-admin": {
+      "description": "Build only the admin module with dependencies",
+      "template": "cd $PROJECT_ROOT && mvn clean install -pl admin -am -DskipTests"
+    },
+    "run": {
+      "description": "Run the Spring Boot admin application",
+      "template": "cd $PROJECT_ROOT && java -jar admin/target/admin-1.0.0.jar"
+    },
+    "test": {
+      "description": "Run all Maven tests",
+      "template": "cd $PROJECT_ROOT && mvn test"
+    },
+    "dev-ui": {
+      "description": "Start the frontend dev server",
+      "template": "cd $PROJECT_ROOT/ui-webjar && npm run dev"
+    },
+    "build-ui": {
+      "description": "Build the frontend UI",
+      "template": "cd $PROJECT_ROOT/ui-webjar && npm run build"
+    }
+  },
+
+  "permission": {
+    "bash": {
+      "mvn *": "allow",
+      "java *": "allow",
+      "npm *": "allow",
+      "node *": "allow",
+      "git *": "allow",
+      "curl *": "allow",
+      "*": "ask"
+    }
+  }
+}
