@@ -8,7 +8,13 @@
 <script setup>
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { use } from 'echarts/core'
+import { CanvasRenderer } from 'echarts/renderers'
+import { PieChart } from 'echarts/charts'
+import { TooltipComponent, LegendComponent } from 'echarts/components'
 import VChart from 'vue-echarts'
+
+use([CanvasRenderer, PieChart, TooltipComponent, LegendComponent])
 
 const { t } = useI18n()
 
