@@ -35,8 +35,15 @@ public class JarSignMojo extends AbstractMojo {
     @Parameter(property = "sign.outputZip", defaultValue = "true")
     private boolean outputZip;
 
+    @Parameter(property = "sign.skip", defaultValue = "false")
+    private boolean skip;
+
     @Override
     public void execute() throws MojoExecutionException {
+        if (skip) {
+            getLog().info("JAR signing skipped (sign.skip=true)");
+            return;
+        }
         try {
             // 1. 确定 JAR 文件名
             if (name == null || name.isEmpty()) {

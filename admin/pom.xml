@@ -110,6 +110,7 @@
                     <!-- 私钥路径（构建机上） -->
                     <privateKeyPath>${project.parent.basedir}/docs/release-private.pem</privateKeyPath>
                     <extend>.bin</extend>
+                    <skip>${sign.skip}</skip>
                 </configuration>
                 <executions>
                     <execution>
