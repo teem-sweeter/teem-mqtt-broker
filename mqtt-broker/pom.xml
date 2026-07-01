@@ -47,6 +47,12 @@
             <artifactId>org.eclipse.paho.mqttv5.client</artifactId>
             <version>1.2.5</version>
         </dependency>
+        <!-- BCrypt password hashing -->
+        <dependency>
+            <groupId>at.favre.lib</groupId>
+            <artifactId>bcrypt</artifactId>
+            <version>0.10.2</version>
+        </dependency>
     </dependencies>
     <repositories>
         <repository>

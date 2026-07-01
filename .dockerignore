@@ -1,0 +1,12 @@
+.git
+.github
+.gitignore
+standalone/
+data/
+*.pid
+*.log
+node_modules/
+dist/
+target/
+.idea/
+*.iml

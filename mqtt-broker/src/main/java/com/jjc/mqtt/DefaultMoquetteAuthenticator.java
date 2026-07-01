@@ -43,7 +43,7 @@ public class DefaultMoquetteAuthenticator implements IAuthenticator {
         }
 
         // 非匿名连接：校验用户名密码
-        if (!expectedUser.equals(username) || !expectedPass.equals(new String(password))) {
+        if (!expectedUser.equals(username) || !PasswordEncoder.matches(new String(password), expectedPass)) {
             return false;
         }
 

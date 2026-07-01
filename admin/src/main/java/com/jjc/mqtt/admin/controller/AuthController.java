@@ -1,8 +1,11 @@
 package com.jjc.mqtt.admin.controller;
 
 import com.jjc.mqtt.MoquetteProperties;
+import com.jjc.mqtt.PasswordEncoder;
 import com.jjc.mqtt.admin.security.JwtUtils;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,10 +35,10 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<Map<String, Object>> login(@RequestBody LoginRequest request) {
+    public ResponseEntity<Map<String, Object>> login(@Valid @RequestBody LoginRequest request) {
         Map<String, Object> result = new HashMap<>();
         // 简单的登录验证
-        if (moquetteProperties.getUsername().equals(request.getUsername()) && moquetteProperties.getPassword().equals(request.getPassword())) {
+        if (moquetteProperties.getUsername().equals(request.getUsername()) && PasswordEncoder.matches(request.getPassword(), moquetteProperties.getPassword())) {
             result.put("code", 200);
             result.put("token", jwtUtils.generateToken(request.getUsername()));
             result.put("msg", "登录成功");
@@ -47,7 +50,9 @@ public class AuthController {
     }
 
     public static class LoginRequest {
+        @NotBlank(message = "用户名不能为空")
         private String username;
+        @NotBlank(message = "密码不能为空")
         private String password;
 
         public String getUsername() {

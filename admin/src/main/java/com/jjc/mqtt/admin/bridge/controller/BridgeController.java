@@ -4,6 +4,7 @@ import com.jjc.mqtt.admin.bridge.model.*;
 import com.jjc.mqtt.admin.bridge.service.BridgeService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -40,13 +41,13 @@ public class BridgeController {
 
     @Operation(summary = "创建桥接链路")
     @PostMapping
-    public ResponseEntity<Bridge> createBridge(@RequestBody Bridge dto) {
+    public ResponseEntity<Bridge> createBridge(@Valid @RequestBody Bridge dto) {
         return ResponseEntity.ok(bridgeService.create(dto));
     }
 
     @Operation(summary = "更新桥接链路")
     @PutMapping("/{id}")
-    public ResponseEntity<Bridge> updateBridge(@PathVariable Long id, @RequestBody Bridge dto) {
+    public ResponseEntity<Bridge> updateBridge(@PathVariable Long id, @Valid @RequestBody Bridge dto) {
         return ResponseEntity.ok(bridgeService.update(id, dto));
     }
 

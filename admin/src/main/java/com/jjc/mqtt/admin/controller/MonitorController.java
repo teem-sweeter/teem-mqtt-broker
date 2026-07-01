@@ -14,6 +14,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -88,7 +90,7 @@ public class MonitorController {
     }
 
     @PostMapping("/publish")
-    public ResponseEntity<Map<String, Object>> publishMessage(@RequestBody PublishRequest request) {
+    public ResponseEntity<Map<String, Object>> publishMessage(@Valid @RequestBody PublishRequest request) {
         Map<String, Object> result = new HashMap<>();
 
         if (mqttBroker == null) {
@@ -122,8 +124,10 @@ public class MonitorController {
     }
 
     public static class PublishRequest {
+        @NotBlank(message = "主题不能为空")
         private String topic;
         private int qos;
+        @NotBlank(message = "消息内容不能为空")
         private String payload;
 
         public String getTopic() {

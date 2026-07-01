@@ -1,5 +1,8 @@
 package com.jjc.mqtt.admin.bridge.model;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+
 import java.time.Instant;
 import java.util.List;
 
@@ -11,7 +14,10 @@ import java.util.List;
 public class Bridge {
 
     private Long id;
+    @NotBlank(message = "链路别名不能为空")
+    @Size(min = 2, max = 50, message = "链路别名长度2-50个字符")
     private String name;
+    @NotBlank(message = "远程地址不能为空")
     private String remoteUrl;
     private String clientId;
     private Integer keepAlive;

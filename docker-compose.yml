@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  mqtt-broker:
+    build: .
+    container_name: teem-mqtt-broker
+    ports:
+      - "8080:8080"   # Web UI & API
+      - "1883:1883"   # MQTT
+      - "8083:8083"   # MQTT WebSocket
+    volumes:
+      - mqtt-data:/app/data
+    environment:
+      - JWT_SECRET=${JWT_SECRET:-change-me-in-production}
+      - MQTT_BROKER_PASSWORD=${MQTT_BROKER_PASSWORD:-admin2026}
+      - JAVA_OPTS=-Xms256m -Xmx512m
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/v1/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+volumes:
+  mqtt-data:

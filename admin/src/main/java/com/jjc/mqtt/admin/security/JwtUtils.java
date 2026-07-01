@@ -4,6 +4,9 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import jakarta.annotation.PostConstruct;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -14,11 +17,24 @@ import java.util.Date;
 @Component
 public class JwtUtils {
 
-    @Value("${jwt.secret:mqtt-edge-default-secret-key-must-be-at-least-32bytes}")
+    private static final Logger log = LoggerFactory.getLogger(JwtUtils.class);
+    private static final String DEFAULT_SECRET = "mqtt-edge-default-secret-key-must-be-at-least-32bytes";
+
+    @Value("${jwt.secret:" + DEFAULT_SECRET + "}")
     private String secret;
 
     @Value("${jwt.expiration:86400000}")
     private long expiration;
+
+    @PostConstruct
+    public void init() {
+        if (DEFAULT_SECRET.equals(secret)) {
+            log.warn("============================================================");
+            log.warn("  WARNING: Using default JWT secret!");
+            log.warn("  Set JWT_SECRET environment variable for production use.");
+            log.warn("============================================================");
+        }
+    }
 
     private SecretKey getSigningKey() {
         return Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
