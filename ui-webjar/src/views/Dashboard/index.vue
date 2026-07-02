@@ -51,7 +51,8 @@ function connectSse() {
   if (eventSource) {
     eventSource.close()
   }
-  eventSource = new EventSource(`/api/dashboard/stream?range=${timeRange.value}`)
+  const token = localStorage.getItem('token') || ''
+  eventSource = new EventSource(`/api/dashboard/stream?range=${timeRange.value}&token=${token}`)
   eventSource.onmessage = (event) => {
     try {
       const data = JSON.parse(event.data)
