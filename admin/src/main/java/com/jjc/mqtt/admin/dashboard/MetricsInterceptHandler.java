@@ -5,16 +5,12 @@ import io.moquette.interception.messages.InterceptConnectMessage;
 import io.moquette.interception.messages.InterceptDisconnectMessage;
 import io.moquette.interception.messages.InterceptPublishMessage;
 import io.netty.buffer.ByteBuf;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Component
 public class MetricsInterceptHandler extends AbstractInterceptHandler {
-
-    private static final Logger log = LoggerFactory.getLogger(MetricsInterceptHandler.class);
 
     private final MetricsCollector collector;
     private final AtomicInteger clientCount = new AtomicInteger(0);
@@ -38,7 +34,6 @@ public class MetricsInterceptHandler extends AbstractInterceptHandler {
         collector.incrementPublish(payloadSize);
         collector.incrementQos(qos);
         collector.incrementTopic(topic);
-        log.debug("Metrics onPublish: topic={}, qos={}, size={}", topic, qos, payloadSize);
     }
 
     @Override
@@ -56,6 +51,5 @@ public class MetricsInterceptHandler extends AbstractInterceptHandler {
     @Override
     public void onSessionLoopError(Throwable throwable) {
         collector.incrementErrors();
-        log.error("Metrics intercept handler session error", throwable);
     }
 }

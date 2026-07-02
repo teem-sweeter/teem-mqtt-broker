@@ -38,21 +38,16 @@ public class DashboardSseController {
         ScheduledFuture<?> future = scheduler.scheduleAtFixedRate(() -> {
             try {
                 List<MetricSnapshot> snapshots = collector.getSnapshots(range);
-                log.debug("SSE pushing {} snapshots for range={}", snapshots.size(), range);
                 emitter.send(SseEmitter.event()
                         .data(snapshots, MediaType.APPLICATION_JSON));
             } catch (IOException | IllegalStateException e) {
-                log.error("SSE send error: {}", e.getMessage());
                 emitter.complete();
             }
         }, 0, 1, TimeUnit.SECONDS);
 
         emitter.onCompletion(() -> future.cancel(false));
         emitter.onTimeout(() -> future.cancel(false));
-        emitter.onError(e -> {
-            log.error("SSE error: {}", e.getMessage());
-            future.cancel(false);
-        });
+        emitter.onError(e -> future.cancel(false));
 
         log.info("Dashboard SSE connected, range={}", range);
         return emitter;

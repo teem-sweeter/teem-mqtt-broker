@@ -1,7 +1,5 @@
 package com.jjc.mqtt.admin.dashboard;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -14,8 +12,6 @@ import java.util.concurrent.atomic.AtomicLong;
 @Service
 @EnableScheduling
 public class MetricsCollector {
-
-    private static final Logger log = LoggerFactory.getLogger(MetricsCollector.class);
 
     private final AtomicLong publishCount = new AtomicLong(0);
     private final AtomicLong receiveCount = new AtomicLong(0);
@@ -41,9 +37,8 @@ public class MetricsCollector {
     private static final int MAX_BUFFER_SIZE = 3600;
 
     public void incrementPublish(int payloadSize) {
-        long newVal = publishCount.incrementAndGet();
+        publishCount.incrementAndGet();
         bytesIn.addAndGet(payloadSize);
-        log.info("incrementPublish: payloadSize={}, publishCount={}", payloadSize, newVal);
     }
 
     public void incrementReceive(int payloadSize) {
@@ -83,15 +78,10 @@ public class MetricsCollector {
         long currentQos2 = qos2Count.get();
         long currentErrors = errorsCount.get();
 
-        long publishDelta = currentPublish - lastPublishCount;
-        long receiveDelta = currentReceive - lastReceiveCount;
-
-        log.info("snapshot tick: currentPublish={}, lastPublish={}, delta={}, bufferSize={}", currentPublish, lastPublishCount, publishDelta, buffer.size());
-
         MetricSnapshot snap = new MetricSnapshot(
                 now,
-                publishDelta,
-                receiveDelta,
+                currentPublish - lastPublishCount,
+                currentReceive - lastReceiveCount,
                 currentBytesIn - lastBytesIn,
                 currentBytesOut - lastBytesOut,
                 activeClients,
