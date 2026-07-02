@@ -3,7 +3,7 @@
     <div class="container">
       <div class="dashboard-header">
         <div class="range-switch">
-          <el-radio-group v-model="timeRange" @change="reconnect">
+          <el-radio-group v-model="timeRange" @change="reconnect" size="small">
             <el-radio-button value="5m">5 {{ t('dashboard.minutes') }}</el-radio-button>
             <el-radio-button value="15m">15 {{ t('dashboard.minutes') }}</el-radio-button>
             <el-radio-button value="60m">60 {{ t('dashboard.minutes') }}</el-radio-button>
@@ -92,15 +92,15 @@ onUnmounted(() => {
 
 <style scoped>
 .dashboard-page {
-  background: var(--bg-secondary);
-  padding: 12px;
+  background: var(--el-fill-color-blank);
+  padding: 20px;
   box-sizing: border-box;
   height: 100%;
   overflow: hidden;
 }
 
 .container {
-  max-width: 1400px;
+  max-width: 1440px;
   margin: 0 auto;
   height: 100%;
   display: flex;
@@ -110,21 +110,23 @@ onUnmounted(() => {
 .dashboard-header {
   display: flex;
   justify-content: flex-end;
-  margin-bottom: 12px;
+  align-items: center;
+  margin-bottom: 16px;
 }
 
 .overview-cards {
-  margin-bottom: 12px;
+  margin-bottom: 20px;
 }
 
 .charts-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
+  gap: 16px;
   min-width: 0;
   flex: 1;
   min-height: 0;
   overflow-y: auto;
+  padding-bottom: 8px;
 }
 
 /* 大屏 2K+ */
@@ -137,11 +139,11 @@ onUnmounted(() => {
 /* 小屏 */
 @media (max-width: 768px) {
   .dashboard-page {
-    padding: 8px;
+    padding: 12px;
   }
   .charts-grid {
     grid-template-columns: 1fr;
-    gap: 10px;
+    gap: 12px;
   }
 }
 </style>

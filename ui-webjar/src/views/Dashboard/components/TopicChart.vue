@@ -1,7 +1,10 @@
 <template>
   <div class="chart-card">
-    <div class="chart-title">{{ t('dashboard.topicChart') }}</div>
-    <v-chart :option="chartOption" autoresize style="height: 280px" />
+    <div class="chart-header">
+      <div class="chart-title">{{ t('dashboard.topicChart') }}</div>
+      <div class="chart-badge">Top {{ topics.length }}</div>
+    </div>
+    <v-chart :option="chartOption" autoresize style="height: 260px" />
   </div>
 </template>
 
@@ -10,6 +13,7 @@ import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import './echarts-setup'
 import VChart from 'vue-echarts'
+import { colors, baseAxis, baseTooltip } from './chart-theme'
 
 const { t } = useI18n()
 
@@ -17,31 +21,65 @@ const props = defineProps({
   data: { type: Array, default: () => [] }
 })
 
-const chartOption = computed(() => {
+const topics = computed(() => {
   const latest = props.data.length > 0 ? props.data[props.data.length - 1] : null
-  const topics = latest?.topTopics || []
-  return {
-    tooltip: { trigger: 'axis' },
-    xAxis: { type: 'category', data: topics.map(tp => tp.topic), axisLabel: { rotate: 30 } },
-    yAxis: { type: 'value', name: t('dashboard.messageCount') },
-    series: [
-      { name: t('dashboard.messageCount'), type: 'bar', data: topics.map(tp => tp.count) }
-    ]
-  }
+  return latest?.topTopics || []
 })
+
+const chartOption = computed(() => ({
+  color: colors,
+  tooltip: { ...baseTooltip, trigger: 'axis' },
+  grid: { top: 16, right: 16, bottom: 20, left: 50, containLabel: false },
+  xAxis: { type: 'category', data: topics.value.map(tp => tp.topic), ...baseAxis, axisLabel: { ...baseAxis.axisLabel, rotate: 20, fontSize: 10 } },
+  yAxis: { type: 'value', ...baseAxis },
+  series: [{
+    name: t('dashboard.messageCount'),
+    type: 'bar',
+    barWidth: '50%',
+    itemStyle: {
+      borderRadius: [4, 4, 0, 0],
+      color: {
+        type: 'linear',
+        x: 0, y: 0, x2: 0, y2: 1,
+        colorStops: [
+          { offset: 0, color: colors[0] },
+          { offset: 1, color: colors[0] + '60' }
+        ]
+      }
+    },
+    data: topics.value.map(tp => tp.count)
+  }]
+}))
 </script>
 
 <style scoped>
 .chart-card {
   background: var(--el-bg-color);
-  border-radius: 8px;
-  padding: 16px;
-  box-shadow: var(--el-box-shadow-light);
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+  border: 1px solid var(--el-border-color-lighter);
+  transition: box-shadow 0.3s;
+}
+.chart-card:hover {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+.chart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
 }
 .chart-title {
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 600;
-  margin-bottom: 12px;
   color: var(--el-text-color-primary);
+}
+.chart-badge {
+  font-size: 12px;
+  color: var(--el-text-color-secondary);
+  background: var(--el-fill-color-light);
+  padding: 2px 10px;
+  border-radius: 12px;
 }
 </style>
