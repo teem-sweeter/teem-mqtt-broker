@@ -86,6 +86,8 @@ public class MetricsCollector {
         long publishDelta = currentPublish - lastPublishCount;
         long receiveDelta = currentReceive - lastReceiveCount;
 
+        log.info("snapshot tick: currentPublish={}, lastPublish={}, delta={}, bufferSize={}", currentPublish, lastPublishCount, publishDelta, buffer.size());
+
         MetricSnapshot snap = new MetricSnapshot(
                 now,
                 publishDelta,
@@ -112,10 +114,6 @@ public class MetricsCollector {
         buffer.addLast(snap);
         while (buffer.size() > MAX_BUFFER_SIZE) {
             buffer.pollFirst();
-        }
-
-        if (publishDelta > 0 || receiveDelta > 0) {
-            log.info("Metrics snapshot: publish={}, receive={}, clients={}, bufferSize={}", publishDelta, receiveDelta, activeClients, buffer.size());
         }
     }
 
