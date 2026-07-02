@@ -51,7 +51,7 @@ function connectSse() {
   if (eventSource) {
     eventSource.close()
   }
-  const token = localStorage.getItem('token') || ''
+  const token = sessionStorage.token || ''
   eventSource = new EventSource(`/api/dashboard/stream?range=${timeRange.value}&token=${token}`)
   eventSource.onmessage = (event) => {
     try {
