@@ -5,7 +5,7 @@
       <div class="chart-badge" v-if="hasData">Top {{ topics.length }}</div>
     </div>
     <div class="chart-body" v-if="hasData">
-      <v-chart :option="chartOption" autoresize style="height: 260px" />
+      <v-chart :option="chartOption" autoresize style="height: 200px" />
     </div>
     <div class="chart-empty" v-else>
       <el-icon :size="40" color="#C0C4CC"><Histogram /></el-icon>
@@ -68,7 +68,7 @@ const chartOption = computed(() => ({
 .chart-card {
   background: var(--el-bg-color);
   border-radius: 12px;
-  padding: 20px;
+  padding: 16px;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
   border: 1px solid var(--el-border-color-lighter);
   transition: box-shadow 0.3s;
@@ -80,7 +80,7 @@ const chartOption = computed(() => ({
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 12px;
+  margin-bottom: 8px;
 }
 .chart-title {
   font-size: 15px;
@@ -95,7 +95,7 @@ const chartOption = computed(() => ({
   border-radius: 12px;
 }
 .chart-empty {
-  height: 260px;
+  height: 200px;
   display: flex;
   flex-direction: column;
   align-items: center;
