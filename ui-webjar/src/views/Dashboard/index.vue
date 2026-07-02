@@ -125,8 +125,7 @@ onUnmounted(() => {
   min-width: 0;
   flex: 1;
   min-height: 0;
-  overflow-y: auto;
-  padding-bottom: 8px;
+  overflow: hidden;
 }
 
 /* 大屏 2K+ */
