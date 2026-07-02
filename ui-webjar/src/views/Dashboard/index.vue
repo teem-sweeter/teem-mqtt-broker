@@ -125,7 +125,12 @@ onUnmounted(() => {
   min-width: 0;
   flex: 1;
   min-height: 0;
-  overflow: hidden;
+  overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.charts-grid::-webkit-scrollbar {
+  display: none;
 }
 
 /* 大屏 2K+ */
