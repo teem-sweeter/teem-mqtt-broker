@@ -137,17 +137,17 @@
               {{ formatTime(new Date(row.scheduledTime).getTime()) }}
             </template>
           </el-table-column>
-          <el-table-column :label="t('monitor.status')" width="80" align="center">
+          <el-table-column :label="t('common.status')" width="80" align="center">
             <template #default="{ row }">
               <el-tag :type="row.status === 'PENDING' ? 'warning' : row.status === 'DELIVERED' ? 'success' : 'info'" size="small">
-                {{ row.status }}
+                {{ t(`monitor.${row.status.toLowerCase()}`) }}
               </el-tag>
             </template>
           </el-table-column>
-          <el-table-column :label="t('monitor.action')" width="80" align="center">
+          <el-table-column :label="t('common.operation')" width="80" align="center">
             <template #default="{ row }">
               <el-button v-if="row.status === 'PENDING'" type="danger" text size="small" @click="handleCancelDelayed(row.id)">
-                {{ t('monitor.cancel') }}
+                {{ t('common.cancel') }}
               </el-button>
             </template>
           </el-table-column>

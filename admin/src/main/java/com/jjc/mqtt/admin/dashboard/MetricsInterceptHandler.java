@@ -4,6 +4,7 @@ import io.moquette.interception.AbstractInterceptHandler;
 import io.moquette.interception.messages.InterceptConnectMessage;
 import io.moquette.interception.messages.InterceptDisconnectMessage;
 import io.moquette.interception.messages.InterceptPublishMessage;
+import io.netty.buffer.ByteBuf;
 import org.springframework.stereotype.Component;
 
 import java.util.concurrent.atomic.AtomicInteger;
@@ -28,7 +29,10 @@ public class MetricsInterceptHandler extends AbstractInterceptHandler {
         int qos = msg.getQos() != null ? msg.getQos().value() : 0;
         String topic = msg.getTopicName();
 
-        collector.incrementPublish(0);
+        ByteBuf buf = msg.getPayload();
+        int payloadSize = buf != null ? buf.readableBytes() : 0;
+
+        collector.incrementPublish(payloadSize);
         collector.incrementQos(qos);
         collector.incrementTopic(topic);
     }
