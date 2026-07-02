@@ -49,6 +49,8 @@ mqtt:
     allow-anonymous: true
     username: admin
     password: admin2026
+    monitor:
+      enabled: true
     persistence:
       max-rows: 10000
 

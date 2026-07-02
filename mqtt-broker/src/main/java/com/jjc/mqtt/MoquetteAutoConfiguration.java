@@ -66,9 +66,6 @@ public class MoquetteAutoConfiguration {
 
     private Server mqttBroker;
 
-    @Autowired(required = false)
-    @Lazy
-    private List<InterceptHandler> userHandlers;
 
     /**
      * 已连接客户端 ID 跟踪器
@@ -140,7 +137,7 @@ public class MoquetteAutoConfiguration {
      * MQTT Broker 服务器
      */
     @Bean(destroyMethod = "stopServer")
-    public Server mqttBroker(MoquetteProperties properties, IAuthenticator authenticator) throws IOException {
+    public Server mqttBroker(MoquetteProperties properties, IAuthenticator authenticator,List<InterceptHandler> userHandlers) throws IOException {
         mqttBroker = new Server();
         Properties configProps = new Properties();
         configProps.setProperty(IConfig.HOST_PROPERTY_NAME, properties.getHost());
