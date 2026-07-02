@@ -126,7 +126,8 @@
     "bytesPerSec": "字节/秒",
     "messageCount": "消息数",
     "errorRate": "错误率",
-    "errorsPerSec": "错误/秒"
+    "errorsPerSec": "错误/秒",
+    "noData": "暂无数据"
   },
   "monitor": {
     "title": "MQTT Broker 监控",

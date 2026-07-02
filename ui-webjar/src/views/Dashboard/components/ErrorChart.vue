@@ -2,15 +2,22 @@
   <div class="chart-card">
     <div class="chart-header">
       <div class="chart-title">{{ t('dashboard.errorChart') }}</div>
-      <div class="chart-badge" :class="{ 'badge-warn': latestErrors > 0 }">{{ latestErrors }} {{ t('dashboard.errorsPerSec') }}</div>
+      <div class="chart-badge" v-if="hasData" :class="{ 'badge-warn': latestErrors > 0 }">{{ latestErrors }} {{ t('dashboard.errorsPerSec') }}</div>
     </div>
-    <v-chart :option="chartOption" autoresize style="height: 260px" />
+    <div class="chart-body" v-if="hasData">
+      <v-chart :option="chartOption" autoresize style="height: 260px" />
+    </div>
+    <div class="chart-empty" v-else>
+      <el-icon :size="40" color="#C0C4CC"><WarningFilled /></el-icon>
+      <span>{{ t('dashboard.noData') }}</span>
+    </div>
   </div>
 </template>
 
 <script setup>
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { WarningFilled } from '@element-plus/icons-vue'
 import './echarts-setup'
 import VChart from 'vue-echarts'
 import { colors, makeAreaStyle, baseAxis, baseTooltip } from './chart-theme'
@@ -20,6 +27,8 @@ const { t } = useI18n()
 const props = defineProps({
   data: { type: Array, default: () => [] }
 })
+
+const hasData = computed(() => props.data.length > 0)
 
 const latestErrors = computed(() => {
   const last = props.data[props.data.length - 1]
@@ -77,5 +86,15 @@ const chartOption = computed(() => ({
 .badge-warn {
   color: #F56C6C;
   background: #FEF0F0;
+}
+.chart-empty {
+  height: 260px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  color: var(--el-text-color-placeholder);
+  font-size: 13px;
 }
 </style>

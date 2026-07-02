@@ -2,15 +2,22 @@
   <div class="chart-card">
     <div class="chart-header">
       <div class="chart-title">{{ t('dashboard.messageChart') }}</div>
-      <div class="chart-badge">{{ latestPublish }} / {{ latestReceive }} {{ t('dashboard.msgPerSec') }}</div>
+      <div class="chart-badge" v-if="hasData">{{ latestPublish }} / {{ latestReceive }} {{ t('dashboard.msgPerSec') }}</div>
     </div>
-    <v-chart :option="chartOption" autoresize style="height: 260px" />
+    <div class="chart-body" v-if="hasData">
+      <v-chart :option="chartOption" autoresize style="height: 260px" />
+    </div>
+    <div class="chart-empty" v-else>
+      <el-icon :size="40" color="#C0C4CC"><TrendCharts /></el-icon>
+      <span>{{ t('dashboard.noData') }}</span>
+    </div>
   </div>
 </template>
 
 <script setup>
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { TrendCharts } from '@element-plus/icons-vue'
 import './echarts-setup'
 import VChart from 'vue-echarts'
 import { colors, makeAreaStyle, baseAxis, baseTooltip, baseLegend } from './chart-theme'
@@ -20,6 +27,8 @@ const { t } = useI18n()
 const props = defineProps({
   data: { type: Array, default: () => [] }
 })
+
+const hasData = computed(() => props.data.length > 0)
 
 const latestPublish = computed(() => {
   const last = props.data[props.data.length - 1]
@@ -73,5 +82,15 @@ const chartOption = computed(() => ({
   background: var(--el-fill-color-light);
   padding: 2px 10px;
   border-radius: 12px;
+}
+.chart-empty {
+  height: 260px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  color: var(--el-text-color-placeholder);
+  font-size: 13px;
 }
 </style>

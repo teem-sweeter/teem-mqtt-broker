@@ -126,7 +126,8 @@
     "bytesPerSec": "bytes/s",
     "messageCount": "Messages",
     "errorRate": "Error Rate",
-    "errorsPerSec": "errors/s"
+    "errorsPerSec": "errors/s",
+    "noData": "No data yet"
   },
   "monitor": {
     "title": "MQTT Broker Monitor",
