@@ -41,9 +41,9 @@ public class MetricsCollector {
     private static final int MAX_BUFFER_SIZE = 3600;
 
     public void incrementPublish(int payloadSize) {
-        publishCount.incrementAndGet();
+        long newVal = publishCount.incrementAndGet();
         bytesIn.addAndGet(payloadSize);
-        log.debug("incrementPublish: payloadSize={}, publishCount={}", payloadSize, publishCount.get());
+        log.info("incrementPublish: payloadSize={}, publishCount={}", payloadSize, newVal);
     }
 
     public void incrementReceive(int payloadSize) {
