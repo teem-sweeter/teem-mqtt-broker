@@ -1,5 +1,7 @@
 package com.jjc.mqtt.admin.dashboard;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -12,6 +14,8 @@ import java.util.concurrent.atomic.AtomicLong;
 @Service
 @EnableScheduling
 public class MetricsCollector {
+
+    private static final Logger log = LoggerFactory.getLogger(MetricsCollector.class);
 
     private final AtomicLong publishCount = new AtomicLong(0);
     private final AtomicLong receiveCount = new AtomicLong(0);
@@ -39,6 +43,7 @@ public class MetricsCollector {
     public void incrementPublish(int payloadSize) {
         publishCount.incrementAndGet();
         bytesIn.addAndGet(payloadSize);
+        log.debug("incrementPublish: payloadSize={}, publishCount={}", payloadSize, publishCount.get());
     }
 
     public void incrementReceive(int payloadSize) {
@@ -78,10 +83,13 @@ public class MetricsCollector {
         long currentQos2 = qos2Count.get();
         long currentErrors = errorsCount.get();
 
+        long publishDelta = currentPublish - lastPublishCount;
+        long receiveDelta = currentReceive - lastReceiveCount;
+
         MetricSnapshot snap = new MetricSnapshot(
                 now,
-                currentPublish - lastPublishCount,
-                currentReceive - lastReceiveCount,
+                publishDelta,
+                receiveDelta,
                 currentBytesIn - lastBytesIn,
                 currentBytesOut - lastBytesOut,
                 activeClients,
@@ -104,6 +112,10 @@ public class MetricsCollector {
         buffer.addLast(snap);
         while (buffer.size() > MAX_BUFFER_SIZE) {
             buffer.pollFirst();
+        }
+
+        if (publishDelta > 0 || receiveDelta > 0) {
+            log.info("Metrics snapshot: publish={}, receive={}, clients={}, bufferSize={}", publishDelta, receiveDelta, activeClients, buffer.size());
         }
     }
 

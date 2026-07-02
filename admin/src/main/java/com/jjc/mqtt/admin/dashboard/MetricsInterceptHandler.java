@@ -38,6 +38,7 @@ public class MetricsInterceptHandler extends AbstractInterceptHandler {
         collector.incrementPublish(payloadSize);
         collector.incrementQos(qos);
         collector.incrementTopic(topic);
+        log.debug("Metrics onPublish: topic={}, qos={}, size={}", topic, qos, payloadSize);
     }
 
     @Override
