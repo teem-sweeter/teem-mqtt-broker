@@ -12,7 +12,7 @@
       </div>
 
       <div class="overview-cards">
-        <MetricCards :mqtt-info="mqttInfo" :has-mqtt="hasMqtt" />
+        <MetricCards :mqtt-info="mqttInfo.mqtt" :has-mqtt="hasMqtt" />
       </div>
 
       <div class="charts-grid">
