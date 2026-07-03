@@ -1,5 +1,7 @@
 package com.jjc.mqtt.admin.dashboard;
 
+import com.jjc.mqtt.monitor.ClientInfo;
+import com.jjc.mqtt.monitor.MonitorService;
 import io.moquette.interception.AbstractInterceptHandler;
 import io.moquette.interception.messages.InterceptConnectMessage;
 import io.moquette.interception.messages.InterceptDisconnectMessage;
@@ -13,10 +15,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class MetricsInterceptHandler extends AbstractInterceptHandler {
 
     private final MetricsCollector collector;
+    private final MonitorService monitorService;
     private final AtomicInteger clientCount = new AtomicInteger(0);
 
-    public MetricsInterceptHandler(MetricsCollector collector) {
+    public MetricsInterceptHandler(MetricsCollector collector, MonitorService monitorService) {
         this.collector = collector;
+        this.monitorService = monitorService;
     }
 
     @Override
@@ -35,6 +39,19 @@ public class MetricsInterceptHandler extends AbstractInterceptHandler {
         collector.incrementPublish(payloadSize);
         collector.incrementQos(qos);
         collector.incrementTopic(topic);
+
+        int subscriberCount = 0;
+        for (ClientInfo client : monitorService.getConnectedClients()) {
+            for (String filter : client.getSubscriptions()) {
+                if (TopicMatcher.matches(filter, topic)) {
+                    subscriberCount++;
+                    break;
+                }
+            }
+        }
+        if (subscriberCount > 0) {
+            collector.incrementReceive(payloadSize * subscriberCount);
+        }
     }
 
     @Override
