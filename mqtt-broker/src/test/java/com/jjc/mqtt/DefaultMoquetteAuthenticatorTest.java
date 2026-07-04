@@ -1,5 +1,7 @@
 package com.jjc.mqtt;
 
+import io.moquette.broker.subscriptions.Topic;
+import com.jjc.mqtt.monitor.ClientControlProvider;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.ObjectProvider;
 
@@ -14,12 +16,15 @@ class DefaultMoquetteAuthenticatorTest {
     @SuppressWarnings("unchecked")
     private final ObjectProvider<com.jjc.mqtt.monitor.MonitorService> monitorServiceProvider = mock(ObjectProvider.class);
 
+    @SuppressWarnings("unchecked")
+    private final ObjectProvider<com.jjc.mqtt.monitor.ClientControlProvider> clientControlProvider = mock(ObjectProvider.class);
+
     @Test
     void checkValid_shouldAcceptValidCredentials() {
         DefaultMoquetteAuthenticator auth = new DefaultMoquetteAuthenticator(
                 "admin", "pass123", false,
                 DuplicateClientIdStrategy.REJECT_NEW,
-                connectedClientsProvider, monitorServiceProvider
+                connectedClientsProvider, monitorServiceProvider, clientControlProvider
         );
 
         assertTrue(auth.checkValid("client-1", "admin", "pass123".getBytes()));
@@ -30,7 +35,7 @@ class DefaultMoquetteAuthenticatorTest {
         DefaultMoquetteAuthenticator auth = new DefaultMoquetteAuthenticator(
                 "admin", "pass123", false,
                 DuplicateClientIdStrategy.REJECT_NEW,
-                connectedClientsProvider, monitorServiceProvider
+                connectedClientsProvider, monitorServiceProvider, clientControlProvider
         );
 
         assertFalse(auth.checkValid("client-1", "admin", "wrong".getBytes()));
@@ -42,7 +47,7 @@ class DefaultMoquetteAuthenticatorTest {
         DefaultMoquetteAuthenticator auth = new DefaultMoquetteAuthenticator(
                 "admin", "pass123", true,
                 DuplicateClientIdStrategy.REJECT_NEW,
-                connectedClientsProvider, monitorServiceProvider
+                connectedClientsProvider, monitorServiceProvider, clientControlProvider
         );
 
         assertTrue(auth.checkValid("client-1", null, null));
@@ -54,7 +59,7 @@ class DefaultMoquetteAuthenticatorTest {
         DefaultMoquetteAuthenticator auth = new DefaultMoquetteAuthenticator(
                 "admin", "pass123", false,
                 DuplicateClientIdStrategy.REJECT_NEW,
-                connectedClientsProvider, monitorServiceProvider
+                connectedClientsProvider, monitorServiceProvider, clientControlProvider
         );
 
         assertFalse(auth.checkValid("client-1", null, null));
@@ -69,9 +74,46 @@ class DefaultMoquetteAuthenticatorTest {
         DefaultMoquetteAuthenticator auth = new DefaultMoquetteAuthenticator(
                 "admin", "pass123", false,
                 DuplicateClientIdStrategy.REJECT_NEW,
-                connectedClientsProvider, monitorServiceProvider
+                connectedClientsProvider, monitorServiceProvider, clientControlProvider
         );
 
         assertFalse(auth.checkValid("client-1", "admin", "pass123".getBytes()));
     }
+
+    @Test
+    void canWrite_shouldRestrictPublishWhenSendDisabled() {
+        ClientControlProvider ccp = mock(ClientControlProvider.class);
+        when(clientControlProvider.getIfAvailable()).thenReturn(ccp);
+        when(ccp.isSendDisabled("test-client")).thenReturn(true);
+        when(ccp.isSendDisabled("other-client")).thenReturn(false);
+
+        DefaultMoquetteAuthenticator auth = new DefaultMoquetteAuthenticator(
+                "admin", "pass123", false,
+                DuplicateClientIdStrategy.REJECT_NEW,
+                connectedClientsProvider, monitorServiceProvider, clientControlProvider
+        );
+
+        Topic topic = Topic.asTopic("test/topic");
+        assertFalse(auth.canWrite(topic, "admin", "test-client"));
+        assertTrue(auth.canWrite(topic, "admin", "other-client"));
+    }
+
+    @Test
+    void canRead_shouldAllowSubscribeEvenWhenReceiveDisabled() {
+        ClientControlProvider ccp = mock(ClientControlProvider.class);
+        when(clientControlProvider.getIfAvailable()).thenReturn(ccp);
+        when(ccp.isReceiveDisabled("test-client")).thenReturn(true);
+        when(ccp.isReceiveDisabled("other-client")).thenReturn(false);
+
+        DefaultMoquetteAuthenticator auth = new DefaultMoquetteAuthenticator(
+                "admin", "pass123", false,
+                DuplicateClientIdStrategy.REJECT_NEW,
+                connectedClientsProvider, monitorServiceProvider, clientControlProvider
+        );
+
+        Topic topic = Topic.asTopic("test/topic");
+        assertTrue(auth.canRead(topic, "admin", "test-client"));
+        assertTrue(auth.canRead(topic, "admin", "other-client"));
+    }
+
 }

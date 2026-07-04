@@ -1,7 +1,10 @@
 package com.jjc.mqtt;
 
+import com.jjc.mqtt.monitor.ClientControlProvider;
 import com.jjc.mqtt.monitor.MonitorService;
 import io.moquette.broker.security.IAuthenticator;
+import io.moquette.broker.security.IAuthorizatorPolicy;
+import io.moquette.broker.subscriptions.Topic;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.ObjectProvider;
@@ -11,7 +14,7 @@ import org.springframework.beans.factory.ObjectProvider;
  * @date 2026/2/4 14:36
  * @description
  */
-public class DefaultMoquetteAuthenticator implements IAuthenticator {
+public class DefaultMoquetteAuthenticator implements IAuthenticator, IAuthorizatorPolicy {
 
     private static final Logger log = LoggerFactory.getLogger(DefaultMoquetteAuthenticator.class);
 
@@ -21,17 +24,20 @@ public class DefaultMoquetteAuthenticator implements IAuthenticator {
     private final DuplicateClientIdStrategy duplicateClientIdStrategy;
     private final ObjectProvider<ConnectedClients> connectedClientsProvider;
     private final ObjectProvider<MonitorService> monitorServiceProvider;
+    private final ObjectProvider<ClientControlProvider> clientControlProvider;
 
     public DefaultMoquetteAuthenticator(String user, String pass, boolean allowAnonymous,
                                         DuplicateClientIdStrategy duplicateClientIdStrategy,
                                         ObjectProvider<ConnectedClients> connectedClientsProvider,
-                                        ObjectProvider<MonitorService> monitorServiceProvider) {
+                                        ObjectProvider<MonitorService> monitorServiceProvider,
+                                        ObjectProvider<ClientControlProvider> clientControlProvider) {
         this.expectedUser = user;
         this.expectedPass = pass;
         this.allowAnonymous = allowAnonymous;
         this.duplicateClientIdStrategy = duplicateClientIdStrategy;
         this.connectedClientsProvider = connectedClientsProvider;
         this.monitorServiceProvider = monitorServiceProvider;
+        this.clientControlProvider = clientControlProvider;
     }
 
     @Override
@@ -66,5 +72,26 @@ public class DefaultMoquetteAuthenticator implements IAuthenticator {
         }
 
         return true;
+    }
+
+    @Override
+    public boolean canWrite(Topic topic, String username, String clientId) {
+        ClientControlProvider ccp = clientControlProvider.getIfAvailable();
+        if (ccp != null && ccp.isSendDisabled(clientId)) {
+            log.warn("拒绝发布: clientId={}, topic={} (禁止发送)", clientId, topic);
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public boolean canRead(Topic topic, String username, String clientId) {
+        // 允许订阅，但实际接收消息会通过动态代理过滤
+        return true;
+    }
+
+    public boolean isReceiveDisabled(String clientId) {
+        ClientControlProvider ccp = clientControlProvider.getIfAvailable();
+        return ccp != null && ccp.isReceiveDisabled(clientId);
     }
 }

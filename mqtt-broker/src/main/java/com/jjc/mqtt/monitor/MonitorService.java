@@ -291,6 +291,106 @@ public class MonitorService implements ApplicationEventPublisherAware {
         return false;
     }
 
+    private Object getTargetObject(Object proxy) {
+        if (proxy == null) {
+            return null;
+        }
+        if (org.springframework.aop.support.AopUtils.isAopProxy(proxy)) {
+            try {
+                if (proxy instanceof org.springframework.aop.framework.Advised) {
+                    Object target = ((org.springframework.aop.framework.Advised) proxy).getTargetSource().getTarget();
+                    return getTargetObject(target);
+                }
+            } catch (Exception e) {
+                log.warn("getTargetObject: unwrap proxy failed", e);
+            }
+        }
+        return proxy;
+    }
+
+    @SuppressWarnings("unchecked")
+    public void unsubscribeClient(String clientId) {
+        try {
+            // 收集所有订阅的主题过滤器
+            Set<String> topicFilters = new HashSet<>();
+            ClientInfo clientInfo = clients.get(clientId);
+            if (clientInfo != null && clientInfo.getSubscriptions() != null) {
+                topicFilters.addAll(clientInfo.getSubscriptions());
+            }
+
+            Object realBroker = getTargetObject(mqttBroker);
+            Field sessionsField = Server.class.getDeclaredField("sessions");
+            sessionsField.setAccessible(true);
+            Object sessionRegistry = sessionsField.get(realBroker);
+            if (sessionRegistry == null) {
+                log.warn("unsubscribeClient: sessionRegistry 为 null");
+                return;
+            }
+
+            java.lang.reflect.Method retrieveMethod = sessionRegistry.getClass().getDeclaredMethod("retrieve", String.class);
+            retrieveMethod.setAccessible(true);
+            Object session = retrieveMethod.invoke(sessionRegistry, clientId);
+            if (session != null) {
+                java.lang.reflect.Method getSubsMethod = session.getClass().getDeclaredMethod("getSubscriptions");
+                getSubsMethod.setAccessible(true);
+                java.util.List<?> subs = (java.util.List<?>) getSubsMethod.invoke(session);
+                if (subs != null) {
+                    for (Object sub : subs) {
+                        java.lang.reflect.Method topicMethod = sub.getClass().getDeclaredMethod("getTopicFilter");
+                        topicMethod.setAccessible(true);
+                        Object topicObj = topicMethod.invoke(sub);
+                        if (topicObj != null) {
+                            topicFilters.add(topicObj.toString());
+                        }
+                    }
+                }
+            }
+
+            if (topicFilters.isEmpty()) {
+                log.info("unsubscribeClient: 客户端无订阅: {}", clientId);
+                return;
+            }
+
+            Field subsDirField = sessionRegistry.getClass().getDeclaredField("subscriptionsDirectory");
+            subsDirField.setAccessible(true);
+            Object subsDir = subsDirField.get(sessionRegistry);
+
+            java.lang.reflect.Method removeSubMethod = null;
+            if (session != null) {
+                removeSubMethod = session.getClass().getDeclaredMethod("removeSubscription",
+                        io.moquette.broker.subscriptions.Topic.class);
+                removeSubMethod.setAccessible(true);
+            }
+
+            java.lang.reflect.Method removeDirSubMethod = subsDir.getClass().getDeclaredMethod("removeSubscription",
+                    io.moquette.broker.subscriptions.Topic.class, String.class);
+            removeDirSubMethod.setAccessible(true);
+
+            for (String topicStr : topicFilters) {
+                io.moquette.broker.subscriptions.Topic topic = io.moquette.broker.subscriptions.Topic.asTopic(topicStr);
+                if (session != null && removeSubMethod != null) {
+                    removeSubMethod.invoke(session, topic);
+                }
+                removeDirSubMethod.invoke(subsDir, topic, clientId);
+                log.info("unsubscribeClient: 已取消客户端 {} 的订阅: {}", clientId, topicStr);
+            }
+
+            // 清理本地监控缓存
+            if (clientInfo != null) {
+                if (clientInfo.getSubscriptions() != null) {
+                    clientInfo.getSubscriptions().clear();
+                }
+                if (clientInfo.getSubscriptionDetails() != null) {
+                    clientInfo.getSubscriptionDetails().clear();
+                }
+            }
+
+            log.info("unsubscribeClient: 已成功取消客户端 {} 的所有订阅", clientId);
+        } catch (Exception e) {
+            log.error("unsubscribeClient: 取消客户端订阅失败: {}", clientId, e);
+        }
+    }
+
     public void clearStats() {
         statsLock.writeLock().lock();
         try {

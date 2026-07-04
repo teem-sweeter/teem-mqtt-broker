@@ -123,12 +123,6 @@ html.dark .el-button--danger.is-link:hover {
     background-color: var(--table-current-row-bg) !important;
 }
 
-/* 修复el-card hover时的白色背景 */
-.el-card:hover {
-    box-shadow: var(--shadow-card-hover) !important;
-    border-color: var(--color-primary) !important;
-}
-
 /* 修复el-tag hover时的白色背景 */
 .el-tag:hover {
     background-color: var(--bg-active) !important;

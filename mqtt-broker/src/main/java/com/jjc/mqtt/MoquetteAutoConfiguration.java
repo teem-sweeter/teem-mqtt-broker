@@ -1,10 +1,10 @@
 package com.jjc.mqtt;
 
 import com.jjc.mqtt.handler.BridgeInterceptHandler;
-import com.jjc.mqtt.handler.ClientControlHandler;
 import com.jjc.mqtt.handler.DefaultMoquetteHandler;
 import com.jjc.mqtt.handler.MqttMonitorHandler;
 import com.jjc.mqtt.handler.MqttPersistenceHandler;
+import com.jjc.mqtt.monitor.ClientControlProvider;
 import com.jjc.mqtt.monitor.MonitorService;
 import io.moquette.broker.Server;
 import io.moquette.broker.config.IConfig;
@@ -123,21 +123,11 @@ public class MoquetteAutoConfiguration {
         log.info("桥接拦截处理器已启用");
         return new BridgeInterceptHandler();
     }
-
-    /**
-     * 客户端管控拦截处理器
-     */
-    @Bean
-    public InterceptHandler clientControlHandler() {
-        log.info("客户端管控拦截处理器已启用");
-        return new ClientControlHandler();
-    }
-
     /**
      * MQTT Broker 服务器
      */
     @Bean(destroyMethod = "stopServer")
-    public Server mqttBroker(MoquetteProperties properties, IAuthenticator authenticator,List<InterceptHandler> userHandlers) throws IOException {
+    public Server mqttBroker(MoquetteProperties properties, DefaultMoquetteAuthenticator authenticator, List<InterceptHandler> userHandlers) throws IOException {
         mqttBroker = new Server();
         Properties configProps = new Properties();
         configProps.setProperty(IConfig.HOST_PROPERTY_NAME, properties.getHost());
@@ -167,8 +157,82 @@ public class MoquetteAutoConfiguration {
             configProps.setProperty(IConfig.WSS_PORT_PROPERTY_NAME, String.valueOf(properties.getWebsocketsPort()));
         }
         log.info("启动 MQTT Broker: host={}, port={}, dataPath={}", properties.getHost(), properties.getPort(), dataPath);
-        mqttBroker.startServer(new MemoryConfig(configProps), userHandlers, null, authenticator, null);
+        mqttBroker.startServer(new MemoryConfig(configProps), userHandlers, null, authenticator, authenticator);
+        injectSubscriptionsProxy(mqttBroker, authenticator);
         return mqttBroker;
+    }
+
+    private void injectSubscriptionsProxy(Server server, DefaultMoquetteAuthenticator authenticator) {
+        try {
+            // 1. 获取 sessions (SessionRegistry)
+            java.lang.reflect.Field sessionsField = Server.class.getDeclaredField("sessions");
+            sessionsField.setAccessible(true);
+            Object sessionRegistry = sessionsField.get(server);
+            if (sessionRegistry == null) {
+                log.warn("injectSubscriptionsProxy: sessionRegistry 为 null");
+                return;
+            }
+
+            // 2. 获取 dispatcher (PostOffice)
+            java.lang.reflect.Field dispatcherField = Server.class.getDeclaredField("dispatcher");
+            dispatcherField.setAccessible(true);
+            Object postOffice = dispatcherField.get(server);
+            if (postOffice == null) {
+                log.warn("injectSubscriptionsProxy: postOffice 为 null");
+                return;
+            }
+
+            // 3. 从 sessionRegistry 中获取原始的 subscriptionsDirectory (ISubscriptionsDirectory)
+            java.lang.reflect.Field subsDirField = sessionRegistry.getClass().getDeclaredField("subscriptionsDirectory");
+            subsDirField.setAccessible(true);
+            final Object rawSubsDir = subsDirField.get(sessionRegistry);
+            if (rawSubsDir == null) {
+                log.warn("injectSubscriptionsProxy: rawSubsDir 为 null");
+                return;
+            }
+
+            // 4. 创建动态代理
+            Class<?> subsDirInterface = Class.forName("io.moquette.broker.subscriptions.ISubscriptionsDirectory");
+            Object proxySubsDir = java.lang.reflect.Proxy.newProxyInstance(
+                subsDirInterface.getClassLoader(),
+                new Class<?>[]{subsDirInterface},
+                new java.lang.reflect.InvocationHandler() {
+                    @Override
+                    public Object invoke(Object proxy, java.lang.reflect.Method method, Object[] args) throws Throwable {
+                        Object result = method.invoke(rawSubsDir, args);
+                        if (("matchQosSharpening".equals(method.getName()) || "matchWithoutQosSharpening".equals(method.getName()))
+                                && result instanceof java.util.List) {
+                            java.util.List<?> list = (java.util.List<?>) result;
+                            java.util.List<Object> filtered = new java.util.ArrayList<>();
+                            for (Object sub : list) {
+                                java.lang.reflect.Method getClientIdMethod = sub.getClass().getDeclaredMethod("getClientId");
+                                getClientIdMethod.setAccessible(true);
+                                String clientId = (String) getClientIdMethod.invoke(sub);
+                                if (clientId != null && authenticator.isReceiveDisabled(clientId)) {
+                                    // 过滤掉不可接收消息的客户端，从而不下发消息
+                                    continue;
+                                }
+                                filtered.add(sub);
+                            }
+                            return filtered;
+                        }
+                        return result;
+                    }
+                }
+            );
+
+            // 5. 替换 sessionRegistry 中的 subscriptionsDirectory
+            subsDirField.set(sessionRegistry, proxySubsDir);
+
+            // 6. 替换 postOffice 中的 subscriptions
+            java.lang.reflect.Field poSubsField = postOffice.getClass().getDeclaredField("subscriptions");
+            poSubsField.setAccessible(true);
+            poSubsField.set(postOffice, proxySubsDir);
+
+            log.info("成功为 Moquette 消息路由注入 ISubscriptionsDirectory 动态代理过滤层！");
+        } catch (Exception e) {
+            log.error("injectSubscriptionsProxy: 注入代理失败", e);
+        }
     }
 
     /**
@@ -177,10 +241,11 @@ public class MoquetteAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean
     public DefaultMoquetteAuthenticator authenticator(MoquetteProperties properties,
-                                                      ObjectProvider<ConnectedClients> connectedClientsProvider,
-                                                      ObjectProvider<MonitorService> monitorServiceProvider) {
+                                                       ObjectProvider<ConnectedClients> connectedClientsProvider,
+                                                       ObjectProvider<MonitorService> monitorServiceProvider,
+                                                       ObjectProvider<ClientControlProvider> clientControlProvider) {
         return new DefaultMoquetteAuthenticator(properties.getUsername(), properties.getPassword(),
                 properties.isAllowAnonymous(), properties.getDuplicateClientIdStrategy(),
-                connectedClientsProvider, monitorServiceProvider);
+                connectedClientsProvider, monitorServiceProvider, clientControlProvider);
     }
 }

@@ -40,7 +40,7 @@ const chartOption = computed(() => ({
   tooltip: { ...baseTooltip, trigger: 'axis' },
   grid: { top: 20, right: 16, bottom: 20, left: 50, containLabel: false },
   xAxis: { type: 'category', data: props.data.map(d => new Date(d.timestamp).toLocaleTimeString()), ...baseAxis, boundaryGap: false },
-  yAxis: { type: 'value', ...baseAxis },
+  yAxis: { type: 'value', minInterval: 1, ...baseAxis, axisLabel: { ...baseAxis.axisLabel, formatter: (v) => Math.round(v) } },
   series: [{
     name: t('dashboard.activeClients'),
     type: 'line',

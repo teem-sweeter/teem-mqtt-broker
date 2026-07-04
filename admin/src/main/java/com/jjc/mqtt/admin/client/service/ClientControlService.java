@@ -2,6 +2,7 @@ package com.jjc.mqtt.admin.client.service;
 
 import com.jjc.mqtt.admin.client.entity.ClientRuleEntity;
 import com.jjc.mqtt.admin.client.repository.ClientRuleRepository;
+import com.jjc.mqtt.monitor.ClientControlProvider;
 import com.jjc.mqtt.monitor.ClientInfo;
 import com.jjc.mqtt.monitor.MonitorService;
 import io.moquette.broker.Server;
@@ -22,7 +23,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author sweeter
  */
 @Service
-public class ClientControlService {
+public class ClientControlService implements ClientControlProvider {
 
     private static final Logger log = LoggerFactory.getLogger(ClientControlService.class);
 
@@ -108,6 +109,7 @@ public class ClientControlService {
         ruleRepository.save(rule);
         ruleCache.put(clientId, rule);
         log.info("客户端接收权限更新: clientId={}, receiveDisabled={}", clientId, disabled);
+        // 不在这里执行物理取消订阅，而是通过 ISubscriptionsDirectory 动态代理在路由消息时过滤下发
     }
 
     /**
