@@ -136,6 +136,33 @@ const routes = [
     }]
   },
   {
+    path: '/security',
+    id: 11000,
+    name: 'security',
+    meta: {
+      title: 'menu.security',
+      icon: 'Lock',
+    },
+    children: [{
+      path: 'credentials',
+      id: 11001,
+      name: 'clientCredentials',
+      meta: {
+        title: 'menu.clientCredentials',
+        icon: 'Key',
+      }
+    },
+    {
+      path: 'acl-rules',
+      id: 11002,
+      name: 'aclRules',
+      meta: {
+        title: 'menu.aclRules',
+        icon: 'SetUp',
+      }
+    }]
+  },
+  {
     path: '/system',
     id: 3000,
     name: 'system',
@@ -162,8 +189,6 @@ const routes = [
       }
     }]
   },
-
-
 ]
 
 // 模拟获取动态路由数据

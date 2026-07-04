@@ -19,12 +19,16 @@ class DefaultMoquetteAuthenticatorTest {
     @SuppressWarnings("unchecked")
     private final ObjectProvider<com.jjc.mqtt.monitor.ClientControlProvider> clientControlProvider = mock(ObjectProvider.class);
 
+    @SuppressWarnings("unchecked")
+    private final ObjectProvider<MqttSecurityProvider> securityProviderProvider = mock(ObjectProvider.class);
+
     @Test
     void checkValid_shouldAcceptValidCredentials() {
         DefaultMoquetteAuthenticator auth = new DefaultMoquetteAuthenticator(
                 "admin", "pass123", false,
                 DuplicateClientIdStrategy.REJECT_NEW,
-                connectedClientsProvider, monitorServiceProvider, clientControlProvider
+                connectedClientsProvider, monitorServiceProvider, clientControlProvider,
+                securityProviderProvider
         );
 
         assertTrue(auth.checkValid("client-1", "admin", "pass123".getBytes()));
@@ -35,7 +39,8 @@ class DefaultMoquetteAuthenticatorTest {
         DefaultMoquetteAuthenticator auth = new DefaultMoquetteAuthenticator(
                 "admin", "pass123", false,
                 DuplicateClientIdStrategy.REJECT_NEW,
-                connectedClientsProvider, monitorServiceProvider, clientControlProvider
+                connectedClientsProvider, monitorServiceProvider, clientControlProvider,
+                securityProviderProvider
         );
 
         assertFalse(auth.checkValid("client-1", "admin", "wrong".getBytes()));
@@ -47,7 +52,8 @@ class DefaultMoquetteAuthenticatorTest {
         DefaultMoquetteAuthenticator auth = new DefaultMoquetteAuthenticator(
                 "admin", "pass123", true,
                 DuplicateClientIdStrategy.REJECT_NEW,
-                connectedClientsProvider, monitorServiceProvider, clientControlProvider
+                connectedClientsProvider, monitorServiceProvider, clientControlProvider,
+                securityProviderProvider
         );
 
         assertTrue(auth.checkValid("client-1", null, null));
@@ -59,7 +65,8 @@ class DefaultMoquetteAuthenticatorTest {
         DefaultMoquetteAuthenticator auth = new DefaultMoquetteAuthenticator(
                 "admin", "pass123", false,
                 DuplicateClientIdStrategy.REJECT_NEW,
-                connectedClientsProvider, monitorServiceProvider, clientControlProvider
+                connectedClientsProvider, monitorServiceProvider, clientControlProvider,
+                securityProviderProvider
         );
 
         assertFalse(auth.checkValid("client-1", null, null));
@@ -74,7 +81,8 @@ class DefaultMoquetteAuthenticatorTest {
         DefaultMoquetteAuthenticator auth = new DefaultMoquetteAuthenticator(
                 "admin", "pass123", false,
                 DuplicateClientIdStrategy.REJECT_NEW,
-                connectedClientsProvider, monitorServiceProvider, clientControlProvider
+                connectedClientsProvider, monitorServiceProvider, clientControlProvider,
+                securityProviderProvider
         );
 
         assertFalse(auth.checkValid("client-1", "admin", "pass123".getBytes()));
@@ -90,7 +98,8 @@ class DefaultMoquetteAuthenticatorTest {
         DefaultMoquetteAuthenticator auth = new DefaultMoquetteAuthenticator(
                 "admin", "pass123", false,
                 DuplicateClientIdStrategy.REJECT_NEW,
-                connectedClientsProvider, monitorServiceProvider, clientControlProvider
+                connectedClientsProvider, monitorServiceProvider, clientControlProvider,
+                securityProviderProvider
         );
 
         Topic topic = Topic.asTopic("test/topic");
@@ -108,7 +117,8 @@ class DefaultMoquetteAuthenticatorTest {
         DefaultMoquetteAuthenticator auth = new DefaultMoquetteAuthenticator(
                 "admin", "pass123", false,
                 DuplicateClientIdStrategy.REJECT_NEW,
-                connectedClientsProvider, monitorServiceProvider, clientControlProvider
+                connectedClientsProvider, monitorServiceProvider, clientControlProvider,
+                securityProviderProvider
         );
 
         Topic topic = Topic.asTopic("test/topic");

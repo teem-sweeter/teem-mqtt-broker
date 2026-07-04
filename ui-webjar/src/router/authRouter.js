@@ -13,6 +13,8 @@ import messageRecord from '../views/MessageRecord/index.vue'
 import bridgeList from '../views/Bridge/index.vue'
 import clientList from '../views/Client/index.vue'
 import webhook from '../views/WebHook/index.vue'
+import clientCredentials from '../views/Security/ClientCredentials.vue'
+import aclRules from '../views/Security/AclRules.vue'
 
 const componentObj = {
   layout,
@@ -25,7 +27,9 @@ const componentObj = {
   messageRecord,
   bridgeList,
   clientList,
-  webhook
+  webhook,
+  clientCredentials,
+  aclRules
 }
 /**
  * 动态添加用户路由权限

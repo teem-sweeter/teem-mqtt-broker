@@ -3,7 +3,23 @@
     <div class="log-card">
       <div class="card-header">
         <span>{{ t('liveLog.title') }}</span>
-        <div class="header-actions">
+        <div class="header-actions" style="display: flex; align-items: center; gap: 10px;">
+          <div class="log-level-settings" style="display: inline-flex; align-items: center; gap: 8px; margin-right: 16px;">
+            <span style="font-size: 13px; color: var(--el-text-color-secondary);">{{ t('liveLog.loggerName') }}:</span>
+            <el-select v-model="selectedLogger" size="small" style="width: 140px;" @change="handleLoggerChange">
+              <el-option value="ROOT" label="Global (ROOT)" />
+              <el-option value="com.jjc.mqtt" label="MQTT Broker" />
+              <el-option value="com.jjc.mqtt.admin" label="Admin Web" />
+            </el-select>
+
+            <span style="font-size: 13px; color: var(--el-text-color-secondary); margin-left: 8px;">{{ t('liveLog.level') }}:</span>
+            <el-select v-model="currentLevel" size="small" style="width: 100px;" @change="handleLevelChange">
+              <el-option value="DEBUG" label="DEBUG" />
+              <el-option value="INFO" label="INFO" />
+              <el-option value="WARN" label="WARN" />
+              <el-option value="ERROR" label="ERROR" />
+            </el-select>
+          </div>
           <el-button type="success" @click="startStreaming" :disabled="isStreaming">{{ t('liveLog.start') }}</el-button>
           <el-button type="warning" @click="stopStreaming" :disabled="!isStreaming">{{ t('liveLog.stop') }}</el-button>
           <el-button type="danger" @click="clearLogs">{{ t('liveLog.clearLog') }}</el-button>
@@ -35,6 +51,7 @@
 import { ref, onMounted, onUnmounted, nextTick } from 'vue'
 import { ElMessage } from 'element-plus'
 import { useI18n } from 'vue-i18n'
+import { getLogLevels, updateLogLevel } from '@/api/log'
 
 const { t } = useI18n()
 
@@ -42,11 +59,42 @@ const logs = ref([])
 const scrollbarRef = ref(null)
 const isStreaming = ref(false)
 
+const selectedLogger = ref('ROOT')
+const currentLevel = ref('INFO')
+const loggerLevelsMap = ref({})
+
 let eventSource = null
 
-onMounted(() => {
+onMounted(async () => {
   startStreaming()
+  await fetchLogLevels()
 })
+
+const fetchLogLevels = async () => {
+  try {
+    const data = await getLogLevels()
+    loggerLevelsMap.value = data || {}
+    currentLevel.value = loggerLevelsMap.value[selectedLogger.value] || 'INFO'
+  } catch (e) {
+    console.error('Failed to fetch log levels', e)
+  }
+}
+
+const handleLoggerChange = (val) => {
+  currentLevel.value = loggerLevelsMap.value[val] || 'INFO'
+}
+
+const handleLevelChange = async (val) => {
+  try {
+    await updateLogLevel(selectedLogger.value, val)
+    ElMessage.success(t('liveLog.updateSuccess'))
+    loggerLevelsMap.value[selectedLogger.value] = val
+  } catch (e) {
+    console.error('Failed to update log level', e)
+    ElMessage.error(t('liveLog.updateFailed'))
+    currentLevel.value = loggerLevelsMap.value[selectedLogger.value] || 'INFO'
+  }
+}
 
 const getLogLevelClass = (line) => {
   if (line.includes('ERROR') || line.includes('error')) {
@@ -72,11 +120,19 @@ const scrollToBottom = () => {
   })
 }
 
+let flushTimer = null
+let buffer = []
+
 const closeStream = () => {
   if (eventSource) {
     eventSource.close()
     eventSource = null
   }
+  if (flushTimer) {
+    clearInterval(flushTimer)
+    flushTimer = null
+  }
+  buffer = []
 }
 
 const startStreaming = () => {
@@ -86,12 +142,23 @@ const startStreaming = () => {
   const token = sessionStorage.token || ''
   eventSource = new EventSource(`/v1/logs/sse?token=${encodeURIComponent(token)}`)
 
-  eventSource.onmessage = (event) => {
-    logs.value.push(event.data)
-    if (logs.value.length > 1000) {
-      logs.value.shift()
+  buffer = []
+  flushTimer = setInterval(() => {
+    if (buffer.length > 0) {
+      const maxLogs = 300
+      const combined = [...logs.value, ...buffer]
+      if (combined.length > maxLogs) {
+        logs.value = combined.slice(combined.length - maxLogs)
+      } else {
+        logs.value = combined
+      }
+      buffer = []
+      scrollToBottom()
     }
-    scrollToBottom()
+  }, 200)
+
+  eventSource.onmessage = (event) => {
+    buffer.push(event.data)
   }
 
   eventSource.onerror = (error) => {

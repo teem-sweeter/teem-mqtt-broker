@@ -25,15 +25,25 @@
         <template #title>{{ t('menu.home') }}</template>
       </el-menu-item>
       <template v-for="item in visibleRouterList" :key="item.name" :data-key="item.name">
-        <!-- 如果子菜单只有一个，则直接渲染为一级菜单 -->
+        <!-- 如果没有子菜单，直接渲染为一级菜单 -->
         <el-menu-item
-          v-if="item.children && item.children.length === 1"
-          :index="item.path + '/' + item.children[0].path"
-          :key="item.path + '/' + item.children[0].path">
-          <el-icon>
+          v-if="!item.children || item.children.length === 0"
+          :index="item.path"
+          :key="item.path">
+          <el-icon v-if="item.meta && item.meta.icon">
             <component :is="item.meta.icon" />
           </el-icon>
-          <template #title>{{ t(item.children[0].meta.breadcrumbName) }}</template>
+          <template #title>{{ item.meta ? t(item.meta.breadcrumbName) : '' }}</template>
+        </el-menu-item>
+        <!-- 如果子菜单只有一个，也直接渲染为一级菜单 -->
+        <el-menu-item
+          v-else-if="item.children && item.children.length === 1"
+          :index="item.path + '/' + item.children[0].path"
+          :key="item.path + '/' + item.children[0].path">
+          <el-icon v-if="item.meta?.icon || item.children[0].meta?.icon">
+            <component :is="item.meta?.icon || item.children[0].meta?.icon" />
+          </el-icon>
+          <template #title>{{ t(item.children[0].meta.breadcrumbName || item.meta?.breadcrumbName) }}</template>
         </el-menu-item>
         <!-- 否则渲染为子菜单 -->
         <el-sub-menu
@@ -41,26 +51,26 @@
           :index="item.path"
           :key="item.path">
           <template #title>
-            <template v-if="item.meta.icon">
+            <template v-if="item.meta && item.meta.icon">
               <el-icon>
                 <component :is="item.meta.icon" />
               </el-icon>
             </template>
             <span :class="{'menu-title-hidden': isCollapse}">
-            {{ t(item.meta.breadcrumbName) }}
-          </span>
+             {{ item.meta ? t(item.meta.breadcrumbName) : '' }}
+            </span>
           </template>
           <el-menu-item
             v-for="ite in item.children"
             :index="item.path + '/' + ite.path"
             :key="ite.name"
           >
-            <template v-if="ite.meta.icon">
+            <template v-if="ite.meta && ite.meta.icon">
               <el-icon>
                 <component :is="ite.meta.icon" />
               </el-icon>
             </template>
-            {{ t(ite.meta.breadcrumbName) }}
+            {{ ite.meta ? t(ite.meta.breadcrumbName) : '' }}
           </el-menu-item>
         </el-sub-menu>
       </template>
@@ -89,10 +99,10 @@ const routerList = authRouterStore.routerList;
 // 过滤掉 hidden 的菜单项
 const visibleRouterList = computed(() => {
   return routerList.map(item => {
-    if (!item.children || item.children.length === 0) return item
+    if (!item.children || item.children.length === 0) return { ...item, children: [] }
     const visibleChildren = item.children.filter(c => !c.meta?.hidden)
     return { ...item, children: visibleChildren }
-  }).filter(item => !item.meta?.hidden && item.children && item.children.length > 0)
+  }).filter(item => !item.meta?.hidden)
 });
 
 const changeMenu = (menu) => {
@@ -226,6 +236,10 @@ const changeMenu = (menu) => {
   .el-sub-menu__title:hover {
     background-color: rgba(97, 225, 135, 0.77) !important;
     box-shadow: none !important;
+    color: #fff !important;
+    .el-icon {
+      color: #fff !important;
+    }
   }
 
   .el-menu-item.is-active,
@@ -233,7 +247,10 @@ const changeMenu = (menu) => {
     background-color: rgb(97, 225, 135) !important;
     box-shadow: none !important;
     font-weight: 600;
-    color: #f3f3f3 !important;
+    color: #fff !important;
+    .el-icon {
+      color: #fff !important;
+    }
   }
   .el-menu-item .el-menu-tooltip__trigger{
     padding: 0 15px;
@@ -249,11 +266,19 @@ html.dark .menu-container {
   .el-menu-item:hover,
   .el-sub-menu__title:hover {
     background-color: rgba(76, 206, 115, 0.25) !important;
+    color: #fff !important;
+    .el-icon {
+      color: #fff !important;
+    }
   }
 
   .el-menu-item.is-active,
   .el-sub-menu__title.is-active {
     background-color: rgba(76, 206, 115, 0.35) !important;
+    color: #fff !important;
+    .el-icon {
+      color: #fff !important;
+    }
   }
 
   .el-sub-menu .el-menu {

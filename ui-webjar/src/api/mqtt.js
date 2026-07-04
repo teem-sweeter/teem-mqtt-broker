@@ -106,3 +106,27 @@ export function publishMqttMessage(topic, qos, payload) {
     data: { topic, qos, payload }
   })
 }
+
+/**
+ * 获取保留消息列表
+ * @returns {*}
+ */
+export function getRetainedMessages() {
+  return request({
+    url: '/v1/monitor/retained',
+    method: 'get'
+  })
+}
+
+/**
+ * 删除保留消息
+ * @param {string} topic 主题
+ * @returns {*}
+ */
+export function deleteRetainedMessage(topic) {
+  return request({
+    url: '/v1/monitor/retained',
+    method: 'delete',
+    params: { topic }
+  })
+}

@@ -442,4 +442,96 @@ public class MonitorService implements ApplicationEventPublisherAware {
         public String getTopic() { return topic; }
         public int getQos() { return qos; }
     }
+
+    public List<Map<String, Object>> getRetainedMessages() {
+        List<Map<String, Object>> result = new ArrayList<>();
+        if (mqttBroker == null) {
+            return result;
+        }
+        try {
+            Object realBroker = getTargetObject(mqttBroker);
+            java.lang.reflect.Field dispatcherField = io.moquette.broker.Server.class.getDeclaredField("dispatcher");
+            dispatcherField.setAccessible(true);
+            Object postOffice = dispatcherField.get(realBroker);
+            if (postOffice == null) {
+                return result;
+            }
+            java.lang.reflect.Field repField = postOffice.getClass().getDeclaredField("retainedRepository");
+            repField.setAccessible(true);
+            Object rep = repField.get(postOffice);
+            if (rep == null) {
+                return result;
+            }
+            java.lang.reflect.Method method = rep.getClass().getMethod("retainedOnTopic", String.class);
+            method.setAccessible(true);
+            java.util.Collection<?> all = (java.util.Collection<?>) method.invoke(rep, "#");
+            if (all != null) {
+                for (Object msg : all) {
+                    Map<String, Object> map = new HashMap<>();
+                    
+                    java.lang.reflect.Field topicField = msg.getClass().getDeclaredField("topic");
+                    topicField.setAccessible(true);
+                    Object topicObj = topicField.get(msg);
+                    map.put("topic", topicObj != null ? topicObj.toString() : "");
+                    
+                    java.lang.reflect.Field qosField = msg.getClass().getDeclaredField("qos");
+                    qosField.setAccessible(true);
+                    Object qosObj = qosField.get(msg);
+                    if (qosObj instanceof io.netty.handler.codec.mqtt.MqttQoS) {
+                        map.put("qos", ((io.netty.handler.codec.mqtt.MqttQoS) qosObj).value());
+                    } else {
+                        map.put("qos", 0);
+                    }
+                    
+                    java.lang.reflect.Field payloadField = msg.getClass().getDeclaredField("payload");
+                    payloadField.setAccessible(true);
+                    byte[] payloadBytes = (byte[]) payloadField.get(msg);
+                    map.put("payload", payloadBytes != null ? new String(payloadBytes, java.nio.charset.StandardCharsets.UTF_8) : "");
+                    
+                    java.lang.reflect.Field expiryField = msg.getClass().getDeclaredField("expiryTime");
+                    expiryField.setAccessible(true);
+                    java.time.Instant expiry = (java.time.Instant) expiryField.get(msg);
+                    map.put("expiryTime", expiry != null ? expiry.toEpochMilli() : null);
+                    
+                    result.add(map);
+                }
+            }
+        } catch (Exception e) {
+            log.error("Failed to get retained messages", e);
+        }
+        return result;
+    }
+
+    public boolean deleteRetainedMessage(String topicName) {
+        if (mqttBroker == null) {
+            return false;
+        }
+        try {
+            Object realBroker = getTargetObject(mqttBroker);
+            java.lang.reflect.Field dispatcherField = io.moquette.broker.Server.class.getDeclaredField("dispatcher");
+            dispatcherField.setAccessible(true);
+            Object postOffice = dispatcherField.get(realBroker);
+            if (postOffice == null) {
+                return false;
+            }
+            java.lang.reflect.Field repField = postOffice.getClass().getDeclaredField("retainedRepository");
+            repField.setAccessible(true);
+            Object rep = repField.get(postOffice);
+            if (rep == null) {
+                return false;
+            }
+            
+            Class<?> topicClass = Class.forName("io.moquette.broker.subscriptions.Topic");
+            java.lang.reflect.Constructor<?> ctor = topicClass.getConstructor(String.class);
+            Object topicObj = ctor.newInstance(topicName);
+            
+            java.lang.reflect.Method method = rep.getClass().getMethod("cleanRetained", topicClass);
+            method.setAccessible(true);
+            method.invoke(rep, topicObj);
+            return true;
+        } catch (Exception e) {
+            log.error("Failed to delete retained message for topic: " + topicName, e);
+            return false;
+        }
+    }
 }

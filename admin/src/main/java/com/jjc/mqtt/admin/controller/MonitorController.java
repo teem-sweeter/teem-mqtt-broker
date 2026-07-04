@@ -119,7 +119,21 @@ public class MonitorController {
             result.put("message", "发布失败: " + e.getMessage());
             log.error("消息发布失败", e);
         }
+        return ResponseEntity.ok(result);
+    }
 
+    @GetMapping("/retained")
+    public ResponseEntity<List<Map<String, Object>>> getRetainedMessages() {
+        return ResponseEntity.ok(monitorService.getRetainedMessages());
+    }
+
+    @DeleteMapping("/retained")
+    public ResponseEntity<Map<String, Object>> deleteRetainedMessage(@RequestParam String topic) {
+        Map<String, Object> result = new HashMap<>();
+        boolean success = monitorService.deleteRetainedMessage(topic);
+        result.put("success", success);
+        result.put("topic", topic);
+        result.put("message", success ? "保留消息清除成功" : "清除失败，主题可能不存在");
         return ResponseEntity.ok(result);
     }
 

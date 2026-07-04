@@ -243,9 +243,11 @@ public class MoquetteAutoConfiguration {
     public DefaultMoquetteAuthenticator authenticator(MoquetteProperties properties,
                                                        ObjectProvider<ConnectedClients> connectedClientsProvider,
                                                        ObjectProvider<MonitorService> monitorServiceProvider,
-                                                       ObjectProvider<ClientControlProvider> clientControlProvider) {
+                                                       ObjectProvider<ClientControlProvider> clientControlProvider,
+                                                       ObjectProvider<MqttSecurityProvider> securityProviderProvider) {
         return new DefaultMoquetteAuthenticator(properties.getUsername(), properties.getPassword(),
                 properties.isAllowAnonymous(), properties.getDuplicateClientIdStrategy(),
-                connectedClientsProvider, monitorServiceProvider, clientControlProvider);
+                connectedClientsProvider, monitorServiceProvider, clientControlProvider,
+                securityProviderProvider);
     }
 }

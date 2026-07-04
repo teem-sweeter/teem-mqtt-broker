@@ -10,10 +10,16 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
+import java.util.Map;
+import java.util.HashMap;
+import ch.qos.logback.classic.LoggerContext;
+import ch.qos.logback.classic.Level;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.nio.channels.Channels;
@@ -213,6 +219,52 @@ public class LogController {
         }
 
         return buffer.toString(StandardCharsets.UTF_8);
+    }
+
+    @Operation(summary = "获取日志级别")
+    @GetMapping("/level")
+    public ResponseEntity<Map<String, String>> getLogLevels() {
+        LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
+        Map<String, String> levels = new HashMap<>();
+        levels.put("ROOT", getLogLevelStr(context.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME)));
+        levels.put("com.jjc.mqtt", getLogLevelStr(context.getLogger("com.jjc.mqtt")));
+        levels.put("com.jjc.mqtt.admin", getLogLevelStr(context.getLogger("com.jjc.mqtt.admin")));
+        return ResponseEntity.ok(levels);
+    }
+
+    @Operation(summary = "修改日志级别")
+    @PostMapping("/level")
+    public ResponseEntity<Map<String, Object>> updateLogLevel(
+            @RequestParam String logger,
+            @RequestParam String level) {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
+            String loggerName = "ROOT".equalsIgnoreCase(logger) ? org.slf4j.Logger.ROOT_LOGGER_NAME : logger;
+            ch.qos.logback.classic.Logger logInstance = context.getLogger(loggerName);
+            if (logInstance != null) {
+                logInstance.setLevel(Level.toLevel(level.toUpperCase(), Level.INFO));
+                result.put("success", true);
+                result.put("logger", logger);
+                result.put("level", level.toUpperCase());
+                result.put("message", "日志级别修改成功");
+                log.info("动态调整日志级别: logger={}, level={}", loggerName, level.toUpperCase());
+            } else {
+                result.put("success", false);
+                result.put("message", "未找到指定的日志记录器: " + logger);
+            }
+        } catch (Exception e) {
+            result.put("success", false);
+            result.put("message", "修改失败: " + e.getMessage());
+            log.error("修改日志级别失败", e);
+        }
+        return ResponseEntity.ok(result);
+    }
+
+    private String getLogLevelStr(ch.qos.logback.classic.Logger logger) {
+        if (logger == null) return "INFO";
+        Level level = logger.getEffectiveLevel();
+        return level != null ? level.toString() : "INFO";
     }
 
     private Path resolveLogPath(String level) {

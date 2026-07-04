@@ -20,7 +20,10 @@
     "liveLog": "实时日志",
     "systemManagement": "系统管理",
     "systemUpgrade": "系统升级",
-    "webhook": "WebHook 转发"
+    "webhook": "WebHook 转发",
+    "security": "安全管理",
+    "clientCredentials": "设备凭证",
+    "aclRules": "ACL 规则"
   },
   "common": {
     "loading": "加载中...",
@@ -164,7 +167,11 @@
     "cancel": "取消",
     "refresh": "刷新",
     "delayedCancelSuccess": "延迟消息已取消",
-    "delayedCancelFailed": "取消失败"
+    "delayedCancelFailed": "取消失败",
+    "retainedMessages": "保留消息",
+    "msgConfirmDeleteRetained": "确定要清除该主题的保留消息吗？",
+    "retainedDeleteSuccess": "保留消息清除成功",
+    "retainedDeleteFailed": "保留消息清除失败"
   },
   "client": {
     "onlineClients": "在线客户端",
@@ -338,7 +345,12 @@
     "noLogs": "暂无实时日志",
     "sseError": "SSE连接出错",
     "stopped": "已停止日志打印",
-    "cleared": "日志已清空"
+    "cleared": "日志已清空",
+    "logLevelConfig": "日志级别配置",
+    "loggerName": "记录器",
+    "level": "级别",
+    "updateSuccess": "日志级别修改成功",
+    "updateFailed": "日志级别修改失败"
   },
   "logSearch": {
     "title": "日志搜索",
@@ -751,5 +763,38 @@
     "fetchAppInfoFailed": "获取应用信息失败: {message}",
     "fetchJvmMemoryFailed": "获取JVM内存指标失败",
     "fetchCpuFailed": "获取CPU指标失败"
+  },
+  "security": {
+    "clientCredentials": "设备凭证管理",
+    "aclRules": "ACL 规则管理",
+    "clientId": "客户端 ID",
+    "username": "用户名",
+    "password": "密码",
+    "enabled": "状态",
+    "remark": "备注",
+    "action": "动作",
+    "permission": "权限",
+    "topic": "主题过滤器",
+    "priority": "优先级",
+    "allow": "允许",
+    "deny": "拒绝",
+    "placeholderClientId": "请输入客户端 ID",
+    "placeholderUsername": "请输入用户名",
+    "placeholderPassword": "请输入密码",
+    "placeholderTopic": "请输入主题过滤器，例如: test/+/status",
+    "placeholderPriority": "数值越大，匹配优先级越高",
+    "tipAclTopic": "支持通配符: + (单层), # (多层)，以及动态变量 ${clientId} 和 ${username}",
+    "msgConfirmDelete": "确定要删除选中的项吗？",
+    "msgSaveSuccess": "保存成功",
+    "msgDeleteSuccess": "删除成功",
+    "addCredential": "新增设备凭证",
+    "editCredential": "编辑设备凭证",
+    "addAclRule": "新增 ACL 规则",
+    "editAclRule": "编辑 ACL 规则",
+    "searchPlaceholderCredential": "搜索客户端 ID / 用户名",
+    "searchPlaceholderAcl": "搜索客户端 ID / 用户名 / 主题",
+    "pubSub": "发布及订阅",
+    "pub": "仅发布",
+    "sub": "仅订阅"
   }
 }

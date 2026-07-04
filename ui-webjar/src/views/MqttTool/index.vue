@@ -674,7 +674,7 @@ onUnmounted(() => disconnect())
 }
 
 .panel-title .el-icon {
-  color: #409eff;
+  color: var(--color-primary);
 }
 
 .title-actions {
@@ -894,7 +894,7 @@ onUnmounted(() => disconnect())
 .msg-topic {
   font-size: 14px;
   font-weight: 500;
-  color: #409eff;
+  color: var(--color-primary-interactive);
 }
 
 .msg-qos {

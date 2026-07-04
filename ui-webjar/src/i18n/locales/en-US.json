@@ -20,7 +20,10 @@
     "liveLog": "Live Log",
     "systemManagement": "System",
     "systemUpgrade": "Upgrade",
-    "webhook": "WebHook"
+    "webhook": "WebHook",
+    "security": "Security",
+    "clientCredentials": "Credentials",
+    "aclRules": "ACL Rules"
   },
   "common": {
     "loading": "Loading...",
@@ -164,7 +167,11 @@
     "cancel": "Cancel",
     "refresh": "Refresh",
     "delayedCancelSuccess": "Delayed message cancelled",
-    "delayedCancelFailed": "Cancel failed"
+    "delayedCancelFailed": "Cancel failed",
+    "retainedMessages": "Retained Messages",
+    "msgConfirmDeleteRetained": "Are you sure you want to clear the retained message for this topic?",
+    "retainedDeleteSuccess": "Retained message cleared successfully",
+    "retainedDeleteFailed": "Failed to clear retained message"
   },
   "client": {
     "onlineClients": "Online Clients",
@@ -338,7 +345,12 @@
     "noLogs": "No live logs yet",
     "sseError": "SSE connection error",
     "stopped": "Log streaming stopped",
-    "cleared": "Logs cleared"
+    "cleared": "Logs cleared",
+    "logLevelConfig": "Log Level Config",
+    "loggerName": "Logger",
+    "level": "Level",
+    "updateSuccess": "Log level updated successfully",
+    "updateFailed": "Failed to update log level"
   },
   "logSearch": {
     "title": "Log Search",
@@ -751,5 +763,38 @@
     "fetchAppInfoFailed": "Failed to get application info: {message}",
     "fetchJvmMemoryFailed": "Failed to get JVM memory metrics",
     "fetchCpuFailed": "Failed to get CPU metrics"
+  },
+  "security": {
+    "clientCredentials": "Client Credentials",
+    "aclRules": "ACL Rules",
+    "clientId": "Client ID",
+    "username": "Username",
+    "password": "Password",
+    "enabled": "Status",
+    "remark": "Remark",
+    "action": "Action",
+    "permission": "Permission",
+    "topic": "Topic Filter",
+    "priority": "Priority",
+    "allow": "Allow",
+    "deny": "Deny",
+    "placeholderClientId": "Please enter Client ID",
+    "placeholderUsername": "Please enter Username",
+    "placeholderPassword": "Please enter Password",
+    "placeholderTopic": "Please enter Topic Filter, e.g.: test/+/status",
+    "placeholderPriority": "Higher value matches with higher priority",
+    "tipAclTopic": "Supports wildcard: + (single level), # (multi level), and variables ${clientId}, ${username}",
+    "msgConfirmDelete": "Are you sure you want to delete the selected items?",
+    "msgSaveSuccess": "Saved successfully",
+    "msgDeleteSuccess": "Deleted successfully",
+    "addCredential": "Add Credential",
+    "editCredential": "Edit Credential",
+    "addAclRule": "Add ACL Rule",
+    "editAclRule": "Edit ACL Rule",
+    "searchPlaceholderCredential": "Search Client ID / Username",
+    "searchPlaceholderAcl": "Search Client ID / Username / Topic",
+    "pubSub": "Publish & Subscribe",
+    "pub": "Publish Only",
+    "sub": "Subscribe Only"
   }
 }

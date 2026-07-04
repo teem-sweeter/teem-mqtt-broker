@@ -220,6 +220,51 @@
           </el-table>
         </el-card>
       </section>
+
+      <section class="retained-section">
+        <el-card shadow="never" class="retained-card">
+          <template #header>
+            <div class="card-header">
+              <div class="card-header-left">
+                <el-icon :size="16" color="var(--color-primary)"><Document /></el-icon>
+                <span>{{ t('monitor.retainedMessages') }}</span>
+              </div>
+              <div class="card-header-actions">
+                <el-button size="small" text @click="refreshRetainedMessages">
+                  <el-icon :size="14"><Refresh /></el-icon>
+                </el-button>
+              </div>
+            </div>
+          </template>
+          <el-table :data="retainedMessages" style="width: 100%" class="monitor-table" size="small" max-height="280">
+            <template #empty>
+              <el-empty :description="t('common.noData')" :image-size="50" />
+            </template>
+            <el-table-column prop="topic" :label="t('monitor.topic')" min-width="180" show-overflow-tooltip />
+            <el-table-column prop="qos" label="QoS" width="80" align="center">
+              <template #default="{ row }">
+                <el-tag size="small" effect="plain" round>QoS {{ row.qos }}</el-tag>
+              </template>
+            </el-table-column>
+            <el-table-column prop="payload" :label="t('monitor.content')" min-width="250" show-overflow-tooltip />
+            <el-table-column :label="t('common.operation')" width="80" align="center" fixed="right">
+              <template #default="{ row }">
+                <el-popconfirm :title="t('monitor.msgConfirmDeleteRetained')" @confirm="handleDeleteRetained(row.topic)">
+                  <template #reference>
+                    <el-button
+                      type="danger"
+                      text
+                      size="small"
+                    >
+                      <el-icon><Close /></el-icon>
+                    </el-button>
+                  </template>
+                </el-popconfirm>
+              </template>
+            </el-table-column>
+          </el-table>
+        </el-card>
+      </section>
     </div>
 
     <el-dialog v-model="clientDetailVisible" :title="t('monitor.clientDetail')" width="540px" align-center destroy-on-close>
@@ -280,7 +325,9 @@ import {
   getMqttClients,
   getMqttMessages,
   getMqttTopics,
-  getHealth
+  getHealth,
+  getRetainedMessages,
+  deleteRetainedMessage
 } from '@/api/mqtt'
 import { getDelayedMessages, cancelDelayedMessage, getDelayedMessageStats } from '@/api/delayed'
 
@@ -295,6 +342,7 @@ const clientDetailVisible = ref(false)
 const selectedClient = ref({})
 const delayedMessages = ref([])
 const delayedStats = ref({})
+const retainedMessages = ref([])
 const messageFilter = ref({ topic: '', qos: null })
 
 let ws = null
@@ -365,7 +413,8 @@ async function refreshAll() {
     refreshMessages(),
     refreshTopics(),
     refreshHealth(),
-    refreshDelayedMessages()
+    refreshDelayedMessages(),
+    refreshRetainedMessages()
   ])
 }
 
@@ -394,6 +443,23 @@ async function refreshDelayedMessages() {
     delayedMessages.value = list
     delayedStats.value = s
   } catch (e) { console.error(e) }
+}
+async function refreshRetainedMessages() {
+  try {
+    retainedMessages.value = await getRetainedMessages()
+  } catch (e) {
+    console.error(e)
+  }
+}
+async function handleDeleteRetained(topic) {
+  try {
+    await deleteRetainedMessage(topic)
+    ElMessage.success(t('monitor.retainedDeleteSuccess'))
+    await refreshRetainedMessages()
+  } catch (e) {
+    console.error(e)
+    ElMessage.error(t('monitor.retainedDeleteFailed'))
+  }
 }
 
 async function handleCancelDelayed(id) {
@@ -773,7 +839,8 @@ onUnmounted(() => {
   display: none;
 }
 
-.delayed-section {
+.delayed-section,
+.retained-section {
   flex-shrink: 0;
 }
 

@@ -1,5 +1,16 @@
 <template>
   <div class="login-container">
+    <!-- 语言切换开关 -->
+    <div class="lang-toggle-wrapper">
+      <el-button class="lang-toggle-btn" size="small" @click="toggleLocale">
+        <svg class="lang-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 6px; width: 14px; height: 14px;">
+          <circle cx="12" cy="12" r="10" />
+          <line x1="2" y1="12" x2="22" y2="12" />
+          <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+        </svg>
+        <span>{{ locale === 'zh-CN' ? 'English' : '中文' }}</span>
+      </el-button>
+    </div>
     <!-- 背景动画层 - 模拟摄像头扫描效果 -->
     <div class="bg-animation">
       <div class="scan-line"></div>
@@ -121,7 +132,14 @@ import router from "@/router";
 import { ref, reactive, computed, onMounted, nextTick } from "vue";
 import { useI18n } from 'vue-i18n'
 
-const { t } = useI18n()
+const { locale, t } = useI18n()
+
+const toggleLocale = () => {
+  const next = locale.value === 'zh-CN' ? 'en-US' : 'zh-CN'
+  locale.value = next
+  localStorage.setItem('locale', next)
+}
+
 import { getDynamicRoutes } from "@/router/menus.js";
 import { getAuthRouters } from "@/router/authRouter.js";
 import { useAuthRouterStore } from "@/stores/authRouter.js";
@@ -809,5 +827,30 @@ html.dark .scan-line { border-color: rgba(43, 224, 140, 0.2); }
 html.dark .particles::before, html.dark .particles::after {
   background: rgba(43, 224, 140, 0.5);
   box-shadow: 0 0 8px rgba(43, 224, 140, 0.3);
+}
+
+.lang-toggle-wrapper {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  z-index: 1000;
+}
+
+.lang-toggle-btn {
+  background: rgba(20, 21, 28, 0.5) !important;
+  border: 1px solid rgba(43, 224, 140, 0.25) !important;
+  color: var(--color-primary) !important;
+  border-radius: 20px !important;
+  padding: 8px 16px !important;
+  font-weight: 500 !important;
+  transition: all 0.3s ease !important;
+  backdrop-filter: blur(10px);
+}
+
+.lang-toggle-btn:hover {
+  background: rgba(43, 224, 140, 0.12) !important;
+  border-color: var(--color-primary) !important;
+  box-shadow: 0 0 10px var(--color-primary-shadow) !important;
+  color: var(--color-primary) !important;
 }
 </style>

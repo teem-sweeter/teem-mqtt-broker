@@ -179,13 +179,19 @@ html.dark .el-button--danger.is-link:hover {
 
 /* 修复el-menu item hover时的白色背景 */
 .el-menu-item:hover {
-    background-color: var(--color-primary-bg) !important;
-    color: var(--color-primary-dark) !important;
+    background-color: var(--color-primary) !important;
+    color: #fff !important;
+}
+.el-menu-item:hover .el-icon {
+    color: #fff !important;
 }
 
 .el-sub-menu__title:hover {
-    background-color: var(--color-primary-bg) !important;
-    color: var(--color-primary-dark) !important;
+    background-color: var(--color-primary) !important;
+    color: #fff !important;
+}
+.el-sub-menu__title:hover .el-icon {
+    color: #fff !important;
 }
 
 /* 修复el-dropdown item hover时的白色背景 */
@@ -381,22 +387,33 @@ html.dark .el-button--default:hover {
 }
 
 /* primary按钮：使用主题绿色替代蓝色 */
-html.dark .el-button--primary {
+.el-button--primary {
     background-color: var(--color-primary) !important;
     border-color: var(--color-primary) !important;
+    color: #fff !important;
 }
-html.dark .el-button--primary:hover {
+.el-button--primary:hover {
     background-color: var(--color-primary-interactive) !important;
     border-color: var(--color-primary-interactive) !important;
+    color: #fff !important;
 }
-html.dark .el-button--primary.is-text {
+.el-button--primary.is-text {
     background-color: transparent !important;
     border-color: transparent !important;
     color: var(--color-primary) !important;
 }
-html.dark .el-button--primary.is-text:hover {
+.el-button--primary.is-text:hover {
     background-color: rgba(43, 224, 140, 0.1) !important;
     border-color: transparent !important;
+}
+.el-button--primary.is-disabled,
+.el-button--primary.is-disabled:hover,
+.el-button--primary.is-disabled:focus,
+.el-button--primary.is-disabled:active {
+    background-color: var(--color-primary-light, rgba(43, 224, 140, 0.6)) !important;
+    border-color: var(--color-primary-light, rgba(43, 224, 140, 0.6)) !important;
+    color: #fff !important;
+    opacity: 0.6;
 }
 
 /* success按钮 */
