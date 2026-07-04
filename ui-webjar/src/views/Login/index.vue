@@ -837,20 +837,20 @@ html.dark .particles::before, html.dark .particles::after {
 }
 
 .lang-toggle-btn {
-  background: rgba(20, 21, 28, 0.5) !important;
-  border: 1px solid rgba(43, 224, 140, 0.25) !important;
-  color: var(--color-primary) !important;
+  background: var(--bg-card) !important;
+  border: 1px solid var(--border-darker) !important;
+  color: var(--text-regular) !important;
   border-radius: 20px !important;
   padding: 8px 16px !important;
   font-weight: 500 !important;
   transition: all 0.3s ease !important;
-  backdrop-filter: blur(10px);
+  box-shadow: var(--shadow-sm);
 }
 
 .lang-toggle-btn:hover {
-  background: rgba(43, 224, 140, 0.12) !important;
+  background: var(--color-primary-hover) !important;
   border-color: var(--color-primary) !important;
+  color: var(--color-primary-interactive) !important;
   box-shadow: 0 0 10px var(--color-primary-shadow) !important;
-  color: var(--color-primary) !important;
 }
 </style>
