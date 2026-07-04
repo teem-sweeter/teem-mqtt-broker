@@ -94,18 +94,22 @@ public class MqttMonitorHandler extends AbstractInterceptHandler {
 
     @Override
     public void onPublish(InterceptPublishMessage msg) {
-        String topic = msg.getTopicName();
-        ByteBuf buf = msg.getPayload();
-        byte[] bytes = new byte[buf.readableBytes()];
-        buf.getBytes(buf.readerIndex(), bytes);
-        String payload = isPrintableText(bytes)
-                ? new String(bytes, StandardCharsets.UTF_8)
-                : bytesToHex(bytes);
-        String clientId = msg.getClientID();
-        int qos = msg.getQos() != null ? msg.getQos().value() : 0;
+        try {
+            String topic = msg.getTopicName();
+            ByteBuf buf = msg.getPayload();
+            byte[] bytes = new byte[buf.readableBytes()];
+            buf.getBytes(buf.readerIndex(), bytes);
+            String payload = isPrintableText(bytes)
+                    ? new String(bytes, StandardCharsets.UTF_8)
+                    : bytesToHex(bytes);
+            String clientId = msg.getClientID();
+            int qos = msg.getQos() != null ? msg.getQos().value() : 0;
 
-        log.debug("消息发布: Topic={}, ClientID={}, QoS={}", topic, clientId, qos);
-        monitorService.onMessagePublish(topic, payload, qos, clientId);
+            log.debug("消息发布: Topic={}, ClientID={}, QoS={}", topic, clientId, qos);
+            monitorService.onMessagePublish(topic, payload, qos, clientId);
+        } finally {
+            io.netty.util.ReferenceCountUtil.safeRelease(msg.getPayload());
+        }
     }
 
     @Override

@@ -30,37 +30,41 @@ public class MqttPersistenceHandler extends AbstractInterceptHandler {
 
     @Override
     public void onPublish(InterceptPublishMessage msg) {
-        long startTime = System.nanoTime();
         try {
-            String topic = msg.getTopicName();
-            MqttQoS qos = msg.getQos();
-            String clientId = msg.getClientID();
+            long startTime = System.nanoTime();
+            try {
+                String topic = msg.getTopicName();
+                MqttQoS qos = msg.getQos();
+                String clientId = msg.getClientID();
 
-            ByteBuf byteBuf = msg.getPayload();
-            if (byteBuf == null || !byteBuf.isReadable()) {
-                log.warn("收到空消息: topic={}, clientId={}", topic, clientId);
-                return;
+                ByteBuf byteBuf = msg.getPayload();
+                if (byteBuf == null || !byteBuf.isReadable()) {
+                    log.warn("收到空消息: topic={}, clientId={}", topic, clientId);
+                    return;
+                }
+
+                byte[] bytes = new byte[byteBuf.readableBytes()];
+                byteBuf.getBytes(byteBuf.readerIndex(), bytes);
+                String payload = isPrintableText(bytes)
+                        ? "\"" + escapeJson(new String(bytes, java.nio.charset.StandardCharsets.UTF_8)) + "\""
+                        : "\"" + bytesToHex(bytes) + "\"";
+                long timestamp = System.currentTimeMillis();
+
+                MqttMessageEvent event = new MqttMessageEvent(topic, payload, timestamp, qos.value(), clientId);
+
+                DISK_LOGGER.info(event.toJsonLine());
+
+                long count = ++totalMessageCount;
+                if (count % SAMPLE_INTERVAL == 0) {
+                    long elapsed = System.nanoTime() - startTime;
+                    log.debug("MQTT 消息持久化采样: count={}, elapsed={}ns, topic={}", count, elapsed, topic);
+                }
+
+            } catch (Exception e) {
+                log.error("MQTT 消息持久化预处理失败: topic={}, error={}", msg.getTopicName(), e.getMessage(), e);
             }
-
-            byte[] bytes = new byte[byteBuf.readableBytes()];
-            byteBuf.getBytes(byteBuf.readerIndex(), bytes);
-            String payload = isPrintableText(bytes)
-                    ? "\"" + escapeJson(new String(bytes, java.nio.charset.StandardCharsets.UTF_8)) + "\""
-                    : "\"" + bytesToHex(bytes) + "\"";
-            long timestamp = System.currentTimeMillis();
-
-            MqttMessageEvent event = new MqttMessageEvent(topic, payload, timestamp, qos.value(), clientId);
-
-            DISK_LOGGER.info(event.toJsonLine());
-
-            long count = ++totalMessageCount;
-            if (count % SAMPLE_INTERVAL == 0) {
-                long elapsed = System.nanoTime() - startTime;
-                log.debug("MQTT 消息持久化采样: count={}, elapsed={}ns, topic={}", count, elapsed, topic);
-            }
-
-        } catch (Exception e) {
-            log.error("MQTT 消息持久化预处理失败: topic={}, error={}", msg.getTopicName(), e.getMessage(), e);
+        } finally {
+            io.netty.util.ReferenceCountUtil.safeRelease(msg.getPayload());
         }
     }
 

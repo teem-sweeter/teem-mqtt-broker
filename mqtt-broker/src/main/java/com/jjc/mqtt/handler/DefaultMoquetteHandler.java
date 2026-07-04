@@ -26,9 +26,13 @@ public class DefaultMoquetteHandler extends AbstractInterceptHandler {
 
     @Override
     public void onPublish(InterceptPublishMessage msg) {
-        ByteBuf byteBuf = msg.getPayload();
-        String payload = byteBuf.toString(CharsetUtil.UTF_8);
-        log.info("收到消息: Topic={}, Payload={}", msg.getTopicName(), payload);
+        try {
+            ByteBuf byteBuf = msg.getPayload();
+            String payload = byteBuf.toString(CharsetUtil.UTF_8);
+            log.info("收到消息: Topic={}, Payload={}", msg.getTopicName(), payload);
+        } finally {
+            io.netty.util.ReferenceCountUtil.safeRelease(msg.getPayload());
+        }
     }
 
     @Override

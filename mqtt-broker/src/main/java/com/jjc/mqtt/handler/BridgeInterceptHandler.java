@@ -32,26 +32,30 @@ public class BridgeInterceptHandler extends AbstractInterceptHandler {
 
     @Override
     public void onPublish(InterceptPublishMessage msg) {
-        String clientId = msg.getClientID();
-        String topic = msg.getTopicName();
-        int qos = msg.getQos() != null ? msg.getQos().value() : 0;
-        boolean retained = msg.isRetainFlag();
+        try {
+            String clientId = msg.getClientID();
+            String topic = msg.getTopicName();
+            int qos = msg.getQos() != null ? msg.getQos().value() : 0;
+            boolean retained = msg.isRetainFlag();
 
-        // 防环：如果是桥接入向注入的消息，直接跳过
-        if (BridgeEngine.BRIDGE_INBOUND_AGENT.equals(clientId)) {
-            return;
-        }
-
-        // 将 payload 转为字节数组
-        io.netty.buffer.ByteBuf buf = msg.getPayload();
-        byte[] payload = new byte[buf.readableBytes()];
-        buf.getBytes(buf.readerIndex(), payload);
-
-        // 通知所有活跃的桥接引擎
-        for (BridgeEngine engine : engines.values()) {
-            if (engine.isRunning()) {
-                engine.onLocalPublish(topic, payload, qos, retained, clientId);
+            // 防环：如果是桥接入向注入的消息，直接跳过
+            if (BridgeEngine.BRIDGE_INBOUND_AGENT.equals(clientId)) {
+                return;
             }
+
+            // 将 payload 转为字节数组
+            io.netty.buffer.ByteBuf buf = msg.getPayload();
+            byte[] payload = new byte[buf.readableBytes()];
+            buf.getBytes(buf.readerIndex(), payload);
+
+            // 通知所有活跃的桥接引擎
+            for (BridgeEngine engine : engines.values()) {
+                if (engine.isRunning()) {
+                    engine.onLocalPublish(topic, payload, qos, retained, clientId);
+                }
+            }
+        } finally {
+            io.netty.util.ReferenceCountUtil.safeRelease(msg.getPayload());
         }
     }
 
