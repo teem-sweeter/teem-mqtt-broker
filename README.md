@@ -30,6 +30,7 @@
 
 - [架构概览](#架构概览)
 - [功能特性](#功能特性)
+- [界面展示](#界面展示)
 - [技术栈](#技术栈)
 - [快速开始](#快速开始)
   - [本地运行](#本地运行)
@@ -112,6 +113,18 @@
 - H2 数据库 AES 文件级透明加密
 - 全局入参校验 @Valid + 统一异常处理
 - 登录页多语言切换（内置科技感悬浮按钮，支持亮/暗自适应色调）
+
+## 界面展示
+
+以下是 MQTT Broker 管理控制台的主要界面截图：
+
+![MQTT调试](docs/example/MQTT调试.png)
+![监控面板](docs/example/监控面板.png)
+![MQTT监控](docs/example/MQTT监控.png)
+![消息记录](docs/example/消息记录.png)
+![home首页](docs/example/home首页.png)
+![桥接链路](docs/example/桥接链路.png)
+![客户端管理](docs/example/客户端管理.png)
 
 ## 技术栈
 
